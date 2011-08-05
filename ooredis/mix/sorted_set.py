@@ -8,6 +8,7 @@ import redis.exceptions as redispy_exception
 from functools import partial
 
 from ooredis.mix.key import Key
+from ooredis.const import LEFTMOST, RIGHTMOST
 
 # redis command execute status code
 MEMBER_NOT_IN_SET_AND_REMOVE_FALSE = 0
@@ -18,10 +19,6 @@ MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 # ZRANGE result item index
 VALUE = 0
 SCORE= 1
-
-# redis range index
-LEFTMOST = 0
-RIGHTMOST = -1
 
 # default value of SortedSet.incr & SortedSet.decr
 DEFAULT_INCREMENT = DEFAULT_DECREMENT = 1

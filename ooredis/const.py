@@ -9,3 +9,7 @@ REDIS_TYPE = {
     'sorted_set': 'zset',
     'not_exists': 'none',
 }
+
+# redis列表和有序集的range边界
+LEFTMOST = 0
+RIGHTMOST = -1

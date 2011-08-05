@@ -24,7 +24,7 @@ class TestList(unittest.TestCase):
     # __repr__
 
     def test_repr(self):
-        self.assertIsNone(repr(self.l))
+        self.assertIsNotNone(repr(self.l))
 
     # len
 

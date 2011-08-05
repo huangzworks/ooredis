@@ -11,6 +11,7 @@ from ooredis.mix.key import (
     get_key_name_from_single_value,
     Key,
 )
+from ooredis.const import LEFTMOST, RIGHTMOST
 
 # block time
 INDEFINITELY = 0
@@ -20,10 +21,6 @@ REMOVE_ALL_ELEMENT_EQUAL_VALUE = 0
 
 # redis blpop/brpop result index
 VALUE = 1
-
-# redis range
-LEFTMOST = 0
-RIGHTMOST = 1
 
 # NOTE:
 # redis的list是可变的(mutable)，没有继承MutableSequence主要是
