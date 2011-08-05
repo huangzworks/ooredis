@@ -1,0 +1,89 @@
++ 代表完成，- 代表未完成。
+
++ 2011.8.3 发布前的代码清理：
+           2011.8.3 set、dict基本完成。
+           2011.8.3 list、sorted_set
+           key
+
++ 2011.8.3 type_case的支持。
+           sorted_set,
+           dict,
+           list,
+           set,
+           string,
+
+- 2011.8.3 key.py中的SortableKey
+
+- 2011.8.3 用sphinx的autodoc模块为ooredis生成api文档。
+
++ 2011.8.3 set模块的集合运算的复杂度。
+
++ 2011.8.3 Set.members
+           
+           [已删除，set(Set)代替]
+
++ 2011.8.2 小心线程问题。
+
++ 2011.7.30 移走sorted_set的rank和score的KeyError？
+            
+            [不，保持异常表现一致。]
+
+- 2011.7.30 研究ooredis如何支持事务。
+
++ 2011.7.30 dict、list、set基本稳定，string、sorted_set和key还需要继续研究。
+
+- 2011.7.29 list的删除方法，以及LINSERT。
+
++ 2011.7.29 HINCRBY
+
++ 2011.7.29 注意程序的复杂度，ooredis部分过程的复杂度和redis的函数的复杂度不同。
+
++ 2011.7.29 注意Raises项，有部分是错误的（复制造成。。。）
+
++ 2011.7.28 查查集合书，将set的<=,>,|等操作补上。
+
+            似乎不用查书，直接用self.members将集合提取出来，再按python的内置集合方式运算就可以了。
+
++ 2011.7.28 sorted_set的几个函数，ZINTERSTORE、ZUNIONSTORE、ZREMRANGEBYSCORE等。
+
+            [ZREMRANGEBYSCORE搞定，ZINTERSTORE、ZUNIONSTORE还需继续努力。]
+
++ 2011.7.28 找一个pythonic的方式处理ltrim、linsert等函数。
+
++ 2011.7.27 移除type_case的还剩下set和sorted_set
+
++ 2011.7.27 决定type_case的走向
+
+            [先移除所有type_case，等完成所有功能之后再考虑类型]
+
++ 2011.7.25 set和sorted_set的discard和remove是否都有必要？
+            不如remove(element, check=False)
+            如果check为True且element不存在时抛出异常
+            其他情况返回None
+
+            但是这样一来很pyhton的默认就不相同了。
+
+            将set的remove也改成了该模式。
+
++ 2011.7.25 ooredis的异常检查是不是过分严格了？
+            对所有get类方法和range类方法，如果不符合，返回None。
+            对所有set类方法，如果key/index不存在则抛出KeyError/IndexError?
+
+            [所有类型的异常机制应该和python内置类保持一致]
+
++ 2011.7.24 有些__iter__似乎没有用？整理一下。
+
++ 2011.7.24 set的&，|等方法运作不正常。
+            想想interstore等函数的处理方式，做到尽量pythonic。
+
++ 2011.7.23 将self.to_redis和self.to_python改成self._to_redis和self._to_python。
+
++ 2011.7.23 为每个类编写__repr__。
+
++ 2011.7.20 开始list.py的工作。
+
++ 2011.7.20 将dict.py内的函数补充完整，添加MIXIN函数的测试。
+            测试dict对多类型的支持。
+
++ 2011.7.19 完成mix/string.py内的几个类，添加Object类型支持。
+            开始hash.py的工作。
