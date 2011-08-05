@@ -8,7 +8,7 @@ from ooredis.client import connect
 from ooredis.mix.list import List
 from ooredis.type_case import JsonTypeCase
 
-class TestList(unittest.TestCase):
+class TestTypeCaseList(unittest.TestCase):
     
     def setUp(self):
         connect()

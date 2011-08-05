@@ -93,6 +93,8 @@ class JsonTypeCase:
     
     @staticmethod
     def to_python(value):
+        if value == None:
+            return None
         return json.loads(value)
 
 
@@ -105,4 +107,6 @@ class SerializeTypeCase:
 
     @staticmethod
     def to_python(value):
+        if value == None:
+            return None
         return pickle.loads(value)

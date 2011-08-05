@@ -9,7 +9,7 @@ from ooredis.client import connect
 from ooredis.mix.dict import Dict
 from ooredis.type_case import JsonTypeCase
 
-class TestDict(unittest.TestCase):
+class TestTypeCaseDict(unittest.TestCase):
     
     def setUp(self):
         connect()
