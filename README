@@ -1,0 +1,75 @@
+OOREDIS
+=======
+
+ooredis是一个Redis的Python库，基于redis-py，它主要有以下三个目标：
+
+    - 以Key对象为单位操作Redis的数据结构
+    - 提供一组Pythonic的API
+    - 提供方便的类型转换机制 
+
+
+需求
+====
+
+Python2.7
+Redis2.2
+redis-py2.4.9
+
+
+安装
+====
+
+    $ cd /tmp/
+    $ git clone git://github.com/huangz1990/ooredis.git
+    Cloning into ooredis...
+    ...
+    Resolving deltas: 100% (34/34), done.
+    $ cd ooredis/
+    $ sudo mv ooredis/ /usr/lib/python2.7/site-packages/
+    $ python2
+    Python 2.7.2 (default, Jun 29 2011, 11:17:09)
+    [GCC 4.6.1] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> from ooredis import *
+
+
+示例
+=====
+
+    >>> from ooredis import *
+    >>> dir()
+    ['Counter', 'Dict', 'List', 'Set', 'SingleValue', 'SortedSet', '__builtins__', '__doc__', '__name__', '__package__', 'connect', 'get_client', 'type_case']
+    >>> connect(db=1)
+    <redis.client.Redis object at 0xb71cae4c>
+    >>> project = Dict('ooredis')
+    >>> project['name'] = 'ooredis'
+    >>> project['version'] = 1.0
+    >>> project['author'] = 'huangz'
+    >>> 
+    >>> friends = Set('my_friends')
+    >>> friends.add('marry')
+    >>> friends.add('jack')
+    >>> set(friends)
+    set([u'marry', u'jack'])
+    >>> 
+    >>> 
+
+
+更多
+====
+
+关于更多代码示例及说明，请参见：http://bit.ly/qMot2r
+
+
+许可
+=====
+
+你可以在免费且自由的情况下，下载、使用、修改本软件，如果你需要其他许可，请联系作者。
+
+
+联系方式
+========
+
+twitter: @huangz1990
+gmail: huangz1990
+豆瓣: http://www.douban.com/people/i_m_huangz/
