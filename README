@@ -61,6 +61,13 @@ redis-py2.4.9
 关于更多代码示例及说明，请参见： http://bit.ly/rbgn3Z
 
 
+文档
+====
+
+(正在编写中)
+http://ooredis.readthedocs.org/
+
+
 测试
 ====
 
