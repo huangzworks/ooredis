@@ -7,10 +7,14 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
+from ooredis.const import (
+    REDIS_TYPE,
+    DEFAULT_INCREMENT,
+    DEFAULT_DECREMENT,
+)
 
-DEFAULT_INCREMENT = DEFAULT_DECREMENT = 1
+KEY_NOT_IN_DICT_AND_DELETE_FALSE = False
 
 class Dict(Key, collections.MutableMapping):
     """ 一个字典对象，底层是redis的hash实现。 """
@@ -36,8 +40,8 @@ class Dict(Key, collections.MutableMapping):
             None
 
         Raises:
-            TypeError: 如果传入的value不是适合的类型。
-                       或key对象不是字典类型。
+            ValueError: 传入的value不是合适的类型时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         try:
             value = self._type_case.to_redis(value)
@@ -60,8 +64,8 @@ class Dict(Key, collections.MutableMapping):
 
         Raises:
             KeyError: key不存在时抛出。
-            TypeError: 如果value不是适合的类型抛出。
-                       或key对象不是hash类型。
+            ValueError: 传入的value不是合适的类型时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         # NOTE: 将TypeError的抛出单独抽取出来，
         #       是为了让MIXIN方法的行为和python一致。
@@ -79,7 +83,7 @@ class Dict(Key, collections.MutableMapping):
 
     def __delitem__(self, key):
         """ 删除dict[key]。
-        如果dict[key]不存在，沉默。
+        如果dict[key]不存在，抛出KeyError。
 
         Args:
             key: 字典的键
@@ -91,10 +95,13 @@ class Dict(Key, collections.MutableMapping):
             None
 
         Raises:
-            TypeError: 当key对象不是字典类型时抛出。
+            KeyError: key不存在时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         try:
-            self._client.hdel(self.name, key)
+            status = self._client.hdel(self.name, key)
+            if status == KEY_NOT_IN_DICT_AND_DELETE_FALSE:
+                raise KeyError
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -105,10 +112,10 @@ class Dict(Key, collections.MutableMapping):
             O(N)
 
         Returns:
-            iterator: 包含所有字典所有key的一个生成器。
+            iterator: 包含所有字典所有key的一个迭代器。
         
         Raises:
-            TypeError: 当key对象不是字典类型时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         try:
             for key in self._client.hkeys(self.name):
@@ -126,7 +133,7 @@ class Dict(Key, collections.MutableMapping):
             int: 字典中key-value对的个数。
 
         Raises:
-            TypeError: 当key对象不是hash类型时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         try:
             return self._client.hlen(self.name)
@@ -135,6 +142,7 @@ class Dict(Key, collections.MutableMapping):
 
     def incr(self, key, increment=DEFAULT_INCREMENT):
         """ 将dict[key]中的值加上increment。
+        dict[key]中储存的必须是整数值(int)，否则引发异常。
 
         Args:
             key: 键
@@ -144,14 +152,15 @@ class Dict(Key, collections.MutableMapping):
             O(1)
 
         Returns:
-            int: 当前dict[key]中的值
+            int: 执行incr操作之后，dict[key]的值
 
         Raises:
-            KeyError:如果dict[key]存在且储存的不是整数类型时抛出。
-            TypeError:对非字典类型进行incr操作时抛出。
+            KeyError:如果dict[key]存在但储存的不是整数类型时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         if self.exists and self._represent != REDIS_TYPE['hash']:
             raise TypeError
+
         try:
             return self._client.hincrby(self.name, key, increment)
         except redispy_exception.ResponseError:
@@ -159,6 +168,7 @@ class Dict(Key, collections.MutableMapping):
 
     def decr(self, key, decrement=DEFAULT_DECREMENT):
         """ 将dict[key]中的值减去decrement。
+        dict[key]中储存的必须是整数值(int)，否则引发异常。
 
         Args:
             key: 键
@@ -168,10 +178,10 @@ class Dict(Key, collections.MutableMapping):
             O(1)
 
         Returns:
-            int: 当前dict[key]中的值
+            int: 执行decr操作之后，dict[key]的值
 
         Raises:
             KeyError:如果dict[key]存在且储存的不是整数类型时抛出。
-            TypeError:对非字典类型进行incr操作时抛出。
+            TypeError: Key对象不是Dict类型时抛出。
         """
         return self.incr(key, 0-decrement)

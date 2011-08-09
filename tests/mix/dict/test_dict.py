@@ -72,16 +72,16 @@ class TestDict(unittest.TestCase):
 
     # __delitem__
 
-    def test_del_not_exists_key(self):
-        del self.d['a']
-        self.assertEqual(dict(self.d), {})
-
     def test_del_exists_key(self):
         self.d['key'] = 'value'
 
         del self.d['key']
         self.assertTrue('key' not in self.d)
         self.assertEqual(dict(self.d), {})
+
+    def test_del_not_exists_key(self):
+        with self.assertRaises(KeyError):
+            del self.d['a']
 
     def test_del_raise_wrong_type(self):
         with self.assertRaises(TypeError):
