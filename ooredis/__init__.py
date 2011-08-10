@@ -14,6 +14,6 @@ from mix.dict import Dict
 from mix.list import List
 from mix.set import Set
 from mix.sorted_set import SortedSet
-from mix.string import SingleValue, Counter
+from mix.single_value import SingleValue, Counter
 
-__version__ = 1.1
+__version__ = 1.2

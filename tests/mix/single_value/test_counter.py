@@ -5,7 +5,7 @@ import unittest
 import redis
 
 from ooredis.client import connect
-from ooredis.mix.string import Counter
+from ooredis.mix.single_value import Counter
 
 class TestCounter(unittest.TestCase):
     

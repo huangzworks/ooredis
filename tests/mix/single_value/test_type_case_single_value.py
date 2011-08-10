@@ -5,7 +5,7 @@ import unittest
 import redis
 
 from ooredis.client import connect
-from ooredis.mix.string import SingleValue
+from ooredis.mix.single_value import SingleValue
 from ooredis.type_case import SerializeTypeCase
 
 class Person:
