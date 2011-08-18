@@ -1,8 +1,13 @@
 + 代表完成，- 代表未完成。
 
++ 2011.8.12 为set.py加上&=, |=, -=操作符，使用SINTERSTORE,SUNIONSTORE和SDIFFSTORE命令。
+
 + 2011.8.9 type_case的字符串编码实现有错
 
 - 2011.8.9 修正更个mix类中的注释，像是“如果Key对象不是list类型”这类语句，应该改成“如果Key对象不是List类型”...
+            
+           [ dict.py完成，
+             set.py完成，
 
 - 2011.8.9 抽出mix中各个类的__repr__
 
@@ -20,7 +25,9 @@
 
 - 2011.8.3 key.py中的SortableKey
 
-- 2011.8.3 用sphinx的autodoc模块为ooredis生成api文档。
++ 2011.8.3 用sphinx的autodoc模块为ooredis生成api文档。
+        
+           [autodoc在readthedoc中不管用]
 
 + 2011.8.3 set模块的集合运算的复杂度。
 

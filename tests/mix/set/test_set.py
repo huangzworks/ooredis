@@ -335,6 +335,37 @@ class TestSet(unittest.TestCase):
             self.redispy.set(self.another.name, 'string')
             self.s | self.another
 
+    # union, &=, __ior__
+
+    def test_ior_with_empty_set(self):
+        self.s |= self.another
+
+        self.assertEqual(set(self.s), set())
+
+        self.assertEqual(set(self.another), set())
+
+    def test_ior_with_not_empty_set(self):
+        self.s.add('a')
+
+        self.another.add('b')
+
+        self.s |= self.another
+
+        self.assertEqual(set(self.s), {'a', 'b'})
+        
+        self.assertEqual(set(self.another), {'b'})
+
+    def test_ior_raise_when_self_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.s.name, 'string')
+            self.s |= self.another
+
+    def test_ior_raise_when_other_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.another.name, 'string')
+            self.s |= self.another
+
+
     # inser(operator) &
 
     def test_op_inter(self):
@@ -366,6 +397,39 @@ class TestSet(unittest.TestCase):
             self.redispy.set(self.another.name, 'string')
             self.s & self.another
 
+    # inter, &=, __iand__
+
+    def test_iand_with_empty_set(self):
+        self.s &= self.another
+
+        self.assertEqual(set(self.s), set())
+
+        # make sure self.another not change
+        self.assertEqual(set(self.another), set())
+
+    def test_iand_with_not_empty_set(self):
+        self.s.add('a')
+
+        self.another.add('a')
+        self.another.add('b')
+
+        self.s &= self.another
+
+        self.assertEqual(set(self.s), set('a'))
+
+        # make sure self.another not change
+        self.assertEqual(set(self.another), {'a', 'b'})
+
+    def test_iand_raise_when_self_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.s.name, 'string')
+            self.s &= self.another
+
+    def test_iand_raise_when_other_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.another.name, 'string')
+            self.s &= self.another
+
     # diff(operator) -
     
     def test_op_diff(self):
@@ -396,6 +460,37 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.redispy.set(self.another.name, 'string')
             self.s - self.another
+
+    # diff, -=, __isub__
+
+    def test_isub_with_empty_set(self):
+        self.s -= self.another
+
+        self.assertEqual(set(self.s), set())
+        self.assertEqual(set(self.another), set())
+
+    def test_isub_with_not_empty_set(self):
+        self.s.add('a')
+        self.s.add('b')
+
+        self.another.add('a')
+        self.another.add('f')
+
+        self.s -= self.another
+
+        self.assertEqual(set(self.s), {'b'})
+
+        self.assertEqual(set(self.another), {'a', 'f'})
+
+    def test_isub_raise_when_self_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.s.name, 'string')
+            self.s -= self.another
+
+    def test_isub_raise_when_other_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.redispy.set(self.another.name, 'string')
+            self.s -= self.another
 
     # symmetric diff(operator) ^
 

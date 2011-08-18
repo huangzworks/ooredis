@@ -7,9 +7,10 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
+from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import (
-    get_key_name_from_single_value,
     Key,
+    get_key_name_from_single_value,
 )
 
 MEMBER_NOT_IN_SET_AND_MOVE_FALSE = 0
@@ -225,9 +226,11 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self).isdisjoint(get_members(other))
+
+    # subset
 
     def __le__(self, other):
         """ 测试集合是否是另一个集合的子集。
@@ -242,9 +245,11 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) <= get_members(other)
+
+    # proper subset
 
     def __lt__(self, other):
         """ 测试集合是否是另一个集合的真子集。
@@ -259,9 +264,11 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) < get_members(other)
+
+    # superset
 
     def __ge__(self, other):
         """ 测试集合是否是另一个集合的超集。
@@ -276,9 +283,11 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) >= get_members(other)
+
+    # proper superset
 
     def __gt__(self, other):
         """ 测试集合是否是另一个集合的真超集。
@@ -293,9 +302,11 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) > get_members(other)
+
+    # union
 
     def __or__(self, other):
         """ 返回集合和另一个集合的并集。
@@ -310,13 +321,41 @@ class Set(Key):
             set
 
         Raises：
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) | get_members(other)
 
     __ror__ = __or__
-    __ror__.__doc__ = \
-    """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
+    __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
+
+    def __ior__(self, other):
+        """ 求集合key对象和另一个集合key对象的并集， 并将结果保存到集合key对象self中。
+
+        和 | 操作符不同，|= 操作符只能在集合key对象和集合key对象之间进行。
+
+        Args:
+            self: Python指定该方法必须返回self。
+
+        Time:
+            O(N)
+
+        Returns:
+            新的集合key对象的基数。
+
+        Raises:
+            TypeError: 当key或other不是Set类型时抛出。
+        """
+        try:
+            if other.exists and other._represent != REDIS_TYPE['set']:
+                raise TypeError
+
+            self._client.sunionstore(self.name, [self.name, other.name])
+            return self
+        except redispy_exception.ResponseError:
+            raise TypeError
+ 
+
+    # intersection
 
     def __and__(self, other):
         """ 返回集合和另一个集合的交集。
@@ -332,14 +371,40 @@ class Set(Key):
             set
 
         Raises：
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) & get_members(other)
 
     __rand__ = __and__
-    __rand__.__doc__ = \
-    """ __and__的反向方法，用于支持多集合进行交集操作。 """
+    __rand__.__doc__ = """ __and__的反向方法，用于支持多集合进行交集操作。 """
 
+    def __iand__(self, other):
+        """ 求集合key对象和另一个集合key对象的交集， 并将结果保存到集合key对象self中。
+
+        和 & 操作符不同，&= 操作符只能在集合key对象和集合key对象之间进行。
+
+        Args:
+            self: Python指定该方法必须返回self。
+
+        Time:
+            O(N)
+
+        Returns:
+            新的集合key对象的基数。
+
+        Raises:
+            TypeError: 当key或other不是Set类型时抛出。
+        """
+        try:
+            if other.exists and other._represent != REDIS_TYPE['set']:
+                raise TypeError
+
+            self._client.sinterstore(self.name, [self.name, other.name])
+            return self
+        except redispy_exception.ResponseError:
+            raise TypeError
+
+    # difference
 
     def __sub__(self, other):
         """ 返回集合对另一个集合的差集。
@@ -354,7 +419,7 @@ class Set(Key):
             set
 
         Raises：
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) - get_members(other)
 
@@ -364,6 +429,35 @@ class Set(Key):
         """
         # WARNING: 注意这里的位置不要弄反。
         return get_members(other) - get_members(self)
+
+    def __isub__(self, other):
+        """ 求集合key对象和另一个集合key对象的差集， 并将结果保存到集合key对象self中。
+
+        和 - 操作符不同，-= 操作符只能在集合key对象和集合key对象之间进行。
+
+        Args:
+            self: Python指定该方法必须返回self。
+
+        Time:
+            O(N)
+
+        Returns:
+            新的集合key对象的基数。
+
+        Raises:
+            TypeError: 当key或other不是Set类型时抛出。
+        """
+        try:
+            if other.exists and other._represent != REDIS_TYPE['set']:
+                raise TypeError
+
+            self._client.sdiffstore(self.name, [self.name, other.name])
+            return self
+        except redispy_exception.ResponseError:
+            raise TypeError
+ 
+
+    # symmetric difference
 
     def __xor__(self, other):
         """ 返回集合对另一个集合的对等差集。
@@ -378,7 +472,7 @@ class Set(Key):
             O(N)
 
         Raises:
-            TypeError: 当key或other不是指定类型时抛出。
+            TypeError: 当key或other不是Set类型时抛出。
         """
         return get_members(self) ^ get_members(other)
 
