@@ -62,7 +62,7 @@ set([u'marry', u'jack'])
 >>> 
 
 
-更多
+简介
 ====
 
 关于更多代码示例及说明，请参见以下幻灯：
@@ -75,8 +75,35 @@ set([u'marry', u'jack'])
 文档
 ====
 
-(正在编写中，暂不可用)
-http://ooredis.readthedocs.org/
+ooredis代码中内置了函数的基本介绍，可以使用help(obj)来查看
+
+>>> from ooredis import Set
+>>> help(Set)
+>>>
+Help on class Set in module ooredis.mix.set:
+
+class Set(ooredis.mix.key.Key)
+|  集合类型，底层实现是redis的set类型。
+|  
+|  Method resolution order:
+|      Set
+|      ooredis.mix.key.Key
+|      __builtin__.object
+|  
+|  Methods defined here:
+|  
+|  __and__(self, other)
+|      __and__的反向方法，用于支持多集合进行交集操作。
+|  
+|  __contains__(self, element)
+|      查元素element是否是集合的成员。
+|      
+|      Args:
+|          element
+|      
+|      Time:
+|          O(1)
+|...
 
 
 测试
