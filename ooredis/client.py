@@ -13,7 +13,6 @@ class SingletonClientMeta(type):
     def __call__(cls, *args, **kwargs):
         if cls._instance == None:
             cls._instance = redis.Redis(*args, **kwargs)
-            return cls._instance
         return cls._instance
 
 class RedisClient:
