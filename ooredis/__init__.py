@@ -16,4 +16,4 @@ from mix.set import Set
 from mix.sorted_set import SortedSet
 from mix.single_value import SingleValue, Counter
 
-__version__ = 1.3
+__version__ = 1.4

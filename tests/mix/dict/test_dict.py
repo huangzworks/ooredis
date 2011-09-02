@@ -114,61 +114,6 @@ class TestDict(unittest.TestCase):
             self.redispy.set(self.d.name, 'string')
             list(self.d)
 
-    # incr
-
-    def test_incr(self):
-        self.assertEqual(self.d.incr('counter', 1), 1)
-
-        self.assertEqual(self.d['counter'], 1)
-
-    def test_incr_with_exists_key(self):
-        self.d['counter'] = 10086
-
-        self.assertEqual(self.d.incr('counter', 1), 10086+1)
-        self.assertEqual(self.d['counter'], 10086+1)
-
-    def test_incr_with_default_increment(self):
-        self.assertEqual(self.d.incr('counter'), 1)
-
-        self.assertEqual(self.d['counter'], 1)
-
-    def test_incr_raise_when_key_wrong_type(self):
-        with self.assertRaises(KeyError):
-            self.d['string'] = 'hello'
-            self.d.incr('string')
-
-    def test_incr_raise_when_key_object_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.redispy.set(self.d.name, 'string')
-            self.d.incr('counter')
-
-    # decr
-
-    def test_decr(self):
-        self.assertEqual(self.d.decr('counter', 1), -1)
-
-        self.assertEqual(self.d['counter'], -1)
-
-    def test_decr_with_exists_key(self):
-        self.d['counter'] = 10086
-
-        self.assertEqual(self.d.decr('counter', 1), 10086-1)
-        self.assertEqual(self.d['counter'], 10086-1)
-
-    def test_decr_with_default_decrement(self):
-        self.assertEqual(self.d.decr('counter'), -1)
-        self.assertEqual(self.d['counter'], -1)
-
-    def test_decr_raise_when_key_wrong_type(self):
-        with self.assertRaises(KeyError):
-            self.d['string'] = 'hello'
-            self.d.decr('string')
-
-    def test_incr_raise_when_key_object_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.redispy.set(self.d.name, 'string')
-            self.d.decr('counter')
- 
     # MAXIN method.........................
 
     # __contains__
@@ -362,6 +307,37 @@ class TestDict(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.redispy.set(self.d.name, 'string')
             self.d.setdefault('key', 'default')
+
+    # +=, __iadd__
+    
+    def test_iadd(self):
+        self.d['counter'] = 0
+        self.d['counter'] += 10086
+
+        self.assertEqual(self.d['counter'], 10086)
+
+    def test_iadd_with_string(self):
+        self.d['greet'] = 'good '
+        self.d['greet'] += 'morning'
+
+        self.assertEqual(self.d['greet'], 'good morning')
+
+    def test_iadd_raise_when_key_not_exists(self):
+        with self.assertRaises(KeyError):
+            self.d['not_exists'] += 5
+
+    # -=, __isub__
+
+    def test_isub(self):
+        self.d['counter'] = 0
+        self.d['counter'] -= 10086
+
+        self.assertEqual(self.d['counter'], 0-10086)
+
+    def test_isub_raise_when_key_not_exists(self):
+        with self.assertRaises(KeyError):
+            self.d['not_exists'] -= 123
+
 
 if __name__ == "__main__":
     unittest.main()
