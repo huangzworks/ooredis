@@ -15,7 +15,7 @@ class SingletonClientMeta(type):
             cls._instance = redis.Redis(*args, **kwargs)
         return cls._instance
 
-class RedisClient:
+class Redis:
     
     __metaclass__ = SingletonClientMeta
 
@@ -23,7 +23,7 @@ class RedisClient:
 # helper functions:
 
 def connect(*args, **kwargs):
-    return RedisClient(*args, **kwargs)
+    return Redis(*args, **kwargs)
 
 def get_client():
-    return RedisClient()
+    return Redis()
