@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='ooredis',
-      version='1.4',
+      version='1.4.1',
       author='huangz',
       author_email='huangz1990@gmail.com',
       url='https://github.com/huangz1990/ooredis',

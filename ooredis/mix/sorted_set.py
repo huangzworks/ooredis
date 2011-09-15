@@ -1,4 +1,4 @@
-# coding:utf-8
+# coding: utf-8
 
 __all__ = ['SortedSet']
 
@@ -8,7 +8,12 @@ import redis.exceptions as redispy_exception
 from functools import partial
 
 from ooredis.mix.key import Key
-from ooredis.const import LEFTMOST, RIGHTMOST
+from ooredis.const import (
+    LEFTMOST,
+    RIGHTMOST,
+    DEFAULT_INCREMENT,
+    DEFAULT_DECREMENT,
+)
 
 # redis command execute status code
 MEMBER_NOT_IN_SET_AND_REMOVE_FALSE = 0
@@ -19,9 +24,6 @@ MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 # ZRANGE result item index
 VALUE = 0
 SCORE= 1
-
-# default value of SortedSet.incr & SortedSet.decr
-DEFAULT_INCREMENT = DEFAULT_DECREMENT = 1
 
 class SortedSet(Key):
     """ 有序集对象，底层是redis的zset实现。 """
@@ -69,8 +71,7 @@ class SortedSet(Key):
         # 所以这里用ZSCORE命令hack一个，
         # 如果ZSCORE key member不为None，证明element是有序集成员。
 
-        # WARNING:
-        # 这里不要用self.score，这两个方法互相引用。
+        # WARNING: 这里不要用self.score，这两个方法互相引用。
         try:
             element = self._type_case.to_redis(element)
             return None != self._client.zscore(self.name, element)
@@ -202,9 +203,9 @@ class SortedSet(Key):
             TypeError: 当key不是有序集类型时由in语句抛出。
         """
         try:
-            get_rank = self._client.zrevrank if reverse else self._client.zrank
-
             member = self._type_case.to_redis(member)
+
+            get_rank = self._client.zrevrank if reverse else self._client.zrank
             result = get_rank(self.name, member)
 
             if result == MEMBER_NOT_IN_SET_AND_GET_RANK_FALSE:

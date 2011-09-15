@@ -3,9 +3,12 @@
 
 import unittest
 
+# client
+
 from test_client import TestClient
 from test_type_case import TestTypeCase
 
+# mix 
 from mix.key.test_key import TestKey
 
 from mix.dict.test_dict import TestDict
@@ -23,6 +26,10 @@ from mix.sorted_set.test_type_case_sorted_set import TestTypeCaseSortedSet
 from mix.single_value.test_single_value import TestSingleValue
 from mix.single_value.test_counter import TestCounter
 from mix.single_value.test_type_case_single_value import TestTypeCaseSingleValue
+
+# server
+
+from test_server import TestServer
 
 def all_tests():
     suite = unittest.TestSuite()
@@ -47,6 +54,8 @@ def all_tests():
     suite.addTest(unittest.makeSuite(TestSingleValue))
     suite.addTest(unittest.makeSuite(TestCounter))
     suite.addTest(unittest.makeSuite(TestTypeCaseSingleValue))
+
+    suite.addTest(unittest.makeSuite(TestServer))
 
     return suite
 
