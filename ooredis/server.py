@@ -1,12 +1,9 @@
 # coding: utf-8
 
-<<<<<<< HEAD
 __all__ = ['Server']
 
 __metaclass__ = type
 
-=======
->>>>>>> 278bbcea2a47ef2663ccab1b46853c183b3830d8
 from ooredis import get_client
 
 class Server:
