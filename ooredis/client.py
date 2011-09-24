@@ -6,24 +6,18 @@ __metaclass__ = type
 
 import redis
 
-class SingletonClientMeta(type):
-    
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls._instance == None:
-            cls._instance = redis.Redis(*args, **kwargs)
-        return cls._instance
-
-class Redis:
-    
-    __metaclass__ = SingletonClientMeta
-
-
-# helper functions:
+__client = None
 
 def connect(*args, **kwargs):
-    return Redis(*args, **kwargs)
+    """ 连接Redis数据库，参数和redis-py的Redis类一样 """
+    global __client
+    __client = redis.Redis(*args, **kwargs)
 
 def get_client():
-    return Redis()
+    """ 返回OORedis客户端 """
+    global __client
+
+    if __client == None:
+        __client = redis.Redis()
+
+    return __client

@@ -19,4 +19,4 @@ from mix.single_value import SingleValue, Counter
 
 from server import Server
 
-__version__ = "1.4.1"
+__version__ = "1.4.1.2"

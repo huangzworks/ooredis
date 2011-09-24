@@ -6,6 +6,7 @@ import unittest
 # client
 
 from test_client import TestClient
+from test_remote_server import TestRemoteServer
 from test_type_case import TestTypeCase
 
 # mix 
@@ -35,6 +36,7 @@ def all_tests():
     suite = unittest.TestSuite()
 
     suite.addTest(unittest.makeSuite(TestClient))
+    suite.addTest(unittest.makeSuite(TestRemoteServer))
     suite.addTest(unittest.makeSuite(TestTypeCase))
 
     suite.addTest(unittest.makeSuite(TestKey))

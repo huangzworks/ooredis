@@ -17,7 +17,7 @@ from ooredis.type_case import GenericTypeCase
 class TestKey(unittest.TestCase):
     
     def setUp(self):
-        self.client = connect()
+        connect()
     
         self.name = "name"
         self.value = "value"
@@ -35,7 +35,7 @@ class TestKey(unittest.TestCase):
         self.assertIsNotNone(self.key._client)
         self.assertTrue(isinstance(self.key._client, redis.Redis))
 
-        self.assertEqual(self.client, self.key._client)
+        self.assertEqual(get_client(), self.key._client)
 
         self.assertEqual(self.key._type_case, GenericTypeCase)
 
