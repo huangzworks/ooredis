@@ -32,7 +32,6 @@ class TestKey(unittest.TestCase):
     # __init__
 
     def test_key_client(self):
-        self.assertIsNotNone(self.key._client)
         self.assertTrue(isinstance(self.key._client, redis.Redis))
 
         self.assertEqual(get_client(), self.key._client)

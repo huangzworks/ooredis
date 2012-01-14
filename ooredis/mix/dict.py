@@ -20,6 +20,7 @@ class Dict(Key, collections.MutableMapping):
     """ 一个字典对象，底层是redis的hash实现。 """
 
     def __repr__(self):
+        # TODO: key_values 未转义
         key_type = self.__class__.__name__.title()
         key_name = self.name
         key_values = dict(self.items())
@@ -44,8 +45,8 @@ class Dict(Key, collections.MutableMapping):
             TypeError: Key对象不是Dict类型时抛出。
         """
         try:
-            value = self._type_case.to_redis(value)
-            self._client.hset(self.name, key, value)
+            cased_value = self._type_case.to_redis(value)
+            self._client.hset(self.name, key, cased_value)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -64,7 +65,6 @@ class Dict(Key, collections.MutableMapping):
 
         Raises:
             KeyError: key不存在时抛出。
-            ValueError: 传入的value不是合适的类型时抛出。
             TypeError: Key对象不是Dict类型时抛出。
         """
         # NOTE: 将TypeError的抛出单独抽取出来，
@@ -78,8 +78,10 @@ class Dict(Key, collections.MutableMapping):
         if self._client.hexists(self.name, key) is False:
             raise KeyError
 
-        value = self._client.hget(self.name, key)
-        return self._type_case.to_python(value)
+        cased_value = self._client.hget(self.name, key)
+        original_value = self._type_case.to_python(cased_value)
+
+        return original_value
 
     def __delitem__(self, key):
         """ 删除dict[key]。

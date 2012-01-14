@@ -14,12 +14,15 @@ class Server:
         """ 清除当前数据库的所有key。
 
         Args:
-            client: redis-py句柄
+            client: redis-py客户端。
 
         Time:
             O(1)
 
         Return:
             None
+
+        Raises:
+            none
         """
         client.flushdb()

@@ -17,8 +17,8 @@ class Key:
             name: key的名字
             client: 客户端，默认为全局客户端。
         """
-        self._client = client or get_client()
         self._name = name
+        self._client = client or get_client()
         self._type_case = type_case or GenericTypeCase
 
     def __eq__(self, other):
@@ -94,7 +94,6 @@ class Key:
     def delete(self):
         """ 删除key。
 
-
         Time:
             O(1)
 
@@ -124,7 +123,7 @@ class Key:
         """
         # redis-py对不存在的key进行expire返回false，
         # 这里抛出一个异常。
-        if self.exists == False:
+        if self.exists is False:
             raise TypeError
 
         assert(self._client.expire(self.name, second))
@@ -210,9 +209,9 @@ class SortableKey:
 
 # helper
 
-def get_key_name_from_single_value(value):
+def get_key_name_from_single_value(key):
     """ 从单个值中获取key对象的名字。 """
-    return value.name if isinstance(value, Key) else value
+    return key.name if isinstance(key, Key) else key
    
 def get_key_name_from_list(iterable):
     """ 从列表/元组中获取多个key对象的名字。 """
