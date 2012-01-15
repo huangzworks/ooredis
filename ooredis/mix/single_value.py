@@ -1,4 +1,7 @@
-# coding:utf-8
+# coding: utf-8
+
+# TODO: 对转换过类型的值区别为 encoded_value ，而不是单纯的 value，比如 encoded_value = encode(value)
+# TODO: Key 类的 __repr__ ，需要有一个统一的格式，可以用一个函数来做
 
 __all__ = ['Mutable', 'Counter']
 
@@ -93,7 +96,7 @@ class SingleValue(Key):
         except redispy_exception.ResponseError:
             raise TypeError
 
-
+#TODO: 移除 incr 和 decr 方法，只保留 += 和 -=
 class Counter(SingleValue):
     """ 为数值类型的key对象加上incr，decr以及+= 和-= 语法糖。 """
 
