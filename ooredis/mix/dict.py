@@ -17,6 +17,7 @@ from ooredis.const import (
 KEY_NOT_IN_DICT_AND_DELETE_FALSE = False
 
 class Dict(Key, collections.MutableMapping):
+
     """ 一个字典对象，底层是redis的hash实现。 """
 
     def __repr__(self):
@@ -27,12 +28,12 @@ class Dict(Key, collections.MutableMapping):
         return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
 
     def __setitem__(self, key, value):
-        """ 将dict[key]的值设为value。
-        如果dict[key]已经存在，则将其覆盖。
+        """ 将 self[key] 的值设为 value 。
+        如果 self[key] 已经存在，则将其覆盖。
 
         Args:
-            key: 字典的键
-            value: 字典的值
+            key
+            value
 
         Time:
             O(1)
@@ -41,8 +42,8 @@ class Dict(Key, collections.MutableMapping):
             None
 
         Raises:
-            ValueError: 传入的value不是合适的类型时抛出。
-            TypeError: Key对象不是Dict类型时抛出。
+            ValueError: 传入的 value 不是合适的类型时抛出。
+            TypeError: Key 对象不是 Dict 类型时抛出。
         """
         try:
             cased_value = self._type_case.to_redis(value)
@@ -51,21 +52,21 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
     def __getitem__(self, key):
-        """ 返回dict[key]的值。
-        如果dict[key]不存在，抛出KeyError。
+        """ 返回 self[key] 的值。
+        如果 self[key] 不存在，抛出 KeyError 。
 
         Args:
-            key: 字典的键
+            key
 
         Time:
             O(1)
 
         Returns:
-            value: dict[key]的值
+            value: self[key] 的值
 
         Raises:
-            KeyError: key不存在时抛出。
-            TypeError: Key对象不是Dict类型时抛出。
+            KeyError: key 不存在时抛出。
+            TypeError: Key 对象不是 Dict 类型时抛出。
         """
         # NOTE: 将TypeError的抛出单独抽取出来，
         #       是为了让MIXIN方法的行为和python一致。
@@ -84,11 +85,11 @@ class Dict(Key, collections.MutableMapping):
         return original_value
 
     def __delitem__(self, key):
-        """ 删除dict[key]。
-        如果dict[key]不存在，抛出KeyError。
+        """ 删除 self[key] 。
+        如果 self[key] 不存在，抛出KeyError。
 
         Args:
-            key: 字典的键
+            key
 
         Time:
             O(1)
@@ -97,8 +98,8 @@ class Dict(Key, collections.MutableMapping):
             None
 
         Raises:
-            KeyError: key不存在时抛出。
-            TypeError: Key对象不是Dict类型时抛出。
+            KeyError: key 不存在时抛出。
+            TypeError: Key 对象不是 Dict 类型时抛出。
         """
         try:
             status = self._client.hdel(self.name, key)
@@ -108,16 +109,19 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
     def __iter__(self):
-        """ 返回字典所有key。
+        """ 返回 self 中所有 key 。
+
+        Args:
+            None
 
         Time:
             O(N)
 
         Returns:
-            iterator: 包含所有字典所有key的一个迭代器。
+            iterator: 包含所有 key 的一个迭代器。
         
         Raises:
-            TypeError: Key对象不是Dict类型时抛出。
+            TypeError: Key 对象不是 Dict 类型时抛出。
         """
         try:
             for key in self._client.hkeys(self.name):
@@ -126,16 +130,16 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
     def __len__(self):
-        """ 返回字典key-value对的个数，空字典返回0。
+        """ 返回字典 key-value 对的个数，空字典返回 0 。
 
         Time:
             O(1)
 
         Returns:
-            int: 字典中key-value对的个数。
+            int: 字典中 key-value 对的个数。
 
         Raises:
-            TypeError: Key对象不是Dict类型时抛出。
+            TypeError: Key 对象不是 Dict 类型时抛出。
         """
         try:
             return self._client.hlen(self.name)
