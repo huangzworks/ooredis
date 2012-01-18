@@ -20,10 +20,8 @@ def accept_type(*types):
     匿名函数接受一个值，如果值的类型不是类型列表的其中一个，
     那么返回 False。
     """
-    def _lambda(value):
-        return any(map(lambda t: isinstance(value, t), types))
+    return lambda value: any(map(lambda t: isinstance(value, t), types))
 
-    return _lambda
 
 # type case class
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
