@@ -1,8 +1,5 @@
 # coding: utf-8
 
-# TODO: 对转换过类型的值区别为 encoded_value ，而不是单纯的 value，比如 encoded_value = encode(value)
-# TODO: Key 类的 __repr__ ，需要有一个统一的格式，可以用一个函数来做
-
 __all__ = ['Mutable', 'Counter']
 
 __metaclass__ = type
@@ -10,11 +7,11 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
+from ooredis.const import REDIS_TYPE
 
 class SingleValue(Key):
-    """ 为key对象提供set，get，getset操作。 """
+    """ 为储存单个值的 key 对象提供set，get，getset操作。 """
 
     def __repr__(self):
         key_type = self.__class__.__name__.title()
@@ -39,9 +36,10 @@ class SingleValue(Key):
             TypeError: 当key非空且key不是指定类型时抛出。
             ValueError: 根据preserve参数的情况抛出。
         """
-        # set命令可以无视类型进行设置的命令。
+        # NOTE:
+        # set 命令可以无视类型进行设置的命令。
         # 为了保证类型的限制，
-        # ooredis里对一个非字符串类型进行set将引发TypeError异常。
+        # ooredis 里对一个非字符串类型进行 set 将引发 TypeError 异常。
         if self.exists:
             if self._represent != REDIS_TYPE['string']:
                 raise TypeError
@@ -61,11 +59,11 @@ class SingleValue(Key):
             O(1)
 
         Returns:
-            value： key的值。
-            None: key不存在时返回。
+            value： key 的值。
+            None: key 不存在时返回。
 
         Raises:
-            TypeError: 当key非空且不是string类型时抛出。
+            TypeError: 当 key 非空且不是 string 类型时抛出。
         """
         try:
             value = self._client.get(self.name)
@@ -74,20 +72,20 @@ class SingleValue(Key):
             raise TypeError
 
     def getset(self, value):
-        """ 修改key的值，并返回key之前的值。
+        """ 修改 key 的值，并返回 key 之前的值。
 
         Args:
-            value: key对象的新值。
+            value: key 对象的新值。
 
         Time:
             O(1)
 
         Returns:
-            None: 当key不存时(没有前值)返回。
-            value: 否则，返回key之前的值。
+            None: 当 key 不存时(没有前值)返回。
+            value: 否则，返回 key 之前的值。
 
         Raises:
-            TypeError: 当key非空且不是string类型时抛出。
+            TypeError: 当 key 非空且不是 string 类型时抛出。
         """
         try:
             value = self._type_case.to_redis(value)
@@ -96,15 +94,15 @@ class SingleValue(Key):
         except redispy_exception.ResponseError:
             raise TypeError
 
-#TODO: 移除 incr 和 decr 方法，只保留 += 和 -=
+
 class Counter(SingleValue):
-    """ 为数值类型的key对象加上incr，decr以及+= 和-= 语法糖。 """
+    """ 为计数类型的 key 对象加上 incr ，decr 以及 += 和 -= 语法糖。 """
 
     def incr(self, increment=1):
-        """ 将key对象的值加上增量increment。
+        """ 将 key 对象的值加上增量 increment 。
 
         Args:
-            increment: 增量，默认为1.
+            increment: 增量，默认为 1 。
 
         Time:
             O(1)
@@ -113,16 +111,16 @@ class Counter(SingleValue):
             int: 操作执行之后的值。
 
         Raises:
-            TypeError: 当key储存的不是数值类型时抛出。
+            TypeError: 当 key 储存的不是数值类型时抛出。
         """
-        # redis-py用incr代替redis的incrby
+        # NOTE: redis-py用incr代替redis的incrby
         try:
             return self._client.incr(self.name, increment)
         except redispy_exception.ResponseError:
             raise TypeError
 
     def decr(self, decrement=1):
-        """ 将key对象的值减去减量decrement。
+        """ 将 key 对象的值减去减量 decrement 。
 
         Args:
             decrement: 减量，默认为1.
@@ -136,16 +134,15 @@ class Counter(SingleValue):
         Raises:
             TypeError: 当key储存的不是数值类型时抛出。
         """
-        # redis-py用decr代替redis的decrby
+        # NOTE: redis-py用decr代替redis的decrby
         try:
             return self._client.decr(self.name, decrement)
         except redispy_exception.ResponseError:
             raise TypeError
 
     def __iadd__(self, increment):
-        """ self.incr方法的一个python语法糖。
-
-        和self.incr的区别是，这个特殊方法不返回key值。
+        """ self.incr 方法的一个 python 语法糖。
+        和 self.incr 的区别是，这个特殊方法不返回 key 值。
 
         Args:
             increment: 增量。
@@ -154,18 +151,17 @@ class Counter(SingleValue):
             O(1)
 
         Returns:
-            self: python要求这个特殊方法返回被修改后的对象。
+            self: python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
-            TypeError: 当key储存的不是数值类型时由self.incr抛出。
+            TypeError: 当 key 储存的不是数值类型时由 self.incr 抛出。
         """
         self.incr(increment)
         return self
 
     def __isub__(self, decrement):
-        """ self.decr方法的一个python语法糖。
-
-        和self.decr的区别是，这个特殊方法不返回key的值。
+        """ self.decr方法的一个 python 语法糖。
+        和 self.decr 的区别是，这个特殊方法不返回 key 的值。
 
         Args:
             decrement: 减量。
@@ -174,10 +170,10 @@ class Counter(SingleValue):
             O(1)
 
         Returns:
-            self: python要求这个特殊方法返回被修改后的对象。
+            self: python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
-            TypeError: 当key储存的不是数值类型时由self.decr抛出。
+            TypeError: 当 key 储存的不是数值类型时由 self.decr 抛出。
         """
         self.decr(decrement)
         return self
