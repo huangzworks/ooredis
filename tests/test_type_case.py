@@ -4,6 +4,7 @@
 import unittest
 import ooredis.type_case as type_case
 from ooredis.type_case import *
+from ooredis.type_case import accept_type
 
 from redis import Redis
 
@@ -16,6 +17,18 @@ class TestTypeCase(unittest.TestCase):
     def setUp(self):
         r = Redis()
         r.flushdb()
+
+    """
+    accept_type helper
+    """
+
+    def test_accept_type_TRUE(self):
+        assert accept_type(int,str)("a str value")
+        assert accept_type(int)(10)
+
+    def test_accept_type_FALSE(self):
+        assert not accept_type(int)("a str value")
+        assert not accept_type(int, str)(3.14)
 
     """
     GenericTypeCase

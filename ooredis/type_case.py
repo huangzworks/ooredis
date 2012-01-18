@@ -1,37 +1,51 @@
 # coding: utf-8
 
-__all__ = ['GenericTypeCase','IntTypeCase', 'FloatTypeCase', 'StringTypeCase', 'JsonTypeCase', 'SerializeTypeCase']
+__all__ = [
+    'GenericTypeCase','IntTypeCase', 'FloatTypeCase',
+    'StringTypeCase','JsonTypeCase', 'SerializeTypeCase'
+]
+
+__metaclass__ = type
 
 import json
 import pickle
 
-is_unicode = lambda value: isinstance(value, unicode)
-is_str = lambda value: isinstance(value, str)
-is_basestring = lambda value: is_unicode(value) or is_str(value) 
+from numbers import Integral
 
-is_integer = lambda value: isinstance(value, int) or isinstance(value, long)
-is_float = lambda value: isinstance(value, float)
+# helper
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def accept_type(*types):
+    """ 接受一个类型列表，返回一个匿名函数。
+    匿名函数接受一个值，如果值的类型不是类型列表的其中一个，
+    那么返回 False。
+    """
+    def _lambda(value):
+        return any(map(lambda t: isinstance(value, t), types))
+
+    return _lambda
+
+# type case class
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class GenericTypeCase:
-    """ 一般的类型转换类，可以处理str,unicode,int和float。 """
+
+    """ 通用类型转换类，可以处理 str/unicode/int/float 类型值。 """
 
     @staticmethod
     def to_redis(value):
-        """ 接受int/long/str/unicode/float类型值，
-        否则抛出ValueError。
+        """ 接受 int/long/str/unicode/float 类型值，
+        否则抛出 ValueError。
         """
-        if not is_basestring(value) and \
-           not is_integer(value) and \
-           not is_float(value):
+        if not accept_type(basestring, Integral, float)(value):
             raise ValueError
 
         return value
 
     @staticmethod
     def to_python(value):
-        """ 将int/long/str/unicode/float转回
-        原来的值，如果转换失败，抛出
-        ValueError。
+        """ 将 int/long/str/unicode/float 转回原来的值，
+        如果转换失败，抛出 ValueError 。
         """
         if value == None:
             return None
@@ -53,41 +67,34 @@ class GenericTypeCase:
         try:
             return int(value)
         except:
-            pass
-
-        try:
-            return float(value)
-        except:
-            pass
-
-        try:
-            return str(value)
-        except:
-            pass
-
-        try:
-            return unicode(value)
-        except:
-            pass
-
-        raise ValueError
+            try: 
+                return float(value)
+            except:
+                try:
+                    return str(value)
+                except:
+                    try: 
+                        return unicode(value)
+                    except:
+                        raise ValueError
 
 
 class IntTypeCase:
-    """ 将python值转换为int(long)类型。 """
+
+    """ 处理 int(long) 类型值的转换。 """
 
     @staticmethod
     def to_redis(value):
-        """ 接受int类型值，否则抛出ValueError。 """
-        if not is_integer(value):
+        """ 接受 int 类型值，否则抛出 ValueError。 """
+        if not accept_type(Integral)(value):
             raise ValueError
 
         return value
 
     @staticmethod
     def to_python(value):
-        """ 尝试将值转回int类型，
-        如果转换失败，抛出ValueError。
+        """ 尝试将值转回 int 类型，
+        如果转换失败，抛出 ValueError。
         """
         if value == None:
             return None
@@ -96,20 +103,21 @@ class IntTypeCase:
 
 
 class FloatTypeCase:
-    """ 将python值转换为float类型。 """
+
+    """ 处理 float 类型值的转换。 """
 
     @staticmethod
     def to_redis(value):
-        """ 接受float类型值，否则抛出ValueError。 """
-        if not is_float(value):
+        """ 接受 float 类型值，否则抛出 ValueError。 """
+        if not accept_type(float)(value):
             raise ValueError
 
         return float(value)
 
     @staticmethod
     def to_python(value):
-        """ 尝试将值转回float类型，
-        如果转换失败，抛出ValueError。
+        """ 尝试将值转回 float 类型，
+        如果转换失败，抛出 ValueError 。
         """
         if value == None:
             return None
@@ -118,12 +126,15 @@ class FloatTypeCase:
 
 
 class StringTypeCase:
-    """ 将python值转换为字符串类型(str或unicode)。 """
+
+    """ 处理字符串类型(str或unicode)值的转换。 """
 
     @staticmethod
     def to_redis(value):
-        """ 接受basestring子类的值，否则抛出ValueError。 """
-        if not is_basestring(value):
+        """ 接受 basestring 子类的值(str或unicode)，
+        否则抛出ValueError。
+        """
+        if not accept_type(basestring)(value):
             raise ValueError
 
         return value
@@ -139,49 +150,49 @@ class StringTypeCase:
         try:
             return str(value)
         except:
-            pass
-
-        try:
-            return unicode(value)
-        except:
-            pass
-
-        raise ValueError
+            try:
+                return unicode(value)
+            except:
+                raise ValueError
 
 
 class JsonTypeCase:
-    """ 将python对象转化为JSON对象。 """
+
+    """ 将 python 对象转化为 JSON 对象。 """
 
     @staticmethod
     def to_redis(value):
-        """ 将值转成JSON对象，
-        如果值不能转成JSON对象，抛出TypeError异常。
+        """ 将值转成 JSON 对象，
+        如果值不能转成 JSON 对象，抛出 TypeError 异常。
         """
         return json.dumps(value)
     
     @staticmethod
     def to_python(value):
-        """ 将Json对象转回原来的类型。
-        如果转换失败，抛出ValueError。
+        """ 将 Json 对象转回原来的类型。
+        如果转换失败，抛出 ValueError 。
         """
         if value == None:
             return None
+
         return json.loads(value)
 
 
 class SerializeTypeCase:
-    """ 将python对象序列化(使用pickle模块)。 """
+
+    """ 将 python 对象序列化(使用 pickle 模块)。 """
 
     @staticmethod
     def to_redis(value):
-        """ 将值序列化(包括自定义类和Python内置类)。 """
+        """ 将值序列化(包括自定义类和 Python 内置类)。 """
         return pickle.dumps(value)
 
     @staticmethod
     def to_python(value):
         """ 将序列化的字符串转换回原来的对象，
-        如果反序列化不成功，返回KeyError
+        如果反序列化不成功，返回 KeyError
         """
         if value == None:
             return None
+
         return pickle.loads(value)
