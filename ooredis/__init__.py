@@ -7,8 +7,9 @@ __all__ = [
     '__version__',
 ]
 
-from client import connect, get_client
 import type_case
+
+from client import connect, get_client
 
 from mix.dict import Dict
 from mix.list import List
