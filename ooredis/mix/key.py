@@ -8,18 +8,19 @@ from ooredis.client import get_client
 from ooredis.type_case import GenericTypeCase
 
 class Key:
+
     """ key对象的基类，所有类型的key都继承这个类。 """
 
-    def __init__(self, name, client=None, type_case=None):
+    def __init__(self, name, client=None, type_case=GenericTypeCase):
         """ 为key对象指定名字和客户端。
 
         Args:
             name: key的名字
             client: 客户端，默认为全局客户端。
         """
-        self._name = name
+        self.name = name
         self._client = client or get_client()
-        self._type_case = type_case or GenericTypeCase
+        self._type_case = type_case
 
     def __eq__(self, other):
         """ 判断两个key是否相等。
@@ -39,11 +40,6 @@ class Key:
         """ 为key对象创建一个酷酷的打印信息。 """
         key_type = self.__class__.__name__
         return "<{0} Key '{1}'>".format(key_type.title(), self.name)
-
-    @property
-    def name(self):
-        """ 返回key对象的名字。 """
-        return self._name
 
     @property
     def _represent(self):
@@ -89,8 +85,6 @@ class Key:
         """
         return self._client.exists(self.name)
 
-    # TODO: 这个delete只能删除单个key，
-    #       考虑增加一个删除多个key的类方法
     def delete(self):
         """ 删除key。
 
@@ -101,10 +95,8 @@ class Key:
             None
 
         Raises:
-            AssertionError: 操作因为异常情况而失败时抛出。
+            AssertionError: 操作因异常情况而失败时抛出。
         """
-        # redis-py里，对不存在的key进行删除返回False， 删除成功返回True，
-        # 这里只删除存在的key，返回None，如果出现问题导致删除失败，抛出异常。
         if self.exists:
             assert(self._client.delete(self.name))
 
@@ -123,7 +115,7 @@ class Key:
         """
         # redis-py对不存在的key进行expire返回false，
         # 这里抛出一个异常。
-        if self.exists is False:
+        if not self.exists:
             raise TypeError
 
         assert(self._client.expire(self.name, second))
@@ -143,7 +135,7 @@ class Key:
         """
         # redis-py对不存在的key进行expireat返回False，
         # 这里抛出一个异常。
-        if self.exists == False:
+        if not self.exists:
             raise TypeError
 
         assert(self._client.expireat(self.name, unix_timestamp))
@@ -163,12 +155,12 @@ class Key:
         """
         # redis-py对不存在的key进行persist返回-1
         # 这里抛出一个异常
-        if self.exists == False:
+        if not self.exists:
             raise TypeError
 
         # redis-py对没有生存时间的key进行persist也返回-1
         # 这里选择不进行其他动作(返回None)
-        if self.ttl == None:
+        if self.ttl is None:
             return
 
         assert(self._client.persist(self.name))

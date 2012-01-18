@@ -52,12 +52,6 @@ class TestKey(unittest.TestCase):
     def test_str(self):
         self.assertEqual(str(self.key), "<{0} Key '{1}'>".format(self.key.__class__.__name__.title(), self.key.name))
 
-    # _name
-
-    def test_cant_change_key_name(self):
-        with self.assertRaises(AttributeError):
-            self.key.name = 'new_name'
-
     # _represent
 
     def test_represent(self):
