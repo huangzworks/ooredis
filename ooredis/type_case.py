@@ -45,7 +45,7 @@ class GenericTypeCase:
         """ 将 int/long/str/unicode/float 转回原来的值，
         如果转换失败，抛出 ValueError 。
         """
-        if value == None:
+        if value is None:
             return None
 
         # NOTE: 该转换的基础是在redis储存字符串
@@ -94,7 +94,7 @@ class IntTypeCase:
         """ 尝试将值转回 int 类型，
         如果转换失败，抛出 ValueError。
         """
-        if value == None:
+        if value is None:
             return None
 
         return int(value)
@@ -117,7 +117,7 @@ class FloatTypeCase:
         """ 尝试将值转回 float 类型，
         如果转换失败，抛出 ValueError 。
         """
-        if value == None:
+        if value is None:
             return None
 
         return float(value)
@@ -142,7 +142,7 @@ class StringTypeCase:
         """ 尝试将值转回str或unicode类型，
         如果转换失败，抛出ValueError。
         """
-        if value == None:
+        if value is None:
             return None
 
         try:
@@ -170,7 +170,7 @@ class JsonTypeCase:
         """ 将 Json 对象转回原来的类型。
         如果转换失败，抛出 ValueError 。
         """
-        if value == None:
+        if value is None:
             return None
 
         return json.loads(value)
@@ -190,7 +190,7 @@ class SerializeTypeCase:
         """ 将序列化的字符串转换回原来的对象，
         如果反序列化不成功，返回 KeyError
         """
-        if value == None:
+        if value is None:
             return None
 
         return pickle.loads(value)
