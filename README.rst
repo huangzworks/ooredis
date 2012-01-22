@@ -73,6 +73,7 @@ redis-py2.4.9
 (推荐翻墙使用 google doc 观看，因为幻灯在 slideshare 显示有排版错误)
 
 `去 slideshare 观看 <http://www.slideshare.net/iammutex/ooredis-8792195>`_
+
 `去 google docs 观看 <http://bit.ly/rbgn3Z>`_
 
 
@@ -145,5 +146,7 @@ OORedis 代码中内置了函数的基本介绍，可以使用 ``help(obj)`` 来
 ========
 
 twitter: @huangz1990
+
 gmail: huangz1990
+
 豆瓣: `http://www.douban.com/people/i_m_huangz/ <www.douban.com/people/i_m_huangz>`_
