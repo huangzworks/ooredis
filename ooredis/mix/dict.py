@@ -8,11 +8,7 @@ import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
-from ooredis.const import (
-    REDIS_TYPE,
-    DEFAULT_INCREMENT,
-    DEFAULT_DECREMENT,
-)
+from ooredis.const import REDIS_TYPE
 
 KEY_NOT_IN_DICT_AND_DELETE_FALSE = False
 
@@ -27,13 +23,14 @@ class Dict(Key, collections.MutableMapping):
         key_values = dict(self.items())
         return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
 
-    def __setitem__(self, key, value):
-        """ 将 self[key] 的值设为 value 。
+    def __setitem__(self, key, python_value):
+        """ 
+        将 self[key] 的值设为 value 。
         如果 self[key] 已经存在，则将其覆盖。
 
         Args:
             key
-            value
+            python_value
 
         Time:
             O(1)
@@ -42,17 +39,17 @@ class Dict(Key, collections.MutableMapping):
             None
 
         Raises:
-            ValueError: 传入的 value 不是合适的类型时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
         try:
-            cased_value = self._type_case.to_redis(value)
-            self._client.hset(self.name, key, cased_value)
+            redis_value = self._type_case.to_redis(python_value)
+            self._client.hset(self.name, key, redis_value)
         except redispy_exception.ResponseError:
             raise TypeError
 
     def __getitem__(self, key):
-        """ 返回 self[key] 的值。
+        """ 
+        返回 self[key] 的值。
         如果 self[key] 不存在，抛出 KeyError 。
 
         Args:
@@ -76,16 +73,17 @@ class Dict(Key, collections.MutableMapping):
         # WARNING: 不要在这里使用key in self语句，
         #          除非你自己实现了__contains__方法，
         #          否则迎接你的将是一个无限递归。。。
-        if self._client.hexists(self.name, key) is False:
+        if not self._client.hexists(self.name, key):
             raise KeyError
 
-        cased_value = self._client.hget(self.name, key)
-        original_value = self._type_case.to_python(cased_value)
+        redis_value = self._client.hget(self.name, key)
+        python_value = self._type_case.to_python(redis_value)
 
-        return original_value
+        return python_value
 
     def __delitem__(self, key):
-        """ 删除 self[key] 。
+        """ 
+        删除 self[key] 。
         如果 self[key] 不存在，抛出KeyError。
 
         Args:
@@ -130,7 +128,12 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
     def __len__(self):
-        """ 返回字典 key-value 对的个数，空字典返回 0 。
+        """
+        返回字典 key-value 对的个数。
+        空字典返回 0 。
+
+        Args:
+            None
 
         Time:
             O(1)
