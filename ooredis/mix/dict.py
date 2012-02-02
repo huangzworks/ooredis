@@ -25,8 +25,8 @@ class Dict(Key, collections.MutableMapping):
 
     def __setitem__(self, key, python_value):
         """ 
-        将 self[key] 的值设为 value 。
-        如果 self[key] 已经存在，则将其覆盖。
+        将字典中键 key 的值设为 value 。
+        如果键 key 已经关联了另一个值 ，那么将它覆盖。
 
         Args:
             key
@@ -49,8 +49,8 @@ class Dict(Key, collections.MutableMapping):
 
     def __getitem__(self, key):
         """ 
-        返回 self[key] 的值。
-        如果 self[key] 不存在，抛出 KeyError 。
+        返回字典中键 key 的值。
+        如果键 key 的值不存在，那么抛出 KeyError 。
 
         Args:
             key
@@ -59,20 +59,19 @@ class Dict(Key, collections.MutableMapping):
             O(1)
 
         Returns:
-            value: self[key] 的值
+            python_value
 
         Raises:
             KeyError: key 不存在时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        # NOTE: 将TypeError的抛出单独抽取出来，
-        #       是为了让MIXIN方法的行为和python一致。
+        # 将 TypeError 的抛出单独抽取出来
+        # 让 MIXIN 方法的行为和 Python dict 类保持一致。
         if self.exists and self._represent != REDIS_TYPE['hash']:
             raise TypeError
 
-        # WARNING: 不要在这里使用key in self语句，
-        #          除非你自己实现了__contains__方法，
-        #          否则迎接你的将是一个无限递归。。。
+        # 没有自己实现 __contains__ 的话
+        # 不要使用 key in self ，否则将引起死循环
         if not self._client.hexists(self.name, key):
             raise KeyError
 
@@ -83,8 +82,8 @@ class Dict(Key, collections.MutableMapping):
 
     def __delitem__(self, key):
         """ 
-        删除 self[key] 。
-        如果 self[key] 不存在，抛出KeyError。
+        删除字典键 key 的值。
+        如果键 key 的值不存在，那么抛出 KeyError 。
 
         Args:
             key
@@ -107,7 +106,8 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
     def __iter__(self):
-        """ 返回 self 中所有 key 。
+        """ 
+        返回字典中的中所有键。
 
         Args:
             None
@@ -129,7 +129,7 @@ class Dict(Key, collections.MutableMapping):
 
     def __len__(self):
         """
-        返回字典 key-value 对的个数。
+        返回字典中键-值对的个数。
         空字典返回 0 。
 
         Args:
