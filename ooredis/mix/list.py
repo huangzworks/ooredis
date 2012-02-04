@@ -81,7 +81,7 @@ class List(Key, collections.Sequence):
         # redis-py对不存的key，以及key超出范围都抛出ResponseError
         # ooredis里__getitem__和__setitem__对不存在的key都抛出IndexError
         # 主要是为了和python的list类型行为保持一致。
-        if self.exists == False:
+        if self.exists is False:
             raise IndexError
 
         if isinstance(key, slice):
@@ -92,8 +92,8 @@ class List(Key, collections.Sequence):
             raise IndexError
         else:
             try:
-                value = self._type_case.to_redis(value)
-                self._client.lset(self.name, key, value)
+                redis_value = self._type_case.to_redis(value)
+                self._client.lset(self.name, key, redis_value)
             except redispy_exception.ResponseError:
                 raise TypeError
 
@@ -133,13 +133,15 @@ class List(Key, collections.Sequence):
                 #return self._client.lrange(self.name, start, stop)
    
                 # 2.SAFE version(get key in client side):
-                value = self._client.lrange(self.name, LEFTMOST, RIGHTMOST)[key]
-                return map(self._type_case.to_python, value)
+                redis_value = self._client.lrange(self.name, LEFTMOST, RIGHTMOST)[key]
+                python_value = map(self._type_case.to_python, redis_value)
+                return python_value
             elif key >= len(self):
                 raise IndexError
             else:
-                value = self._client.lindex(self.name, key)
-                return self._type_case.to_python(value)
+                redis_value = self._client.lindex(self.name, key)
+                python_value = self._type_case.to_python(redis_value)
+                return python_value
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -202,8 +204,8 @@ class List(Key, collections.Sequence):
             TypeError: 尝试对非list类型的对象进行操作时抛出。
         """
         try:
-            value = self._type_case.to_redis(value)
-            return self._client.lrem(self.name, value, REMOVE_ALL_ELEMENT_EQUAL_VALUE)
+            redis_value = self._type_case.to_redis(value)
+            return self._client.lrem(self.name, redis_value, REMOVE_ALL_ELEMENT_EQUAL_VALUE)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -224,8 +226,8 @@ class List(Key, collections.Sequence):
             TypeError: 尝试对非list类型的对象进行操作时抛出。
         """
         try:
-            value = self._type_case.to_redis(value)
-            self._client.lpush(self.name, value)
+            redis_value = self._type_case.to_redis(value)
+            self._client.lpush(self.name, redis_value)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -245,8 +247,9 @@ class List(Key, collections.Sequence):
         try:
             if len(self) == 0:
                 raise IndexError
-            value = self._client.lpop(self.name)
-            return self._type_case.to_python(value)
+
+            redis_value = self._client.lpop(self.name)
+            return self._type_case.to_python(redis_value)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -273,13 +276,12 @@ class List(Key, collections.Sequence):
         try:
             result = self._client.blpop(self.name, timeout)
 
-            value = result[VALUE] if result else None
+            redis_value = result[VALUE] if result else None
 
-            return self._type_case.to_python(value)
+            return self._type_case.to_python(redis_value)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    # TODO: >= 2.4: 接受多个值
     def rpush(self, value):
         """ 将value添加到表尾。
 
