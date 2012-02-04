@@ -16,6 +16,6 @@ def get_client():
     global client
 
     if client == None:
-        client = redis.Redis()
+        connect()
 
     return client
