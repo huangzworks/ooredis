@@ -5,14 +5,10 @@ import unittest
 import redis
 import numbers
 
-from ooredis.client import connect, get_client
 from ooredis.mix.key import Key
-from ooredis.mix.key import (
-    get_key_name_from_list, 
-    get_key_name_from_single_value,
-)
 from ooredis.const import REDIS_TYPE
 from ooredis.type_case import GenericTypeCase
+from ooredis.client import connect, get_client
 
 class TestKey(unittest.TestCase):
     
@@ -174,29 +170,6 @@ class TestKey(unittest.TestCase):
 
         self.assertIsNone(self.key.persist())
         self.assertIsNone(self.key.ttl)
-
-
-    # helper function
-
-    def test_get_key_name_from_single_value_with_key_object(self):
-        self.assertEqual(
-            get_key_name_from_single_value(self.key),
-            self.key.name)
-
-    def test_get_key_name_from_single_value_with_key_name(self):
-        self.assertEqual(
-            get_key_name_from_single_value(self.key.name),
-            self.key.name)
-
-    def test_get_key_name_from_list_with_key_objects(self):
-        self.assertListEqual(
-            get_key_name_from_list([self.key]),
-            [self.key.name])
-
-    def test_get_key_name_from_list_with_key_names(self):
-        self.assertListEqual(
-            get_key_name_from_list([self.key.name]),
-            [self.key.name])
 
 if __name__ == "__main__":
     unittest.main()

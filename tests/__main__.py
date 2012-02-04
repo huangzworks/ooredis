@@ -10,6 +10,8 @@ from test_remote_server import TestRemoteServer
 from test_type_case import TestTypeCase
 
 # mix 
+from mix.helper.test_helper import TestHelper
+
 from mix.key.test_key import TestKey
 
 from mix.dict.test_dict import TestDict
@@ -34,6 +36,8 @@ def all_tests():
     suite.addTest(unittest.makeSuite(TestClient))
     suite.addTest(unittest.makeSuite(TestRemoteServer))
     suite.addTest(unittest.makeSuite(TestTypeCase))
+
+    suite.addTest(unittest.makeSuite(TestHelper))
 
     suite.addTest(unittest.makeSuite(TestKey))
 

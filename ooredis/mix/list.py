@@ -7,11 +7,9 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.mix.key import (
-    get_key_name_from_single_value,
-    Key,
-)
+from ooredis.mix.key import Key
 from ooredis.const import LEFTMOST, RIGHTMOST
+from ooredis.mix.helper import get_key_name_from_single_value
 
 # block time
 INDEFINITELY = 0
