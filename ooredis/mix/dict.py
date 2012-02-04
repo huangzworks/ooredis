@@ -107,7 +107,7 @@ class Dict(Key, collections.MutableMapping):
 
     def __iter__(self):
         """ 
-        返回字典中的中所有键。
+        返回一个包含字典里所有键的迭代器。
 
         Args:
             None
@@ -116,7 +116,7 @@ class Dict(Key, collections.MutableMapping):
             O(N)
 
         Returns:
-            iterator: 包含所有 key 的一个迭代器。
+            iterator
         
         Raises:
             TypeError: Key 对象不是 Dict 类型时抛出。
