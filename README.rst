@@ -1,7 +1,7 @@
 OOREDIS
 =======
 
-OORedis 是一个 Redis 的 Python 库，基于 redis-py ，它具有以下三个主要功能：
+OORedis 是一个 Redis 的 Python 库，它基于 redis-py ，具有以下三个主要功能：
 
 - 以 Key 对象为单位操作 Redis 的数据结构
 - 提供一组 Pythonic 的 API
@@ -12,7 +12,9 @@ OORedis 是一个 Redis 的 Python 库，基于 redis-py ，它具有以下三�
 ====
 
 Python2.7
+
 Redis2.2
+
 redis-py2.4.9
 
 
