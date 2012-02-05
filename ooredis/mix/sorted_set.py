@@ -4,10 +4,11 @@ __all__ = ['SortedSet']
 
 __metaclass__ = type
 
-import redis.exceptions as redispy_exception
 from functools import partial
+import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
+from ooredis.mix.helper import format_key
 from ooredis.const import (
     LEFTMOST,
     RIGHTMOST,
@@ -29,11 +30,8 @@ class SortedSet(Key):
     """ 有序集对象，底层是redis的zset实现。 """
 
     def __repr__(self):
-        key_type = self.__class__.__name__.title()
-        key_name = self.name
-        key_values = list(self)
-        return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
-    
+        return format_key(self, self.name, list(self))
+   
     def __len__(self):
         """ 返回有序集的基数。
         

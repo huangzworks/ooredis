@@ -8,23 +8,22 @@ import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
+from ooredis.mix.helper import format_key
 
 class SingleValue(Key):
-    """ 为储存单个值的 key 对象提供 set，get，getset操作。 """
+    """ 为储存单个值的 Key 对象提供 set，get 和 getset操作。 """
 
     def __repr__(self):
-        key_type = self.__class__.__name__.title()
-        key_name = self.name
-        key_value = self.get()
-        return "{0} Key '{1}': {2}".format(key_type, key_name, key_value)
+        return format_key(self, self.name, self.get())
 
     def set(self, python_value, preserve=False, expire=None):
-        """ 为 key 对象指定一个值。
+        """
+        为 Key 对象指定值。
 
         Args:
-            python_value: 值。
-            preserve: 指定是否不覆盖原本储存的值。
-            expire: 设置 key 的过期时间，以秒为单位。
+            python_value: 为 Key 对象指定的值。
+            preserve: 指示是否不覆盖原本储存的值。
+            expire: 设置 Key 对象的过期时间，以秒为单位。
 
         Time:
             O(1)
@@ -33,13 +32,11 @@ class SingleValue(Key):
             None
 
         Raises:
-            TypeError: 当 key 非空且 key 不是指定类型时抛出。
+            TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
             ValueError: 根据 preserve 参数的情况抛出。
         """
-        # NOTE:
-        # set 命令可以无视类型进行设置的命令。
-        # 为了保证类型的限制，
-        # ooredis 里对一个非字符串类型进行 set 将引发 TypeError 异常。
+        # set 命令可以无视类型进行设置的命令， 为了保证类型的限制
+        # ooredis 里对一个非 string 类型进行 set 将引发 TypeError 异常。
         if self.exists and self._represent != REDIS_TYPE['string']:
                 raise TypeError
 
@@ -53,59 +50,66 @@ class SingleValue(Key):
             self._client.set(self.name, redis_value)
 
     def get(self):
-        """ 返回 key 对象的值。
+        """
+        返回 Key 对象的值。
 
         Time:
             O(1)
 
         Returns:
-            value： key 的值。
+            python_value： Key 对象的值。
             None: key 不存在时返回。
 
         Raises:
-            TypeError: 当 key 非空且不是 string 类型时抛出。
+            TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
         try:
             redis_value = self._client.get(self.name)
-            return self._type_case.to_python(redis_value)
+
+            python_value = self._type_case.to_python(redis_value)
+            return python_value
         except redispy_exception.ResponseError:
             raise TypeError
 
     def getset(self, python_value):
-        """ 修改 key 的值，并返回 key 之前的值。
+        """ 
+        修改 Key 对象的值，并返回 Key 对象之前储存的值。
 
         Args:
-            value: key 对象的新值。
+            python_value: Key 对象的新值。
 
         Time:
             O(1)
 
         Returns:
             None: 当 key 不存时(没有前值)返回。
-            value: 否则，返回 key 之前的值。
+            python_value:  Key 对象之前的值。
 
         Raises:
-            TypeError: 当 key 非空且不是 string 类型时抛出。
+            TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
         try:
             new_redis_value = self._type_case.to_redis(python_value)
-            original_redis_value = self._client.getset(self.name, new_redis_value)
 
-            return self._type_case.to_python(original_redis_value)
+            old_redis_value = self._client.getset(self.name, new_redis_value)
+
+            python_value = self._type_case.to_python(old_redis_value)
+            return python_value
         except redispy_exception.ResponseError:
             raise TypeError
 
 
 class Counter(SingleValue):
     """
-    为计数类型的 key 对象加上 incr ，
-    decr 以及 += 和 -= 方法。
+    为计数器类型的 Key 对象加上 incr ，decr 以及 += 和 -= 方法。
+   
+    注意当 Key 对象为空时，get/getset 的返回值为 None。
     """
 
     def incr(self, increment=1):
         """
-        将 key 对象的值加上增量 increment， 
-        然后返回执行加法之后 key 对象的值。
+        将 Key 对象的值加上增量 increment， 
+        然后返回执行加法之后 Key 对象的值。
 
         Args:
             increment: 增量，默认为 1 。
@@ -117,9 +121,9 @@ class Counter(SingleValue):
             int: 操作执行之后的值。
 
         Raises:
-            TypeError: 当 key 储存的不是数值类型时抛出。
+            TypeError: 当 Key 对象储存的不是数值类型时抛出。
         """
-        # NOTE: redis-py用incr代替redis的incrby
+        # redis-py用incr代替redis的incrby
         try:
             return self._client.incr(self.name, increment)
         except redispy_exception.ResponseError:
@@ -142,7 +146,7 @@ class Counter(SingleValue):
         Raises:
             TypeError: 当key储存的不是数值类型时抛出。
         """
-        # NOTE: redis-py用decr代替redis的decrby
+        # redis-py用decr代替redis的decrby
         try:
             return self._client.decr(self.name, decrement)
         except redispy_exception.ResponseError:

@@ -7,6 +7,7 @@ from ooredis.mix.key import Key
 from ooredis.mix.helper import (
     get_key_name_from_list, 
     get_key_name_from_single_value,
+    format_key,
 )
 
 class TestHelper(unittest.TestCase):
@@ -39,6 +40,12 @@ class TestHelper(unittest.TestCase):
         self.assertListEqual(
             get_key_name_from_list([self.key.name]),
             [self.key.name])
+
+    # format_key
+
+    def test_format_key(self):
+        output = format_key(self.key, self.name, self.value)
+        self.assertEqual( output,"Key Key 'name': value")
 
 if __name__ == "__main__":
     unittest.main()

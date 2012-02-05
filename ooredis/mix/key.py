@@ -36,11 +36,6 @@ class Key:
         """
         return self.name == other.name
 
-    def __str__(self):
-        """ 为key对象创建一个酷酷的打印信息。 """
-        key_type = self.__class__.__name__
-        return "<{0} Key '{1}'>".format(key_type.title(), self.name)
-
     @property
     def _represent(self):
         """ 返回key在redis中的表示(实现类型)。

@@ -5,6 +5,7 @@ import unittest
 import redis
 
 from ooredis.client import connect
+from ooredis.mix.helper import format_key
 from ooredis.mix.single_value import Counter
 
 class TestCounter(unittest.TestCase):
@@ -15,10 +16,21 @@ class TestCounter(unittest.TestCase):
         self.redispy = redis.Redis()
         self.redispy.flushdb()
 
-        self.counter = Counter('counter')
+        self.name = 'counter'
+        self.value = 10086
+
+        self.counter = Counter(self.name)
 
     def tearDown(self):
         self.redispy.flushdb()
+
+    # __repr__
+
+    def test_repr(self):
+        self.counter.set(self.value)
+
+        self.assertEqual(repr(self.counter),
+                         format_key(self.counter, self.name, self.value))
         
     # incr
 

@@ -43,11 +43,6 @@ class TestKey(unittest.TestCase):
         # not equal
         self.assertNotEqual(self.key, Key('hahaha'))
 
-    # __str__
-
-    def test_str(self):
-        self.assertEqual(str(self.key), "<{0} Key '{1}'>".format(self.key.__class__.__name__.title(), self.key.name))
-
     # _represent
 
     def test_represent(self):

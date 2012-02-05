@@ -1,22 +1,23 @@
 #! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis.client import connect
-
 from ooredis.mix.list import List
+from ooredis.mix.helper import format_key
 
 class TestList(unittest.TestCase):
     
     def setUp(self):
         connect()
-        self.l = List('list')
-        self.destination = List('destination')
 
         self.redispy = redis.Redis()
         self.redispy.flushdb()
+
+        self.l = List('list')
+        self.destination = List('destination')
 
     def tearDown(self):
         self.redispy.flushdb()
@@ -24,7 +25,8 @@ class TestList(unittest.TestCase):
     # __repr__
 
     def test_repr(self):
-        self.assertIsNotNone(repr(self.l))
+        self.assertEqual(repr(self.l),
+                         format_key(self.l, self.l.name, list(self.l)))
 
     # len
 

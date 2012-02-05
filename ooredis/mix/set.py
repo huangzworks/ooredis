@@ -9,7 +9,7 @@ import redis.exceptions as redispy_exception
 
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
-from ooredis.mix.helper import get_key_name_from_single_value
+from ooredis.mix.helper import get_key_name_from_single_value, format_key
 
 MEMBER_NOT_IN_SET_AND_MOVE_FALSE = 0
 
@@ -21,10 +21,7 @@ class Set(Key):
     """ 集合类型，底层实现是redis的set类型。 """
 
     def __repr__(self):
-        key_type = self.__class__.__name__.title()
-        key_name = self.name
-        key_values = set(self)
-        return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
+        return format_key(self, self.name, set(self))
 
     def __len__(self):
         """ 返回集合的基数。

@@ -9,6 +9,7 @@ import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
+from ooredis.mix.helper import format_key
 
 KEY_NOT_IN_DICT_AND_DELETE_FALSE = False
 
@@ -17,11 +18,7 @@ class Dict(Key, collections.MutableMapping):
     """ 一个字典对象，底层是redis的hash实现。 """
 
     def __repr__(self):
-        # TODO: key_values 未转义
-        key_type = self.__class__.__name__.title()
-        key_name = self.name
-        key_values = dict(self.items())
-        return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
+        return format_key(self, self.name, dict(self))
 
     def __setitem__(self, key, python_value):
         """ 

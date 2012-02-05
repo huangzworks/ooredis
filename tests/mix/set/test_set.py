@@ -1,25 +1,26 @@
 #! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis.client import connect
 
 from ooredis.mix.key import Key
 from ooredis.mix.set import Set
+from ooredis.mix.helper import format_key
     
 class TestSet(unittest.TestCase):
 
     def setUp(self):
         connect()
 
+        self.redispy = redis.Redis()
+        self.redispy.flushdb()
+
         self.s = Set('set')
         self.another = Set('another')
         self.third = Set('third')
-
-        self.redispy = redis.Redis()
-        self.redispy.flushdb()
 
     def tearDown(self):
         self.redispy.flushdb()
@@ -27,7 +28,8 @@ class TestSet(unittest.TestCase):
     # __repr__
 
     def test_repr(self):
-        self.assertIsNotNone(repr(self.s))
+        self.assertEqual(repr(self.s),
+                         format_key(self.s, self.s.name, set(self.s)))
 
     # len
     # add

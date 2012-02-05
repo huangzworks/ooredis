@@ -1,21 +1,23 @@
 #! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis.client import connect
-
 from ooredis.mix.dict import Dict
+from ooredis.mix.helper import format_key
 
 class TestDict(unittest.TestCase):
     
     def setUp(self):
         connect()
-        self.d = Dict('dict')
 
         self.redispy = redis.Redis()
         self.redispy.flushdb()
+
+        self.name = 'dict'
+        self.d = Dict(self.name)
 
     def tearDown(self): 
         self.redispy.flushdb()
@@ -23,7 +25,8 @@ class TestDict(unittest.TestCase):
     # __repr__
 
     def test_repr(self):
-        self.assertIsNotNone(repr(self.d))
+        self.assertEqual(repr(self.d),
+                         format_key(self.d, self.name, dict(self.d)))
 
     # __setitem__
 

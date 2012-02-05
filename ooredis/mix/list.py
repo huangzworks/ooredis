@@ -9,7 +9,7 @@ import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
 from ooredis.const import LEFTMOST, RIGHTMOST
-from ooredis.mix.helper import get_key_name_from_single_value
+from ooredis.mix.helper import get_key_name_from_single_value, format_key
 
 # block time
 INDEFINITELY = 0
@@ -20,18 +20,14 @@ REMOVE_ALL_ELEMENT_EQUAL_VALUE = 0
 # redis blpop/brpop result index
 VALUE = 1
 
-# NOTE:
-# redis的list是可变的(mutable)，没有继承MutableSequence主要是
+# redis 的list是可变的(mutable)，没有继承MutableSequence主要是
 # 考虑到python的列表是单向增长的(从左到右)，
 # 而redis的列表是双向的，append、pop等和redis的表现不同。
 class List(Key, collections.Sequence):
     """ 一个列表key对象，底层实现是redis的list类型。 """
 
     def __repr__(self):
-        key_type = self.__class__.__name__.title()
-        key_name = self.name
-        key_values = list(self)
-        return "{0} Key '{1}': {2}".format(key_type, key_name, key_values)
+        return format_key(self, self.name, list(self))
 
     def __len__(self):
         """ 返回列表中的元素个数。

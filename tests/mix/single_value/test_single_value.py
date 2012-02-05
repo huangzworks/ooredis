@@ -5,6 +5,7 @@ import unittest
 import redis
 
 from ooredis.client import connect
+from ooredis.mix.helper import format_key
 from ooredis.mix.single_value import SingleValue
 
 class TestSingleValue(unittest.TestCase):
@@ -14,9 +15,11 @@ class TestSingleValue(unittest.TestCase):
 
         self.redispy = redis.Redis()
         self.redispy.flushdb()
-   
-        self.key = SingleValue('string')
+  
+        self.name = 'name'
         self.value = 3.14
+
+        self.key = SingleValue(self.name)
 
     def tearDown(self):
         self.redispy.flushdb()
@@ -24,7 +27,10 @@ class TestSingleValue(unittest.TestCase):
     # __repr__
 
     def test_repr(self):
-        self.assertIsNotNone(repr(self))
+        self.key.set(self.value)
+
+        self.assertEqual(repr(self.key),
+                         format_key(self.key, self.name, self.value))
 
     # set
 
@@ -44,10 +50,7 @@ class TestSingleValue(unittest.TestCase):
             self.key.set('new_value', preserve=True) # overwrite false
 
     def test_set_preserve_with_not_exists_key(self):
-        assert(self.key.exists == False) 
-
         self.key.set('value', preserve=True)
-
         self.assertEqual(self.key.get(), 'value')
 
     def test_set_raises_when_wrong_type(self):
@@ -71,17 +74,18 @@ class TestSingleValue(unittest.TestCase):
 
     # getset
 
-    def test_getset_with_not_exists_key(self):
-        # 没有预设值，返回None。
-        assert(self.key.exists == False)
+    def test_getset_return_NONE_cause_KEY_NOT_EXISTS(self):
         self.assertIsNone(self.key.getset(self.value))
         self.assertEqual(self.key.get(), self.value)
 
-    def test_getset_with_exists_key(self):
-        self.key.set(self.value)
-        # 有预设值，返回预设值。
-        self.assertEqual(self.key.getset('new'), self.value)
-        self.assertEqual(self.key.get(), 'new')
+    def test_getset_return_OLD_VALUE_cause_KEY_EXISTS(self):
+        self.new_value = 'new_value'
+        self.old_value = self.value
+
+        self.key.set(self.old_value)
+
+        self.assertEqual(self.key.getset(self.new_value), self.old_value)
+        self.assertEqual(self.key.get(), self.new_value)
 
     def test_getset_raise_when_wrong_type(self):
         with self.assertRaises(TypeError):

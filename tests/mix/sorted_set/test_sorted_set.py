@@ -1,11 +1,11 @@
 #! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis.client import connect
-
+from ooredis.mix.helper import format_key
 from ooredis.mix.sorted_set import SortedSet
     
 class TestSortedSet(unittest.TestCase):
@@ -13,22 +13,23 @@ class TestSortedSet(unittest.TestCase):
     def setUp(self):
         connect()
 
+        self.redispy = redis.Redis()
+        self.redispy.flushdb()
+
         self.s = SortedSet('sorted_set')
         self.another = SortedSet('another')
 
         self.element = 'value'
         self.score = 10086
         
-        self.redispy = redis.Redis()
-        self.redispy.flushdb()
-
     def tearDown(self):
         self.redispy.flushdb()
 
     # __repr__
 
     def test_repr(self):
-        self.assertIsNotNone(repr(self))
+        self.assertEqual(repr(self.s),
+                         format_key(self.s, self.s.name, list(self.s)))
 
     # __len__
 
