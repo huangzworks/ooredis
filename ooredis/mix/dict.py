@@ -11,7 +11,7 @@ from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.helper import format_key
 
-KEY_NOT_IN_DICT_AND_DELETE_FALSE = False
+DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
 class Dict(Key, collections.MutableMapping):
 
@@ -97,7 +97,7 @@ class Dict(Key, collections.MutableMapping):
         """
         try:
             status = self._client.hdel(self.name, key)
-            if status == KEY_NOT_IN_DICT_AND_DELETE_FALSE:
+            if status == DELETE_FAIL_CAUSE_KEY_NOT_EXISTS:
                 raise KeyError
         except redispy_exception.ResponseError:
             raise TypeError
