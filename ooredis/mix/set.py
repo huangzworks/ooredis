@@ -11,7 +11,7 @@ from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
 from ooredis.mix.helper import get_key_name_from_single_value, format_key
 
-MEMBER_NOT_IN_SET_AND_MOVE_FALSE = 0
+MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 
 def get_members(set_or_set_object):
     """ 从集合对象或集合中提取成员。 """
@@ -203,7 +203,7 @@ class Set(Key):
             member = self._type_case.to_redis(member)
 
             if self._client.smove(self.name, destination, member) == \
-               MEMBER_NOT_IN_SET_AND_MOVE_FALSE:
+               MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET:
                 raise KeyError
         except redispy_exception.ResponseError:
             raise TypeError
