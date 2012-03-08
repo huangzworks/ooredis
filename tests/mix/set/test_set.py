@@ -22,513 +22,513 @@ class TestSet(unittest.TestCase):
         self.another = Set('another')
         self.third = Set('third')
 
+        self.element = 'element'
+
     def tearDown(self):
         self.redispy.flushdb()
 
+    def set_wrong_type(self, key_object):
+        self.redispy.set(key_object.name, 'string')
+
     # __repr__
 
-    def test_repr(self):
-        self.assertEqual(repr(self.s),
-                         format_key(self.s, self.s.name, set(self.s)))
+    def test__repr__(self):
+        assert repr(self.s) == \
+               format_key(self.s, self.s.name, set(self.s))
 
-    # len
-    # add
+    # __len__
 
-    def test_add_len(self):
-        self.assertEqual(len(self.s), 0)
+    def test__len__with_EMPTY_SET(self):
+        assert len(self.s) == 0
 
-        self.s.add('e')
-        self.assertEqual(len(self.s), 1)
+    def test__len__with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
+        assert len(self.s) == 1
 
-    def test_len_raise_when_wrong_type(self):
+    def test__len__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
+            self.set_wrong_type(self.s)
             len(self.s)
-
-    def test_add_raise_when_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
-            self.s.add('e')
 
     # __iter__
 
-    def test_iter(self):
-        self.assertListEqual(list(self.s), [])
+    def test__iter__with_EMPTY_SET(self):
+        assert list(iter(self.s)) == []
 
-        self.s.add('e')
-        self.assertListEqual(list(self.s), ['e'])
+    def test__iter__with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
+        assert list(iter(self.s)) == [self.element]
 
-    def test_iter_raise_when_wrong_type(self):
+    def test__iter__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
-            list(self.s)
+            self.set_wrong_type(self.s)
+            list(iter(self.s))
 
-    # in
+    # __contains__
 
-    def test_contain(self):
-        self.assertFalse('e' in self.s)
+    def test__contains__FALSE(self):
+        assert self.element not in self.s
 
-        self.s.add('e')
-        self.assertTrue('e' in self.s)
+    def test__contains__TRUE(self):
+        self.s.add(self.element)
+        assert self.element in self.s
 
-    def test_contain_raise_when_wrong_type(self):
+    def test__contains__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
-            'e' in self.s
+            self.set_wrong_type(self.s)
+            self.element in self.s
+
+    # add
+
+    def test_add_with_EMPTY_SET(self):
+        self.s.add(self.element)
+        assert set(self.s) == set([self.element])
+
+    def test_add_when_ELEMENT_IS_SET_MEMBER(self):
+        self.s.add(self.element)
+
+        self.s.add(self.element)
+        assert set(self.s) == set([self.element])
+
+    def test_add_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
+            self.s.add(self.element)
 
     # remove
 
-    def test_remove_with_empty_set(self):
-        self.s.remove('e')
-        self.assertEqual(len(self.s), 0)
+    def test_remove_when_ELEMENT_EXISTS(self):
+        self.s.add(self.element)
 
-    def test_remove_with_not_empty_set(self):
-        self.s.add('e')
-        self.assertEqual(len(self.s), 1)
+        self.s.remove(self.element)
+        assert set(self.s) == set()
 
-        self.s.remove('e')
-        self.assertEqual(len(self.s), 0)
-
-    def test_remove_when_value_not_member_and_check_is_False(self):
-        self.assertIsNone(self.s.remove('not_exists_key'))
-
-    def test_remove_raise_when_value_not_member_and_check_is_True(self):
+    def test_remove_RAISE_when_ELEMENT_NOT_EXISTS(self):
         with self.assertRaises(KeyError):
-            self.s.remove('not_exists_key',check=True)
+            self.s.remove(self.element)
 
-    def test_remove_raise_when_wrong_type(self):
+    def test_remove_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
-            self.s.remove('e')
+            self.set_wrong_type(self.s)
+            self.s.remove(self.element)
 
     # pop
 
-    def test_pop_with_empty_set(self):
+    def test_pop_RAISE_when_SET_EMPTY(self):
         with self.assertRaises(KeyError):
             self.s.pop()
 
-    def test_pop_with_not_empty_set(self):
-        self.s.add('element')
+    def test_pop_with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
 
-        self.assertEqual(self.s.pop(), 'element')
-        self.assertEqual(len(self.s), 0)
+        assert self.s.pop() == self.element
+        assert len(self.s) == 0
 
-    def test_pop_raise_when_wrong_type(self):
+    def test_pop_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
+            self.set_wrong_type(self.s)
             self.s.pop()
 
     # random
 
-    def test_random_in_empty_set(self):
-        self.assertIsNone(self.s.random())
+    def test_random_with_EMPTY_SET(self):
+        assert self.s.random() is None
 
-    def test_random_in_not_empty_set(self):
-        self.s.add('e')
-        self.assertEqual(self.s.random(), 'e')
-        self.assertEqual(len(self.s), 1)
+    def test_random_with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
 
-        self.s.add('b')
-        self.assertTrue(self.s.random() in ['e', 'b'])
+        assert self.s.random() == self.element
 
-    def test_random_raise_when_wrong_type(self):
+        assert len(self.s) == 1
+        assert set(self.s) == set([self.element])
+
+    def test_random_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set('set', 'string')
+            self.set_wrong_type(self.s)
             self.s.random()
 
     # move
 
-    def test_move(self):
-        self.s.add('e')
+    def test_move_ELEMENT_NOT_EXISTS_IN_DESTINATION_SET(self):
+        self.s.add(self.element)
 
-        self.another = Set('another')
-        self.s.move(self.another, 'e')
+        self.s.move(self.another, self.element)
 
-        # self.s empty and self.another not empty more
-        self.assertEqual(len(self.s), 0)
-        self.assertEqual(len(self.another), 1)
+        # remove self.element from self.s
+        assert len(self.s) == 0 
+        # move ok
+        assert len(self.another) == 1
+        assert set(self.another) == set([self.element])
 
-        self.assertEqual(self.another.pop(), 'e')
+    def test_move_ELEMENT_EXISTS_IN_DESTINATION_SET(self):
+        self.s.add(self.element)
+        self.another.add(self.element)
 
-    def test_move_raise_key_error_when_element_not_set_member(self):
+        self.s.move(self.another, self.element)
+
+        # remove self.element from self.s
+        assert len(self.s) == 0
+
+        # self.another not change(cause self.element alread exists)
+        assert len(self.another) == 1
+        assert set(self.another) == set([self.element])
+
+    def test_move_RAISE_KEY_ERROR_when_ELEMENT_NOT_SET_MEMBER(self):
         with self.assertRaises(KeyError):
-            self.s.move('another', 'e')
+            self.s.move(self.another, 'not_exists_member')
 
-    def test_move_accpet_key_and_key_name_as_destination(self):
-        self.s.add('a')
-        self.s.add('b')
-
-        self.s.move(self.another, 'a')
-        self.assertEqual(len(self.another), 1)
-
-        # self.another.name == 'another'
-        self.s.move(self.another.name, 'b') 
-        self.assertEqual(len(self.another), 2)
-
-    def test_move_when_two_set_have_same_member(self):
-        self.s.add('a')
-        self.another.add('a')
-
-        self.s.move(self.another, 'a')
-
-        # make sure self.s's 'a' has been delete
-        # and nothing change in self.another
-        self.assertEqual(len(self.s), 0)
-        self.assertEqual(len(self.another), 1)
-        self.assertEqual(self.another.pop(), 'a')
-
-    def test_move_raise_when_wrong_type(self):
+    def test_move_RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.s.name, 'string')
-            self.s.move('another', 'e')
+            self.set_wrong_type(self.s)
+            self.s.move(self.another, self.element)
+
+    def test_move_RAISE_when_DESTINATION_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.s.add(self.element)
+
+            self.set_wrong_type(self.another)
+            self.s.move(self.another, self.element)
 
     # isdisjoint
 
     def test_isdisjoint_True(self):
-        self.s.add('a')
-        self.another.add('e')
-
-        self.assertTrue(self.s.isdisjoint(self.another))
+        self.s.add(self.element)
+        assert self.s.isdisjoint(self.another)
 
     def test_isdisjoint_False(self):
-        self.s.add('a')
-        self.another.add('a')
+        self.s.add(self.element)
+        self.another.add(self.element)
 
-        self.assertFalse(self.s.isdisjoint(self.another))
+        assert not self.s.isdisjoint(self.another)
 
-    def test_idisjoint_with_set(self):
-        self.s.add('a')
-        
-        self.set = set('a')
+    def test_idisjoint_with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s.isdisjoint(set())
 
-        self.assertFalse(self.s.isdisjoint(self.set))
-
-    def test_isdisjoint_raise_when_other_not_key_object(self):
+    def test_isdisjoint_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string') 
+            self.set_wrong_type(self.s)
+            self.s.isdisjoint(set())
+
+    def test_isdisjoint_RAISE_when_OTHER_SET_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
             self.s.isdisjoint(self.another)
 
-    # issubset <=
+    # __le__
 
-    def test_issubset_True(self):
-        self.s.add('a')
-        self.another.add('a')
+    def test__le__True(self):
+        assert self.s <= self.another
 
-        self.assertTrue(self.s <= self.another)
+    def test__le__False(self):
+        self.s.add(self.element)
+        assert not self.s <= self.another
 
-    def test_issubset_False(self):
-        self.s.add('a')
-        
-        self.assertFalse(self.s <= self.another)
+    def test__le__with_PYTHON_SET(self):
+        assert self.s <= set()
 
-    def test_issubset_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set()
-
-        self.assertFalse(self.s <= self.set)
-
-    def test_issubset_raise_when_other_wrong_type(self):
+    def test__le__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string') 
+            self.set_wrong_type(self.s)
             self.s <= self.another
 
-    # issubset <, true subset
-
-    def test_istruesubset_True(self):
-        self.another.add('a')
-
-        self.assertTrue(self.s < self.another)
-
-    def test_istruesubset_False(self):
-        self.s.add('a')
-
-        self.assertFalse(self.s < self.another)
-
-    def test_istruesubset_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set()
-
-        self.assertFalse(self.s < self.set)
-
-    def test_istruesubset_raise_when_other_wrong_type(self):
+    def test__le__RAISE_when_OTHER_SET_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string') 
+            self.set_wrong_type(self.another)
+            self.s <= self.another
+
+    # issubset
+
+    def test_issubset(self):
+        self.s.issubset(self.another)
+
+    # __lt__
+
+    def test__lt__True(self):
+        self.another.add(self.element)
+        assert self.s < self.another
+
+    def test__lt__False(self):
+        self.s.add(self.element)
+        assert not self.s < self.another
+
+    def test__lt__with_PYTHON_SET(self):
+        assert not self.s < set()  
+
+    def test__lt__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
             self.s < self.another
 
-    # superset >=
-
-    def test_issuperset_True(self):
-        self.s.add('a')
-
-        self.assertTrue(self.s >= self.another)
-
-    def test_issuperset_False(self):
-        self.another.add('b')
-
-        self.assertFalse(self.s >= self.another)
-
-    def test_issuperset_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set()
-
-        self.assertTrue(self.s >= self.set)
-
-    def test_issuperset_raise_when_other_wrong_type(self):
+    def test__lt__RAISE_when_OTHER_SET_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string') 
+            self.set_wrong_type(self.another)
+            self.s < self.another
+
+    # __ge__
+
+    def test__ge__TRUE(self):
+        assert self.s >= self.another
+
+    def test__ge__FALSE(self):
+        self.another.add(self.element)
+        assert not self.s >= self.another
+
+    def test__ge__with_PYTHON_SET(self):
+        assert self.s >= set()
+
+    def test__ge__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
             self.s >= self.another
 
-    # superset >, ture super set
-
-    def test_isturesuperset_True(self):
-        self.s.add('a')
-        self.s.add('b')
-        
-        self.another.add('a')
-
-        self.assertTrue(self.s > self.another)
-
-    def test_isturesuperset_False(self):
-        self.s.add('a')
-        self.another.add('a')
-
-        self.assertFalse(self.s > self.another)
-
-    def test_istruesuperset_with_python(self):
-        self.s.add('a')
-
-        self.set = set()
-
-        self.assertTrue(self.s > self.set)
-
-    def test_isturesuperset_raise_when_other_wrong_type(self):
+    def test__ge__RAISE_when_OTHER_SET_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.another)
+            self.s >= self.another
+
+    # issuperset
+
+    def test_issuperset(self):   
+        self.s.issuperset(self.another)
+
+    # __gt__
+
+    def test__gt__True(self):
+        self.s.add(self.element)
+        assert self.s > self.another
+
+    def test__gt__FALSE(self):
+        self.another.add(self.element)
+        assert not self.s > self.another
+
+    def test__gt__with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s > set()
+    
+    def test__gt__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
             self.s > self.another
 
-    # union(operator) |
-
-    def test_op_union(self):
-        self.s.add('a')
-        self.another.add('b')
-
-        self.assertEqual(self.s | self.another, {'a','b'})
-
-    def test_op_union_with_multi_operand(self):
-        self.s.add('a')
-        self.another.add('b')
-        self.third.add('c')
-
-        self.assertEqual(self.s | self.another | self.third,
-                         {'a', 'b', 'c'})
-
-    def test_op_union_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set('b')
-
-        self.assertEqual(self.s | self.set, {'a', 'b'})
-    
-    def test_op_union_raise_when_wrong_type(self):
+    def test__gt__RAISE_when_OTHER_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.another)
+            self.s > self.another
+
+    # __or__
+
+    def test__or__(self):
+        self.s.add(self.element)
+        assert self.s | self.another == {self.element}
+
+    def test__or__with_MULTI_OPERAND(self):
+        self.s.add(self.element)
+        assert self.s | self.another | self.third == {self.element}
+
+    def test__or__with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s | set() == {self.element}
+
+    def test__or__RAISE_when_SELF_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
             self.s | self.another
 
-    # union, &=, __ior__
+    def test__or__RAISE_when_OTHER_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
+            self.s | self.another
 
-    def test_ior_with_empty_set(self):
+    # __ror__
+
+    def test__ror__(self):
+        self.s.add(self.element)
+        assert self.another | self.s == {self.element}
+
+    # __ior__
+
+    def test__ior__with_EMPTY_SET(self):
         self.s |= self.another
 
-        self.assertEqual(set(self.s), set())
+        assert set(self.s) == set()
+        assert set(self.another) == set()
 
-        self.assertEqual(set(self.another), set())
-
-    def test_ior_with_not_empty_set(self):
-        self.s.add('a')
-
-        self.another.add('b')
+    def test__ior__with_NOT_EMPTY_SET(self):
+        self.another.add(self.element)
 
         self.s |= self.another
 
-        self.assertEqual(set(self.s), {'a', 'b'})
-        
-        self.assertEqual(set(self.another), {'b'})
+        assert set(self.s) == set(self.another)
+        assert set(self.another) == {self.element}
 
-    def test_ior_raise_when_self_wrong_type(self):
+    def test__ior__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.s.name, 'string')
+            self.set_wrong_type(self.s)
             self.s |= self.another
 
-    def test_ior_raise_when_other_wrong_type(self):
+    def test__ior__RAISE_when_OTHER_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.another)
             self.s |= self.another
 
+    # __and__
 
-    # inser(operator) &
+    def test__and__(self):
+        self.s.add(self.element)
+        self.another.add(self.element)
 
-    def test_op_inter(self):
-        self.s.add('a')
+        assert self.s & self.another == {self.element}
 
-        self.another.add('a')
-        self.another.add('b')
+    def test__and__with_MULTI_OPERAND(self):
+        self.s.add(self.element)
+        self.another.add(self.element)
+        self.third.add(self.element)
 
-        self.assertEqual(self.s & self.another, {'a'})
+        assert self.s & self.another & self.third == {self.element}
+            
+    def test__and__with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s & {self.element} == {self.element}
 
-    def test_op_inter_with_multi_operand(self):
-        self.s.add('a')
-        self.another.add('a')
-        self.third.add('c')
-        self.third.add('a')
-
-        self.assertEqual(self.s & self.another & self.third,
-                         {'a'})
-
-    def test_op_inter_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set('a')
-
-        self.assertEqual(self.s & self.set, {'a'})
-
-    def test_op_inter_raise_when_wrong_type(self):
+    def test__and__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.s)
             self.s & self.another
 
-    # inter, &=, __iand__
+    def test__and__RAISE_when_OTHER_SET_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
+            self.s & self.another
 
-    def test_iand_with_empty_set(self):
+    # __rand__
+
+    def test__rand__(self):
+        self.s.add(self.element)
+        assert {self.element} & self.s == {self.element}
+
+    # __iand__
+
+    def test__iand__with_EMPTY_SET(self):
         self.s &= self.another
 
-        self.assertEqual(set(self.s), set())
+        assert set(self.s) == set()
+        assert set(self.s) == set(self.another)
 
-        # make sure self.another not change
-        self.assertEqual(set(self.another), set())
+    def test__iand__with_NOT_EMPTY_SET(self):   
+        self.s.add(self.element)
 
-    def test_iand_with_not_empty_set(self):
-        self.s.add('a')
-
-        self.another.add('a')
-        self.another.add('b')
-
+        self.another.add(self.element)
+        
         self.s &= self.another
 
-        self.assertEqual(set(self.s), set('a'))
+        assert set(self.s) == {self.element}
+        assert set(self.s) == set(self.another)
 
-        # make sure self.another not change
-        self.assertEqual(set(self.another), {'a', 'b'})
-
-    def test_iand_raise_when_self_wrong_type(self):
+    def test__iand__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.s.name, 'string')
+            self.set_wrong_type(self.s)
+            self.s &= self.another
+   
+    def test__iand__RAISE_when_OTHER_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
             self.s &= self.another
 
-    def test_iand_raise_when_other_wrong_type(self):
+    # __sub__
+
+    def test__sub__with_EMPTY_SET(self):
+        assert self.s - self.another == set()
+
+    def test__sub__with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
+        assert self.s - self.another == {self.element}
+
+    def test__sub__with_MULTI_OPERAND(self):
+        self.s.add(self.element)
+        self.another.add(self.element)
+        self.third.add(self.element)
+
+        assert self.s - self.another - self.third == set()
+
+    def test__sub__with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s - set() == {self.element}
+
+    def test__sub__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
-            self.s &= self.another
-
-    # diff(operator) -
-    
-    def test_op_diff(self):
-        self.s.add('a')
-
-        self.assertEqual(self.s - self.another, {'a'})
-
-    def test_op_diff_with_multi_operand(self):
-        self.s.add('a')
-        self.s.add('b')
-        self.s.add('c')
-
-        self.another.add('b')
-
-        self.third.add('c')
-
-        self.assertEqual(self.s - self.another - self.third,
-                         {'a'})
-
-    def test_op_diff_with_python_set(self):
-        self.s.add('a')
-
-        self.set = set()
-
-        self.assertEqual(self.s - self.set, {'a'})
-
-    def test_op_diff_raise_when_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.s)
             self.s - self.another
 
-    # diff, -=, __isub__
+    def test__sub__RAISE_when_OTHER_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
+            self.s - self.another
 
-    def test_isub_with_empty_set(self):
+    # __rsub__
+
+    def test__rsub__(self):
+        self.s.add(self.element)
+        assert set() - self.s == set() 
+
+    #__isub__
+
+    def test__isub__with_EMPTY_SET(self):
         self.s -= self.another
 
-        self.assertEqual(set(self.s), set())
-        self.assertEqual(set(self.another), set())
+        assert set(self.s) == set()
+        assert set(self.another) == set()
 
-    def test_isub_with_not_empty_set(self):
-        self.s.add('a')
-        self.s.add('b')
-
-        self.another.add('a')
-        self.another.add('f')
+    def test__isub__with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
 
         self.s -= self.another
 
-        self.assertEqual(set(self.s), {'b'})
+        assert set(self.s) == {self.element}
+        assert set(self.another) == set()
 
-        self.assertEqual(set(self.another), {'a', 'f'})
-
-    def test_isub_raise_when_self_wrong_type(self):
+    def test__isub__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.s.name, 'string')
+            self.set_wrong_type(self.s)
             self.s -= self.another
 
-    def test_isub_raise_when_other_wrong_type(self):
+    def test__isub__RAISE_when_OTHER_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.another)
             self.s -= self.another
 
-    # symmetric diff(operator) ^
+    # __xor__
 
-    def test_op_sym_diff(self): 
-        self.s.add('a')
-        self.s.add('c')
+    def test__xor__with_EMPTY_SET(self):
+        assert self.s ^ self.another == set()
 
-        self.another.add('a')
-        self.another.add('f')
+    def test__xor__with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
+        assert self.s ^ self.another == {self.element}
 
-        self.assertEqual(self.s ^ self.another, {'c', 'f'})
+    def test__xor__with_MULTI_OPERAND(self):
+        self.s.add(self.element)
 
-    def test_op_sym_diff_with_multi_operand(self):
-        self.s.add('a')
-        self.s.add('c')
+        assert self.s ^ self.another ^ self.third == {self.element}
 
-        self.another.add('a')
-        self.another.add('f')
+    def test__xor__with_PYTHON_SET(self):
+        self.s.add(self.element)
+        assert self.s ^ set() == {self.element}
 
-        self.third.add('g')
-
-        self.assertEqual(self.s ^ self.another ^ self.third,
-                         {'c', 'f', 'g'})
-
-    def test_op_sym_diff_with_python_set(self):
-        self.s.add('a')
-        self.s.add('b')
-
-        self.set = {'a', 'c'}
-
-        self.assertEqual(self.s ^ self.set, {'b', 'c'})
-
-    def test_op_sym_diff_raise_when_wrong_type(self):
+    def test__xor__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.another.name, 'string')
+            self.set_wrong_type(self.s)
             self.s ^ self.another
+
+    def test__xor__RAISE_when_OTHER_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
+            self.s ^ self.another
+
+    # __rxor__
+
+    def test__rxor__(self):
+        assert {self.element} ^ self.s == {self.element}
 
 if __name__ == "__main__":
     unittest.main()
