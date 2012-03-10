@@ -11,11 +11,11 @@ OORedis 是一个 Redis 的 Python 库，它基于 redis-py ，具有以下三�
 需求
 ====
 
-Python2.7
+Python 2.7
 
-Redis2.2
+Redis 2.2+
 
-redis-py2.4.9
+redis-py 2.4.9+
 
 nosetest(用于测试)
 
