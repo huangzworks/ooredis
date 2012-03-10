@@ -149,8 +149,8 @@ OORedis 代码中内置了函数的基本介绍，可以使用 ``help(obj)`` 来
 联系方式
 ========
 
-twitter: @huangz1990
+twitter: `@huangz1990 <https://twitter.com/huangz1990>`_
 
 gmail: huangz1990
 
-豆瓣: `http://www.douban.com/people/i_m_huangz/ <www.douban.com/people/i_m_huangz>`_
+豆瓣: `www.douban.com/people/i_m_huangz <http://www.douban.com/people/i_m_huangz/>`_
