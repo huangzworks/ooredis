@@ -1,8 +1,7 @@
-#! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis.client import connect
 from ooredis.mix.helper import format_key
@@ -16,6 +15,10 @@ class TestCounter(unittest.TestCase):
         self.redispy = redis.Redis()
         self.redispy.flushdb()
 
+        self.tearDown()
+
+        self.str = 'str'
+
         self.name = 'counter'
         self.value = 10086
 
@@ -24,93 +27,101 @@ class TestCounter(unittest.TestCase):
     def tearDown(self):
         self.redispy.flushdb()
 
+    def set_wrong_type(self, key_object):
+        self.redispy.set(key_object.name, 'string')
+
     # __repr__
 
-    def test_repr(self):
-        self.counter.set(self.value)
+    def test_repr_when_NOT_EXISTS(self):
+        assert repr(self.counter) == format_key(self.counter, self.name, str(None))
 
-        self.assertEqual(repr(self.counter),
-                         format_key(self.counter, self.name, self.value))
+    def test_repr_when_EXISTS(self):
+        self.counter.set(self.value)
+        assert repr(self.counter) == format_key(self.counter, self.name, self.value)
         
     # incr
 
     def test_incr(self):
-        self.assertEqual(self.counter.incr(), 1)
+        assert self.counter.incr() == 1
 
     def test_incr_with_increment(self):
-        self.assertEqual(self.counter.incr(2), 2)
+        assert self.counter.incr(2) == 2
 
     def test_incr_raise_when_wrong_type(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.counter.name, 'string')
+            self.set_wrong_type(self.counter)
             self.counter.incr()
 
     # decr
 
     def test_decr(self):
-        self.assertEqual(self.counter.decr(), -1)
+        assert self.counter.decr() == -1
 
-    def test_decr(self):
-        self.assertEqual(self.counter.decr(2), -2)
+    def test_decr_with_DECREMENT(self):
+        assert self.counter.decr(2) == -2
 
     def test_decr_raise_when_wrong_type(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.counter.name, 'string')
+            self.set_wrong_type(self.counter)
             self.counter.decr()
-
-    def test_decr(self):
-        self.assertEqual(self.counter.decr(), -1)
-
-    def test_decr(self):
-        self.assertEqual(self.counter.decr(2), -2)
 
     # iadd
 
     def test_iadd(self):
         self.counter += 1
-        self.assertEqual(self.counter.get(), 1)
+        assert self.counter.get() == 1
 
     def test_iadd_raise_when_wrong_type(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.counter.name, 'string')
+            self.set_wrong_type(self.counter)
             self.counter += 1
 
     # isub
 
     def test_isub(self):
         self.counter -= 1
-        self.assertEqual(self.counter.get(), -1)
+        assert self.counter.get() == -1
 
     def test_isub_raise_when_wrong_type(self):
         with self.assertRaises(TypeError):
-            self.redispy.set(self.counter.name, 'string')
+            self.set_wrong_type(self.counter)
             self.counter -= 1
 
     # get
     def test_get(self):
-        self.assertIsNone(self.counter.get())
+        self.counter.set(self.value)
+        assert self.counter.get() == self.value
 
-        self.counter += 1
-        self.assertEqual(self.counter.get(), 1)
+    def test_get_RETURN_NONE_when_NOT_EXISTS(self):
+        assert self.counter.get() is None
 
     # set
 
     def test_set(self):
-        self.counter.set(10086)
+        self.counter.set(self.value)
+        assert self.counter.get() == self.value
 
-        self.assertEqual(self.counter.get(), 10086)
-        
-        self.counter += 1
-        self.assertEqual(self.counter.get(), 10087)
+    def test_set_RAISE_when_INPUT_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter.set(self.str) 
 
     # getset
 
-    def test_getset(self):
-        self.assertIsNone(self.counter.getset(10086))
+    def test_getset_when_NOT_EXISTS(self):
+        previous_value = self.counter.getset(self.value)
 
-        self.assertEqual(10086, self.counter.getset(1))
-        
-        self.assertEqual(self.counter.get(), 1)
+        assert previous_value is None
+        assert self.counter.get() == self.value
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_getset_when_EXISTS(self):
+        self.counter.getset(self.value)
+
+        self.new_value = 123
+        previous_value = self.counter.getset(self.new_value)
+
+        assert previous_value == self.value
+        assert self.counter.get() == self.new_value
+
+    def test_getset_RAISE_when_INPUT_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter.getset(self.str)

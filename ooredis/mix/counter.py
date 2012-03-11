@@ -5,19 +5,29 @@ __all__ = ['Counter']
 __metaclass__ = type
 
 import redis.exceptions as redispy_exception
+
+from ooredis.type_case import IntTypeCase
 from ooredis.mix.single_value import SingleValue
+from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
 class Counter(SingleValue):
     """
-    为计数器类型的 Key 对象加上 incr ，decr 以及 += 和 -= 方法。
+    计算器用途的 key 对象。
    
     注意当 Key 对象为空时，get/getset 的返回值为 None。
     """
 
-    def incr(self, increment=1):
+    def __init__(self, name, client=None, type_case=IntTypeCase):
+        """ 
+        初始化一个 Counter 类实例，
+        使用 IntTypeCase 作为默认 type case 。
         """
-        将 Key 对象的值加上增量 increment， 
-        然后返回执行加法之后 Key 对象的值。
+        super(Counter, self).__init__(name=name, client=client, type_case=type_case)
+
+    def incr(self, increment=DEFAULT_INCREMENT):
+        """
+        将计数器的值加上增量 increment， 
+        然后返回执行 incr 操作之后计数器的当前值。
 
         Args:
             increment: 增量，默认为 1 。
@@ -26,7 +36,7 @@ class Counter(SingleValue):
             O(1)
 
         Returns:
-            int: 操作执行之后的值。
+            current_counter_value
 
         Raises:
             TypeError: 当 Key 对象储存的不是数值类型时抛出。
@@ -37,10 +47,10 @@ class Counter(SingleValue):
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def decr(self, decrement=1):
+    def decr(self, decrement=DEFAULT_DECREMENT):
         """
-        将 key 对象的值减去减量 decrement 。
-        并返回执行减法之后 key 对象的值。
+        将计数器的值减去减量 decrement ，
+        然后返回执行 decr 操作之后计数器的当前值。
 
         Args:
             decrement: 减量，默认为1.
@@ -49,10 +59,10 @@ class Counter(SingleValue):
             O(1)
 
         Returns:
-            int: 操作执行之后的值。
+            current_counter_value
 
         Raises:
-            TypeError: 当key储存的不是数值类型时抛出。
+            TypeError: 当 key 储存的不是数值类型时抛出。
         """
         # redis-py用decr代替redis的decrby
         try:
@@ -63,7 +73,7 @@ class Counter(SingleValue):
     def __iadd__(self, increment):
         """
         SingleValue.incr 方法的一个 python 语法糖，
-        区别是这个特殊方法不返回 key 对象的值。
+        区别是这个特殊方法不返回 key 对象的当前值。
 
         Args:
             increment: 增量。
