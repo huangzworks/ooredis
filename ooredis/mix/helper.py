@@ -6,8 +6,6 @@ __all__ = [
     'get_key_name_from_single_value', 
 ]
            
-__metaclass__ = type
-
 from ooredis.mix.key import Key
 
 def get_key_name_from_single_value(key):
