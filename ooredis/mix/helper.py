@@ -1,5 +1,11 @@
 # coding:utf-8
 
+__all__ = [
+    'format_key',
+    'get_key_name_from_list',
+    'get_key_name_from_single_value', 
+]
+           
 __metaclass__ = type
 
 from ooredis.mix.key import Key
