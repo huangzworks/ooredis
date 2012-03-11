@@ -11,6 +11,8 @@ from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
 from ooredis.mix.helper import get_key_name_from_single_value, format_key
 
+MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
+
 class Set(Key):
     """ 集合 key 对象，底层实现是redis的set类型。 """
 
@@ -218,8 +220,8 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        other_member = get_members(other)
-        self_member = get_members(self)
+        other_member = set(other)
+        self_member = set(self)
 
         return self_member.isdisjoint(other_member)
 
@@ -240,7 +242,7 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) <= get_members(other)
+        return set(self) <= set(other)
 
     issubset = __le__
 
@@ -261,7 +263,7 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) < get_members(other)
+        return set(self) < set(other)
 
     # superset, >= , 超集
 
@@ -280,7 +282,7 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) >= get_members(other)
+        return set(self) >= set(other)
 
     issuperset = __ge__
 
@@ -301,7 +303,7 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) > get_members(other)
+        return set(self) > set(other)
 
     # union, | , 并集
 
@@ -320,7 +322,7 @@ class Set(Key):
         Raises：
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) | get_members(other)
+        return set(self) | set(other)
 
     __ror__ = __or__
     __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
@@ -370,7 +372,7 @@ class Set(Key):
         Raises：
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) & get_members(other)
+        return set(self) & set(other)
 
     __rand__ = __and__
     __rand__.__doc__ = """ __and__的反向方法，用于支持多集合进行交集操作。 """
@@ -420,14 +422,14 @@ class Set(Key):
         Raises：
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
-        return get_members(self) - get_members(other)
+        return set(self) - set(other)
 
     def __rsub__(self, other):
         """ __sub__的反向方法，
         用于支持多集合进行差集运算。
         """
         # WARNING: 注意这里的位置不要弄反。
-        return get_members(other) - get_members(self)
+        return set(other) - set(self)
 
     def __isub__(self, other):
         """ 求集合 key 对象和另一个集合 key 对象的差集，
@@ -474,18 +476,8 @@ class Set(Key):
         Raises:
             TypeError: 当key或other不是Set类型时抛出。
         """
-        return get_members(self) ^ get_members(other)
+        return set(self) ^ set(other)
 
     __rxor__ = __xor__
     __rxor__.__doc__ = \
     """ __xor__的反向方法，用于支持多集合的对等差集运算。 """
-
-# const
-
-MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
-
-# helper
-
-def get_members(set_or_set_object):
-    """ 从集合对象或集合中提取成员。 """
-    return set(set_or_set_object)
