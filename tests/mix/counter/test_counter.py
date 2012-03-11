@@ -6,7 +6,7 @@ import redis
 
 from ooredis.client import connect
 from ooredis.mix.helper import format_key
-from ooredis.mix.single_value import Counter
+from ooredis.mix.counter import Counter
 
 class TestCounter(unittest.TestCase):
     
