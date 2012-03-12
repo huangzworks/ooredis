@@ -3,7 +3,7 @@
 __all__ = [
     'connect', 'get_client',
     'type_case',
-    'Dict', 'List', 'Set', 'SortedSet', 'SingleValue', 'Counter',
+    'Dict', 'List', 'Set', 'SortedSet', 'String', 'Counter',
     '__version__',
 ]
 
@@ -15,7 +15,7 @@ from mix.dict import Dict
 from mix.list import List
 from mix.set import Set
 from mix.sorted_set import SortedSet
-from mix.single_value import SingleValue
+from mix.string import String
 from mix.counter import Counter
 
 __version__ = "1.4.1.2"

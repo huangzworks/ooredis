@@ -6,9 +6,9 @@ import redis
 
 from ooredis.client import connect
 from ooredis.mix.helper import format_key
-from ooredis.mix.single_value import SingleValue
+from ooredis import String
 
-class TestSingleValue(unittest.TestCase):
+class TestString(unittest.TestCase):
 
     def setUp(self):
         connect()
@@ -19,7 +19,7 @@ class TestSingleValue(unittest.TestCase):
         self.name = 'name'
         self.value = 3.14
 
-        self.key = SingleValue(self.name)
+        self.key = String(self.name)
 
     def tearDown(self):
         self.redispy.flushdb()

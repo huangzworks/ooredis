@@ -1,6 +1,6 @@
 # coding: utf-8
 
-__all__ = ['SingleValue']
+__all__ = ['String']
 
 __metaclass__ = type
 
@@ -10,7 +10,7 @@ from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.helper import format_key
 
-class SingleValue(Key):
+class String(Key):
     """ 为储存单个值的 Key 对象提供 set，get 和 getset操作。 """
 
     def __repr__(self):

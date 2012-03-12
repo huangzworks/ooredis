@@ -6,11 +6,11 @@ __metaclass__ = type
 
 import redis.exceptions as redispy_exception
 
+from ooredis import String
 from ooredis.type_case import IntTypeCase
-from ooredis.mix.single_value import SingleValue
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
-class Counter(SingleValue):
+class Counter(String):
     """
     计算器用途的 key 对象。
    

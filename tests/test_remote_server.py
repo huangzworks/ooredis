@@ -3,7 +3,7 @@
 
 import unittest
 
-from ooredis import connect, get_client, SingleValue
+from ooredis import connect, get_client, String
 import redis
 
 class TestRemoteServer(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestRemoteServer(unittest.TestCase):
         self.r.flushdb()
 
     def test_set_and_get(self):
-        self.s = SingleValue('key')
+        self.s = String('key')
         self.s.set('value')
 
         self.assertEqual(self.s.get(), 'value')

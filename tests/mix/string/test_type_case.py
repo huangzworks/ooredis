@@ -4,14 +4,14 @@
 import unittest
 import redis
 
+from ooredis import String
 from ooredis.client import connect
-from ooredis.mix.single_value import SingleValue
 from ooredis.type_case import SerializeTypeCase
 
 class Person:
     name = 'huangz'
 
-class TestTypeCaseSingleValue(unittest.TestCase):
+class TestTypeCaseString(unittest.TestCase):
 
     def setUp(self):
         connect()
@@ -19,7 +19,7 @@ class TestTypeCaseSingleValue(unittest.TestCase):
         self.redispy = redis.Redis()
         self.redispy.flushdb()
    
-        self.key = SingleValue('object', type_case=SerializeTypeCase)
+        self.key = String('object', type_case=SerializeTypeCase)
         self.obj = Person()
 
     def tearDown(self):
