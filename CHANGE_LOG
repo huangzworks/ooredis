@@ -1,4 +1,21 @@
-2.0 -
+2.0
+
+将 SingleValue 类改名为 String 类
+
+对测试进行修正，以支持 nosetest 。
+
+从 ooredis/single_value.py 中分割 ooredis/counter.py
+修正 Counter 类的 set 和 getset 方法的 type case 设置，现在如果向 Counter.set 和 Counter.getset 方法传入一个非 type case 指定的值(默认是 int 类型)会正确地引起 TypeError 错误
+
+将原本的 ooredis/type_case.py 分割为模块
+fix: 原本将不合格类型的值转给 TypeCase 会抛出 ValueError ，现在改为 TypeError
+fix: 将 GenericTypeCase.to_python 传入非字符类型值，将抛出 TypeError 而不再是 AssertionError ，原本的 ValueError 也被移除(这个异常不可能被抛出)
+fix: IntTypeCase.to_python 原本只能只能处理 int 类型而不能处理 long 类型的错误
+fix: FloatTypeCase.to_redis 现在还可以接受 int 类型的值，并将它转为 float 类型(之前是抛出 TypeError 异常)
+
+Set.move 方法不再接受字符串为 destination 参数， destination 参数只能为 Set 类的实例
+Set 类增加 issubset 、 issuperset 方法
+Set 类的 remove 方法不再有 check 选项，现在 remove 一个不存在的成员将抛出 KeyError (和 Python 保持一致)
 
 删除 Server 模块
 
