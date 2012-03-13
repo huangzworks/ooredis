@@ -347,13 +347,10 @@ class Set(Key):
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
         try:
-            if isinstance(other, set):
-                self._client.sadd(self.name, *list(other))
-            else:
-                if other.exists and other._represent != REDIS_TYPE['set']:
-                    raise TypeError
+            if other.exists and other._represent != REDIS_TYPE['set']:
+                raise TypeError
 
-                self._client.sunionstore(self.name, [self.name, other.name])
+            self._client.sunionstore(self.name, [self.name, other.name])
             return self
         except redispy_exception.ResponseError:
             raise TypeError
