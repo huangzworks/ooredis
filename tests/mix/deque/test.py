@@ -4,6 +4,8 @@ from redis import Redis
 from ooredis import Deque
 from unittest import TestCase
 
+from ooredis.mix.helper import format_key
+
 class TestDeque(TestCase):
 
     def setUp(self):
@@ -23,6 +25,11 @@ class TestDeque(TestCase):
 
     def set_wrong_type(self, key_object):
         self.redispy.set(key_object.name, 'string')
+
+    # __repr__
+
+    def test__repr__(self):
+        assert repr(self.d) == format_key(self.d, self.d.name, list(self.d))
 
     # __len__
 

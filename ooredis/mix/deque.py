@@ -8,9 +8,13 @@ import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
+from ooredis.mix.helper import format_key
 
 class Deque(Key):
     """ 一个双端队列 key 对象，底层实现是 redis 的 list 类型。 """
+
+    def __repr__(self):
+        return format_key(self, self.name, list(self))
 
     def __len__(self):
         """
