@@ -60,16 +60,52 @@ class TestDeque(TestCase):
         assert list(self.d) == [self.item, self.another_item]
         assert len(self.d) == 2
 
-    def test_append_with_MULTI_ITEM_INPUT(self):
-        self.d.append(*self.multi_item)
-
-        assert list(self.d) == self.multi_item
-        assert len(self.d) == len(self.multi_item)
-
     def test_append_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             self.d.append(self.item)
+
+    # extend
+
+    def test_extend_when_EMPTY(self):
+        self.d.extend(self.multi_item)
+
+        assert list(self.d) == self.multi_item
+        assert len(self.d) == len(self.multi_item)
+
+    def test_extend_when_NOT_EMPTY(self):
+        self.d.extend(self.multi_item)
+
+        self.d.extend(self.multi_item)
+
+        assert list(self.d) == self.multi_item * 2
+        assert len(self.d) == len(self.multi_item) * 2
+
+    def test_extend_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            self.d.extend(self.multi_item)
+
+    # extendleft
+
+    def test_extendleft_when_EMPTY(self):
+        self.d.extendleft(self.multi_item)
+
+        assert list(self.d) == list(reversed(self.multi_item))
+        assert len(self.d) == len(self.multi_item)
+
+    def test_extendleft_when_NOT_EMPTY(self):
+        self.d.extendleft(self.multi_item)
+        
+        self.d.extendleft(self.multi_item)
+
+        assert list(self.d) == list(reversed(self.multi_item)) * 2
+        assert len(self.d) == len(self.multi_item) * 2
+
+    def test_extend_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            self.d.extendleft(self.multi_item)
 
     # appendleft
 
@@ -85,12 +121,6 @@ class TestDeque(TestCase):
 
         assert list(self.d) == [self.another_item, self.item]
         assert len(self.d) == 2
-
-    def test_appendleft_with_MULTI_ITEM_INPUT(self):
-        self.d.appendleft(*self.multi_item)
-
-        assert list(self.d) == list(reversed(self.multi_item))
-        assert len(self.d) == len(self.multi_item)
 
     def test_append_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):

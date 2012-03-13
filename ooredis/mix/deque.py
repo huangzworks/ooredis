@@ -13,34 +13,12 @@ from ooredis.mix.helper import format_key
 class Deque(Key):
     """ 一个双端队列 key 对象，底层实现是 redis 的 list 类型。 """
 
-    def __repr__(self):
-        return format_key(self, self.name, list(self))
-
-    def __len__(self):
+    def append(self, item):
         """
-        返回队列中的元素个数。
-        空列表返回 0 。
-
-        Time:
-            O(1)
-
-        Returns:
-            len
-
-        Raises:
-            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
-        """
-        try:
-            return self._client.llen(self.name)
-        except redispy_exception.ResponseError:
-            raise TypeError
-
-    def append(self, *items):
-        """
-        将一个或多个元素追加到队列的最右边。
+        将元素 item 追加到队列的最右边。
 
         Args:
-            items
+            item
 
         Time:
             O(1)
@@ -52,16 +30,16 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.rpush(self.name, *items)
+            self._client.rpush(self.name, item)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def appendleft(self, *items):
+    def appendleft(self, item):
         """
-        将一个或多个元素追加到队列的最左边。
+        将元素 item 追加到队列的最左边。
 
         Args:
-            items
+            item
 
         Time:
             O(1)
@@ -73,27 +51,54 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.lpush(self.name, *items)
+            self._client.lpush(self.name, item)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def __iter__(self):
+    def extend(self, iterable):
         """
-        返回一个包含整个队列所有元素的迭代器。
+        将 iterable 内的所有元素追加到队列的最右边。
+
+        Args:
+            iterable
 
         Time:
-            O(N)
+            O(1)
 
         Returns:
-            iterator
+            None
 
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            all_item = self._client.lrange(self.name, 0, -1)
-            for item in all_item:
-                yield item
+            self._client.rpush(self.name, *iterable)
+        except redispy_exception.ResponseError:
+            raise TypeError
+
+    def extendleft(self, iterable):
+        """
+        将 iterable 内的所有元素追加到队列的最左边。
+
+        注意被追加元素是以逆序排列的。
+
+        比如对一个空队列 d 执行 d.extendleft(range(3)) ，
+        那么队列 d 将变成 [3, 2, 1] 。
+
+        Args:
+            iterable
+
+        Time:
+            O(1)
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        try:
+            self._client.lpush(self.name, *iterable)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -184,6 +189,48 @@ class Deque(Key):
                 raise IndexError
             else:
                 return item
+        except redispy_exception.ResponseError:
+            raise TypeError
+
+    def __repr__(self):
+        return format_key(self, self.name, list(self))
+
+    def __len__(self):
+        """
+        返回队列中的元素个数。
+        空列表返回 0 。
+
+        Time:
+            O(1)
+
+        Returns:
+            len
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        try:
+            return self._client.llen(self.name)
+        except redispy_exception.ResponseError:
+            raise TypeError
+
+    def __iter__(self):
+        """
+        返回一个包含整个队列所有元素的迭代器。
+
+        Time:
+            O(N)
+
+        Returns:
+            iterator
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        try:
+            all_item = self._client.lrange(self.name, 0, -1)
+            for item in all_item:
+                yield item
         except redispy_exception.ResponseError:
             raise TypeError
 
