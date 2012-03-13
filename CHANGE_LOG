@@ -1,5 +1,8 @@
 2.0
 
+添加 Deque 类，用于处理双端队列
+得益于 Redis 2.4 对 rpush 和 lpush 的加强，现在 Deque.append 和 Deque.appendleft 可以在常数时间内一次添加多个元素
+
 将 SingleValue 类改名为 String 类
 
 对测试进行修正，以支持 nosetest 。
