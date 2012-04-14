@@ -13,7 +13,7 @@ from ooredis.mix.helper import format_key
 class Deque(Key):
     """ 一个双端队列 key 对象，底层实现是 redis 的 list 类型。 """
 
-    def append(self, item):
+    def append(self, python_item):
         """
         将元素 item 追加到队列的最右边。
 
@@ -30,11 +30,12 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.rpush(self.name, item)
+            redis_item = self._type_case.to_redis(python_item)
+            self._client.rpush(self.name, redis_item)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def appendleft(self, item):
+    def appendleft(self, python_item):
         """
         将元素 item 追加到队列的最左边。
 
@@ -51,11 +52,12 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.lpush(self.name, item)
+            redis_item = self._type_case.to_redis(python_item)
+            self._client.lpush(self.name, redis_item)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def extend(self, iterable):
+    def extend(self, python_iterable):
         """
         将 iterable 内的所有元素追加到队列的最右边。
 
@@ -72,11 +74,12 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.rpush(self.name, *iterable)
+            redis_iterable = map(self._type_case.to_redis, python_iterable)
+            self._client.rpush(self.name, *redis_iterable)
         except redispy_exception.ResponseError:
             raise TypeError
 
-    def extendleft(self, iterable):
+    def extendleft(self, python_iterable):
         """
         将 iterable 内的所有元素追加到队列的最左边。
 
@@ -98,7 +101,8 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            self._client.lpush(self.name, *iterable)
+            redis_iterable = map(self._type_case.to_redis, python_iterable)
+            self._client.lpush(self.name, *redis_iterable)
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -117,7 +121,7 @@ class Deque(Key):
         """
         self.delete()
     
-    def count(self, item):
+    def count(self, python_item):
         """
         计算队列中和 item 相等的元素的个数。
 
@@ -133,8 +137,8 @@ class Deque(Key):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        all_item = list(self)
-        return all_item.count(item)
+        all_python_item = list(self)
+        return all_python_item.count(python_item)
 
     def pop(self):
         """
@@ -156,11 +160,12 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            item = self._client.rpop(self.name)
-            if item is None:
+            redis_item = self._client.rpop(self.name)
+            python_item = self._type_case.to_python(redis_item)
+            if python_item is None:
                 raise IndexError
             else:
-                return item
+                return python_item
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -184,11 +189,12 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            item = self._client.lpop(self.name)
-            if item is None:
+            redis_item = self._client.lpop(self.name)
+            python_item = self._type_case.to_python(redis_item)
+            if python_item is None:
                 raise IndexError
             else:
-                return item
+                return python_item
         except redispy_exception.ResponseError:
             raise TypeError
 
@@ -228,9 +234,10 @@ class Deque(Key):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         try:
-            all_item = self._client.lrange(self.name, 0, -1)
-            for item in all_item:
-                yield item
+            all_redis_item = self._client.lrange(self.name, 0, -1)
+            for redis_item in all_redis_item:
+                python_item = self._type_case.to_python(redis_item)
+                yield python_item
         except redispy_exception.ResponseError:
             raise TypeError
 

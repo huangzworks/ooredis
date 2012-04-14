@@ -5,18 +5,19 @@ from ooredis import Deque
 from unittest import TestCase
 
 from ooredis.mix.helper import format_key
+from ooredis.type_case import IntTypeCase
 
 class TestDeque(TestCase):
 
     def setUp(self):
         self.redispy = Redis()
 
-        self.item = 'item'
-        self.another_item = 'another_item'
+        self.item = 10086 
+        self.another_item = 10000
 
-        self.multi_item = ['a', 'b', 'c']
+        self.multi_item = [123, 321, 231]
 
-        self.d = Deque('deque')
+        self.d = Deque('deque', type_case=IntTypeCase)
    
     def tearDown(self):
         self.redispy.flushdb()
