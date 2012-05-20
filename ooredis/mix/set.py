@@ -329,7 +329,7 @@ class Set(Key):
 
     def __ior__(self, other):
         """
-        计算 self 和 other 之间的并集，并保存到 self 当中。
+        计算 self 和 other 之间的并集，并将结果设置为 self 的值。
         other 可以是另一个集合 key 对象，或者 python set 的实例。
 
         Args:
@@ -380,7 +380,7 @@ class Set(Key):
 
     def __iand__(self, other):
         """
-        计算 self 和 other 之间的交集，并保存到 self 当中。
+        计算 self 和 other 之间的交集，并将结果设置为 self 的值。
         other 可以是另一个集合 key 对象，或者 python set 的实例。
 
         Args:
