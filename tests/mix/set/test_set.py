@@ -433,6 +433,18 @@ class TestSet(unittest.TestCase):
         assert set(self.s) == {self.element}
         assert set(self.s) == set(self.another)
 
+    def test__iand__with_PYTHON_SET(self):
+        self.s.add(1)
+        self.s.add(2)
+        self.s.add(3)
+
+        self.s &= {1, 2}
+
+        self.assertEqual(
+            set(self.s) ,
+            {1, 2}
+        )
+
     def test__iand__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)
