@@ -159,36 +159,3 @@ class Key:
             return
 
         assert(self._client.persist(self.name))
-
-
-# TODO:
-class SortableKey:
-    """ 为可排序的key提供sort方法。 """
-
-    def sort(self, *args, **kwargs):
-        # TODO: ...
-        raise NotImplementedError
-
-    def sortget(self, value):
-        """ sort方法的一个hack，相当于外键来使用，可以获取多个外键。
-
-        将
-        >>> r.sort('user_id', by='not_exists_key', get=('#', 'user_name_*', 'user_password_*') 
-        >>> ['222', 'hacker', 'hey,im in', '59230', 'jack', 'jack201022', '2', 'huangz', 'nobodyknows', '1', 'admin', 'a_long_long_password']
-        
-        改成
-        >>> Key('user_id').get('#', 'user_name_*', 'user_password_*')
-
-        或
-        >>> Key('user_id').get('#').get('user_name_*').get('user_password_*')
-
-        以及limit
-        >>> Key('user_id').get('#').get('user_name_*').get('user_password_*').skip(skip_num).count(count_num)
-
-        列出前10条，key.get() == key.get('#')
-        >>> Key('user_id').get().get('user_name_*').get('user_password_*').skip(0).count(10)
-
-
-        这个方法虽然很cool，但是GET只支持key级别操作，似乎实际效果不是很大。
-        """
-        pass
