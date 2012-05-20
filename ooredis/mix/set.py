@@ -349,12 +349,9 @@ class Set(Key):
                 elements = set(self) | other
                 redis_elements = map(self._type_case.to_redis, elements)
                 self._client.sadd(self.name, *redis_elements)
-                return self
-                
-            if other.exists and other._represent != REDIS_TYPE['set']:
-                raise TypeError
+            else:
+                self._client.sunionstore(self.name, [self.name, other.name])
 
-            self._client.sunionstore(self.name, [self.name, other.name])
             return self
         except redispy_exception.ResponseError:
             raise TypeError
