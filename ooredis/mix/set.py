@@ -436,11 +436,9 @@ class Set(Key):
         return set(other) - set(self)
 
     def __isub__(self, other):
-        """ 求集合 key 对象和另一个集合 key 对象的差集，
-        并将结果保存到集合 key 对象中。
-
-        和 - 操作符不同，
-        -= 操作符只能在两个集合 key 对象之间使用。
+        """
+        计算 self 和 other 之间的差集，并将结果设置为 self 的值。
+        other 可以是另一个集合 key 对象，或者 python set 的实例。
 
         Args:
             other
@@ -452,13 +450,16 @@ class Set(Key):
             self: Python指定该方法必须返回self。
 
         Raises:
-            TypeError: 当key或other不是Set类型时抛出。
+            TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
         try:
-            if other.exists and other._represent != REDIS_TYPE['set']:
-                raise TypeError
+            if isinstance(other, set):
+                remove_elements = set(self) & other
+                redis_elements = map(self._type_case.to_redis, remove_elements)
+                self._client.srem(self.name, *redis_elements)
+            else:
+                self._client.sdiffstore(self.name, [self.name, other.name])
 
-            self._client.sdiffstore(self.name, [self.name, other.name])
             return self
         except redispy_exception.ResponseError:
             raise TypeError
