@@ -72,7 +72,7 @@ class Counter(String):
 
     def __iadd__(self, increment):
         """
-        SingleValue.incr 方法的一个 python 语法糖，
+        self.incr 方法的一个 python 语法糖，
         区别是这个特殊方法不返回 key 对象的当前值。
 
         Args:
@@ -85,14 +85,14 @@ class Counter(String):
             self: python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
-            TypeError: 当 key 储存的不是数值类型时由 SingleValue.incr 抛出。
+            TypeError: 当 key 储存的不是数值类型时由 self.incr 抛出。
         """
         self.incr(increment)
         return self
 
     def __isub__(self, decrement):
         """
-        SingleValue.decr 方法的一个 python 语法糖，
+        self.decr 方法的一个 python 语法糖，
         区别是这个特殊方法不返回 key 对象的当前值。
 
         Args:
@@ -105,7 +105,7 @@ class Counter(String):
             self: python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
-            TypeError: 当 key 储存的不是数值类型时由 SingleValue.decr 抛出。
+            TypeError: 当 key 储存的不是数值类型时由 self.decr 抛出。
         """
         self.decr(decrement)
         return self
