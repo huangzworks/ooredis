@@ -362,6 +362,14 @@ class TestSet(unittest.TestCase):
         assert set(self.s) == set(self.another)
         assert set(self.another) == {self.element}
 
+    def test_ior_with_PYTHON_SET(self):
+        self.s |= {1, 2, 3}
+
+        self.assertEqual(
+            set(self.s) ,
+            {1, 2, 3}
+        )
+
     def test__ior__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)

@@ -328,11 +328,9 @@ class Set(Key):
     __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
 
     def __ior__(self, other):
-        """ 求集合 key 对象和另一个集合 key 对象的并集，
-        并将结果保存到集合 key 对象中。
-
-        和 | 操作符不同，
-        |= 操作符只能在两个集合 key 对象之间进行。
+        """
+        计算 self 和 other 之间的并集，并保存到 self 当中。
+        other 可以是另一个集合 key 对象，或者 python set 的实例。
 
         Args:
             other
@@ -344,9 +342,15 @@ class Set(Key):
             self: Python 指定该方法必须返回 self 。
 
         Raises:
-            TypeError: 当 key 或 other 不是 Set 类型时抛出。
+            TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
         try:
+            if isinstance(other, set):
+                elements = set(self) | other
+                redis_elements = map(self._type_case.to_redis, elements)
+                self._client.sadd(self.name, *redis_elements)
+                return self
+                
             if other.exists and other._represent != REDIS_TYPE['set']:
                 raise TypeError
 
