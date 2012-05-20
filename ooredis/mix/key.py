@@ -96,10 +96,10 @@ class Key:
             None
 
         Raises:
-            AssertionError: 操作因异常情况而失败时抛出。
+            None
         """
         if self.exists:
-            assert(self._client.delete(self.name))
+            self._client.delete(self.name)
 
     def expire(self, second):
         """ 
@@ -113,14 +113,13 @@ class Key:
 
         Raises:
             TypeError: 尝试对不存在的key进行设置时抛出。
-            AssertionError: 操作因为异常情况而失败时抛出。
         """
         # redis-py对不存在的key进行expire返回false，
         # 这里抛出一个异常。
         if not self.exists:
             raise TypeError
 
-        assert(self._client.expire(self.name, second))
+        self._client.expire(self.name, second)
 
     def expireat(self, unix_timestamp):
         """ 
@@ -134,14 +133,13 @@ class Key:
 
         Raises:
             TypeError: 对一个不存在的key进行操作时抛出。
-            AssertionError: 操作因为异常情况而失败时抛出。
         """
         # redis-py对不存在的key进行expireat返回False，
         # 这里抛出一个异常。
         if not self.exists:
             raise TypeError
 
-        assert(self._client.expireat(self.name, unix_timestamp))
+        self._client.expireat(self.name, unix_timestamp)
 
     def persist(self):
         """ 
@@ -155,7 +153,6 @@ class Key:
 
         Raises:
             TypeError: 对一个不存在的key进行操作时抛出
-            AssertionError: 操作因为异常情况而失败时抛出
         """
         # redis-py对不存在的key进行persist返回-1
         # 这里抛出一个异常
@@ -167,4 +164,4 @@ class Key:
         if self.ttl is None:
             return
 
-        assert(self._client.persist(self.name))
+        self._client.persist(self.name)
