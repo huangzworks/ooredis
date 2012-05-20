@@ -12,7 +12,8 @@ class Key:
     """ key对象的基类，所有类型的key都继承这个类。 """
 
     def __init__(self, name, client=None, type_case=GenericTypeCase):
-        """ 为key对象指定名字和客户端。
+        """ 
+        为key对象指定名字和客户端。
 
         Args:
             name: key的名字
@@ -23,7 +24,8 @@ class Key:
         self._type_case = type_case
 
     def __eq__(self, other):
-        """ 判断两个key是否相等。
+        """ 
+        判断两个key是否相等。
 
         Args:
             other: 另一个key对象。
@@ -38,7 +40,8 @@ class Key:
 
     @property
     def _represent(self):
-        """ 返回key在redis中的表示(实现类型)。
+        """ 
+        返回key在redis中的表示(实现类型)。
 
         Time:
             O(1)
@@ -56,7 +59,8 @@ class Key:
 
     @property
     def ttl(self):
-        """ 返回key的生存时间。
+        """ 
+        返回key的生存时间。
 
         Time:
             O(1)
@@ -70,7 +74,8 @@ class Key:
 
     @property
     def exists(self):
-        """ 检查key是否存在。
+        """ 
+        检查key是否存在。
 
         Time:
             O(1)
@@ -81,7 +86,8 @@ class Key:
         return self._client.exists(self.name)
 
     def delete(self):
-        """ 删除key。
+        """ 
+        删除key。
 
         Time:
             O(1)
@@ -96,7 +102,8 @@ class Key:
             assert(self._client.delete(self.name))
 
     def expire(self, second):
-        """ 为key设置生存时间
+        """ 
+        为key设置生存时间
         
         Time:
             O(1)
@@ -116,7 +123,8 @@ class Key:
         assert(self._client.expire(self.name, second))
 
     def expireat(self, unix_timestamp):
-        """ 为key设置生存时间，以一个unix时间戳为终止时间。
+        """ 
+        为key设置生存时间，以一个unix时间戳为终止时间。
 
         Time:
             O(1)
@@ -136,7 +144,8 @@ class Key:
         assert(self._client.expireat(self.name, unix_timestamp))
 
     def persist(self):
-        """ 移除key的生存时间
+        """ 
+        移除key的生存时间
 
         Time:
             O(1)
