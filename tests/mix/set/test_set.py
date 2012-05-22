@@ -33,17 +33,26 @@ class TestSet(unittest.TestCase):
     # __repr__
 
     def test__repr__(self):
-        assert repr(self.s) == \
-               format_key(self.s, self.s.name, set(self.s))
+        self.assertEqual(
+            repr(self.s),
+            format_key(self.s, self.s.name, set(self.s))
+        )
 
     # __len__
 
     def test__len__with_EMPTY_SET(self):
-        assert len(self.s) == 0
+        self.assertEqual(
+            len(self.s),
+            0
+        )
 
     def test__len__with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
-        assert len(self.s) == 1
+
+        self.assertEqual(
+            len(self.s),
+            1
+        )
 
     def test__len__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -53,11 +62,18 @@ class TestSet(unittest.TestCase):
     # __iter__
 
     def test__iter__with_EMPTY_SET(self):
-        assert list(iter(self.s)) == []
+        self.assertEqual(
+            list(iter(self.s)),
+            []
+        )
 
     def test__iter__with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
-        assert list(iter(self.s)) == [self.element]
+
+        self.assertEqual(
+            list(iter(self.s)),
+            [self.element]
+        )
 
     def test__iter__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -67,11 +83,16 @@ class TestSet(unittest.TestCase):
     # __contains__
 
     def test__contains__FALSE(self):
-        assert self.element not in self.s
+        self.assertTrue(
+            self.element not in self.s
+        )
 
     def test__contains__TRUE(self):
         self.s.add(self.element)
-        assert self.element in self.s
+
+        self.assertTrue(
+            self.element in self.s
+        )
 
     def test__contains__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -81,14 +102,27 @@ class TestSet(unittest.TestCase):
     # add
 
     def test_add_with_EMPTY_SET(self):
-        self.s.add(self.element)
-        assert set(self.s) == set([self.element])
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
 
-    def test_add_when_ELEMENT_IS_SET_MEMBER(self):
+    def test_add_with_NOT_EMPTY_SET(self):
+        self.s.add(self.element)
+
+        self.assertEqual(
+            set(self.s),
+            {self.element}
+        )
+
+    def test_add_when_ELEMENT_ALREADY_SET_MEMBER(self):
         self.s.add(self.element)
 
         self.s.add(self.element)
-        assert set(self.s) == set([self.element])
+        self.assertEqual(
+            set(self.s),
+            {self.element}
+        )
 
     def test_add_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -101,7 +135,11 @@ class TestSet(unittest.TestCase):
         self.s.add(self.element)
 
         self.s.remove(self.element)
-        assert set(self.s) == set()
+
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
 
     def test_remove_RAISE_when_ELEMENT_NOT_EXISTS(self):
         with self.assertRaises(KeyError):
@@ -121,8 +159,15 @@ class TestSet(unittest.TestCase):
     def test_pop_with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
 
-        assert self.s.pop() == self.element
-        assert len(self.s) == 0
+        self.assertEqual(
+            self.s.pop(),
+            self.element
+        )
+
+        self.assertEqual(
+            len(self.s),
+            0
+        )
 
     def test_pop_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -132,15 +177,28 @@ class TestSet(unittest.TestCase):
     # random
 
     def test_random_with_EMPTY_SET(self):
-        assert self.s.random() is None
+        self.assertIsNone(
+            self.s.random()
+        )
 
     def test_random_with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
 
-        assert self.s.random() == self.element
+        self.assertEqual(
+            self.s.random(),
+            self.element
+        )
 
-        assert len(self.s) == 1
-        assert set(self.s) == set([self.element])
+        # make sure random not delete element of set
+        self.assertEqual(
+            len(self.s),
+            1
+        )
+
+        self.assertEqual(
+            set(self.s),
+            set([self.element])
+        )
 
     def test_random_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -155,10 +213,21 @@ class TestSet(unittest.TestCase):
         self.s.move(self.another, self.element)
 
         # remove self.element from self.s
-        assert len(self.s) == 0 
+        self.assertEqual(
+            len(self.s),
+            0
+        )
+
         # move ok
-        assert len(self.another) == 1
-        assert set(self.another) == set([self.element])
+        self.assertEqual(
+            len(self.another),
+            1
+        )
+
+        self.assertEqual(
+            set(self.another),
+            set([self.element])
+        )
 
     def test_move_ELEMENT_EXISTS_IN_DESTINATION_SET(self):
         self.s.add(self.element)
@@ -167,11 +236,21 @@ class TestSet(unittest.TestCase):
         self.s.move(self.another, self.element)
 
         # remove self.element from self.s
-        assert len(self.s) == 0
+        self.assertEqual(
+            len(self.s),
+            0
+        )
 
         # self.another not change(cause self.element alread exists)
-        assert len(self.another) == 1
-        assert set(self.another) == set([self.element])
+        self.assertEqual(
+            len(self.another),
+            1
+        )
+
+        self.assertEqual(
+            set(self.another),
+            set([self.element])
+        )
 
     def test_move_RAISE_KEY_ERROR_when_ELEMENT_NOT_SET_MEMBER(self):
         with self.assertRaises(KeyError):
@@ -193,17 +272,25 @@ class TestSet(unittest.TestCase):
 
     def test_isdisjoint_True(self):
         self.s.add(self.element)
-        assert self.s.isdisjoint(self.another)
+
+        self.assertTrue(
+            self.s.isdisjoint(self.another)
+        )
 
     def test_isdisjoint_False(self):
         self.s.add(self.element)
         self.another.add(self.element)
 
-        assert not self.s.isdisjoint(self.another)
+        self.assertFalse(
+            self.s.isdisjoint(self.another)
+        )
 
     def test_idisjoint_with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s.isdisjoint(set())
+
+        self.assertTrue(
+            self.s.isdisjoint(set())
+        )
 
     def test_isdisjoint_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -218,14 +305,21 @@ class TestSet(unittest.TestCase):
     # __le__
 
     def test__le__True(self):
-        assert self.s <= self.another
+        self.assertTrue(
+            self.s <= self.another
+        )
 
     def test__le__False(self):
         self.s.add(self.element)
-        assert not self.s <= self.another
+
+        self.assertFalse(
+            self.s <= self.another
+        )
 
     def test__le__with_PYTHON_SET(self):
-        assert self.s <= set()
+        self.assertTrue(
+            self.s <= set()
+        )
 
     def test__le__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -240,20 +334,30 @@ class TestSet(unittest.TestCase):
     # issubset
 
     def test_issubset(self):
-        self.s.issubset(self.another)
+        self.assertTrue(
+            self.s.issubset(self.another)
+        )
 
     # __lt__
 
     def test__lt__True(self):
         self.another.add(self.element)
-        assert self.s < self.another
+
+        self.assertTrue(
+            self.s < self.another
+        )
 
     def test__lt__False(self):
         self.s.add(self.element)
-        assert not self.s < self.another
+
+        self.assertFalse(
+            self.s < self.another
+        )
 
     def test__lt__with_PYTHON_SET(self):
-        assert not self.s < set()  
+        self.assertFalse(
+            self.s < set()
+        )
 
     def test__lt__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -268,14 +372,21 @@ class TestSet(unittest.TestCase):
     # __ge__
 
     def test__ge__TRUE(self):
-        assert self.s >= self.another
+        self.assertTrue(
+            self.s >= self.another
+        )
 
     def test__ge__FALSE(self):
         self.another.add(self.element)
-        assert not self.s >= self.another
+
+        self.assertFalse(
+            self.s >= self.another
+        )
 
     def test__ge__with_PYTHON_SET(self):
-        assert self.s >= set()
+        self.assertTrue(
+            self.s >= set()
+        )
 
     def test__ge__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -290,21 +401,32 @@ class TestSet(unittest.TestCase):
     # issuperset
 
     def test_issuperset(self):   
-        self.s.issuperset(self.another)
+        self.assertTrue(
+            self.s.issuperset(self.another)
+        )
 
     # __gt__
 
     def test__gt__True(self):
         self.s.add(self.element)
-        assert self.s > self.another
+
+        self.assertTrue(
+            self.s > self.another
+        )
 
     def test__gt__FALSE(self):
         self.another.add(self.element)
-        assert not self.s > self.another
+
+        self.assertFalse(
+            self.s > self.another
+        )
 
     def test__gt__with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s > set()
+
+        self.assertTrue(
+            self.s > set()
+        )
     
     def test__gt__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -320,15 +442,27 @@ class TestSet(unittest.TestCase):
 
     def test__or__(self):
         self.s.add(self.element)
-        assert self.s | self.another == {self.element}
+        
+        self.assertEqual(
+            self.s | self.another,
+            {self.element}
+        )
 
     def test__or__with_MULTI_OPERAND(self):
         self.s.add(self.element)
-        assert self.s | self.another | self.third == {self.element}
+
+        self.assertEqual(
+            self.s | self.another | self.third,
+            {self.element}
+        )
 
     def test__or__with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s | set() == {self.element}
+
+        self.assertEqual(
+            self.s | set(),
+            {self.element}
+        )
 
     def test__or__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -344,23 +478,31 @@ class TestSet(unittest.TestCase):
 
     def test__ror__(self):
         self.s.add(self.element)
-        assert self.another | self.s == {self.element}
+
+        self.assertEqual(
+            self.another | self.s,
+            {self.element}
+        )
 
     # __ior__
 
     def test__ior__with_EMPTY_SET(self):
         self.s |= self.another
 
-        assert set(self.s) == set()
-        assert set(self.another) == set()
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
 
     def test__ior__with_NOT_EMPTY_SET(self):
         self.another.add(self.element)
 
         self.s |= self.another
 
-        assert set(self.s) == set(self.another)
-        assert set(self.another) == {self.element}
+        self.assertEqual(
+            set(self.s),
+            set(self.another)
+        )
 
     def test_ior_with_PYTHON_SET(self):
         self.s |= {1, 2, 3}
@@ -386,18 +528,28 @@ class TestSet(unittest.TestCase):
         self.s.add(self.element)
         self.another.add(self.element)
 
-        assert self.s & self.another == {self.element}
+        self.assertEqual(
+            self.s & self.another,
+            {self.element}
+        )
 
     def test__and__with_MULTI_OPERAND(self):
         self.s.add(self.element)
         self.another.add(self.element)
         self.third.add(self.element)
 
-        assert self.s & self.another & self.third == {self.element}
+        self.assertEqual(
+            self.s & self.another & self.third,
+            {self.element}
+        )
             
     def test__and__with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s & {self.element} == {self.element}
+
+        self.assertEqual(
+            self.s & {self.element},
+            {self.element}
+        )
 
     def test__and__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -413,15 +565,21 @@ class TestSet(unittest.TestCase):
 
     def test__rand__(self):
         self.s.add(self.element)
-        assert {self.element} & self.s == {self.element}
+
+        self.assertEqual(
+            {self.element} & self.s,
+            {self.element}
+        )
 
     # __iand__
 
     def test__iand__with_EMPTY_SET(self):
         self.s &= self.another
 
-        assert set(self.s) == set()
-        assert set(self.s) == set(self.another)
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
 
     def test__iand__with_NOT_EMPTY_SET(self):   
         self.s.add(self.element)
@@ -430,8 +588,10 @@ class TestSet(unittest.TestCase):
         
         self.s &= self.another
 
-        assert set(self.s) == {self.element}
-        assert set(self.s) == set(self.another)
+        self.assertEqual(
+            set(self.s),
+            {self.element}
+        )
 
     def test__iand__with_PYTHON_SET(self):
         self.s.add(1)
@@ -458,22 +618,36 @@ class TestSet(unittest.TestCase):
     # __sub__
 
     def test__sub__with_EMPTY_SET(self):
-        assert self.s - self.another == set()
+        self.assertEqual(
+            self.s - self.another,
+            set()
+        )
 
     def test__sub__with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
-        assert self.s - self.another == {self.element}
+
+        self.assertEqual(
+            self.s - self.another,
+            {self.element}
+        )
 
     def test__sub__with_MULTI_OPERAND(self):
         self.s.add(self.element)
         self.another.add(self.element)
         self.third.add(self.element)
 
-        assert self.s - self.another - self.third == set()
+        self.assertEqual(
+            self.s - self.another - self.third,
+            set()
+        )
 
     def test__sub__with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s - set() == {self.element}
+
+        self.assertEqual(
+            self.s - set(),
+            {self.element}
+        )
 
     def test__sub__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -489,23 +663,31 @@ class TestSet(unittest.TestCase):
 
     def test__rsub__(self):
         self.s.add(self.element)
-        assert set() - self.s == set() 
+
+        self.assertEqual(
+            set() - self.s,
+            set()
+        )
 
     #__isub__
 
     def test__isub__with_EMPTY_SET(self):
         self.s -= self.another
 
-        assert set(self.s) == set()
-        assert set(self.another) == set()
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
 
     def test__isub__with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
 
         self.s -= self.another
 
-        assert set(self.s) == {self.element}
-        assert set(self.another) == set()
+        self.assertEqual(
+            set(self.s),
+            {self.element}
+        )
 
     def test__isub__with_PYTHON_SET(self):
         self.s.add(1)
@@ -532,20 +714,34 @@ class TestSet(unittest.TestCase):
     # __xor__
 
     def test__xor__with_EMPTY_SET(self):
-        assert self.s ^ self.another == set()
+        self.assertEqual(
+            self.s ^ self.another,
+            set()
+        )
 
     def test__xor__with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
-        assert self.s ^ self.another == {self.element}
+
+        self.assertEqual(
+            self.s ^ self.another,
+            {self.element}
+        )
 
     def test__xor__with_MULTI_OPERAND(self):
         self.s.add(self.element)
 
-        assert self.s ^ self.another ^ self.third == {self.element}
+        self.assertEqual(
+            self.s ^ self.another ^ self.third,
+            {self.element}
+        )
 
     def test__xor__with_PYTHON_SET(self):
         self.s.add(self.element)
-        assert self.s ^ set() == {self.element}
+
+        self.assertEqual(
+            self.s ^ set(),
+            {self.element}
+        )
 
     def test__xor__RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -560,7 +756,10 @@ class TestSet(unittest.TestCase):
     # __rxor__
 
     def test__rxor__(self):
-        assert {self.element} ^ self.s == {self.element}
+        self.assertEqual(
+            {self.element} ^ self.s,
+            {self.element}
+        )
 
 if __name__ == "__main__":
     unittest.main()
