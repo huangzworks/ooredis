@@ -761,5 +761,54 @@ class TestSet(unittest.TestCase):
             {self.element}
         )
 
+    # __ixor__
+
+    def test__ixor__with_EMPTY_SET(self):
+        self.s ^= self.another
+
+        self.assertEqual(
+            set(self.s),
+            set()
+        )
+
+    def test__ixor__with_NOT_EMPTY_SET(self):
+        self.s.add(1)
+        self.s.add(2)
+        self.s.add(3)
+
+        self.another.add(1)
+        self.another.add(4)
+        self.another.add(5)
+
+        self.s ^= self.another
+
+        self.assertEqual(
+            set(self.s),
+            {2, 3, 4, 5}
+        )
+
+    def test__ixor__with_PYTHON_SET(self):
+        self.s.add(1)
+        self.s.add(2)
+        self.s.add(3)
+
+        self.s ^= {1, 4, 5}
+
+        self.assertEqual(
+            set(self.s),
+            {2, 3, 4, 5}
+        )
+
+    def test__ixor__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.s)
+            self.s ^= {1, 2, 3}
+
+    def test__ixor__RAISE_when_OTHER_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.another)
+            self.s ^= self.another
+
 if __name__ == "__main__":
     unittest.main()
+
