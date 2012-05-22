@@ -33,21 +33,38 @@ class TestCounter(unittest.TestCase):
     # __repr__
 
     def test_repr_when_NOT_EXISTS(self):
-        assert repr(self.counter) == format_key(self.counter, self.name, str(None))
+        self.assertEqual(
+            repr(self.counter),
+            format_key(self.counter, self.name, str(None))
+        )
 
     def test_repr_when_EXISTS(self):
         self.counter.set(self.value)
-        assert repr(self.counter) == format_key(self.counter, self.name, self.value)
+        
+        self.assertEqual(
+            repr(self.counter),
+            format_key(self.counter, self.name, self.value)
+        )
         
     # incr
 
     def test_incr(self):
-        assert self.counter.incr() == 1
+        self.assertEqual(
+            self.counter.incr(),
+            1
+        )
 
-    def test_incr_with_increment(self):
-        assert self.counter.incr(2) == 2
+    def test_incr_with_INCREMENT(self):
+        self.assertEqual(
+            self.counter.incr(2),
+            2
+        )
 
-    def test_incr_raise_when_wrong_type(self):
+    def test_incr_RAISE_when_INPUT_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter.incr(self.str)
+
+    def test_incr_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.counter)
             self.counter.incr()
@@ -55,12 +72,22 @@ class TestCounter(unittest.TestCase):
     # decr
 
     def test_decr(self):
-        assert self.counter.decr() == -1
+        self.assertEqual(
+            self.counter.decr(),
+            -1
+        )
 
     def test_decr_with_DECREMENT(self):
-        assert self.counter.decr(2) == -2
+        self.assertEqual(
+            self.counter.decr(2),
+            -2
+        )
 
-    def test_decr_raise_when_wrong_type(self):
+    def test_decr_RAISE_when_INPUT_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter.decr(self.str)
+
+    def test_decr_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.counter)
             self.counter.decr()
@@ -69,9 +96,17 @@ class TestCounter(unittest.TestCase):
 
     def test_iadd(self):
         self.counter += 1
-        assert self.counter.get() == 1
 
-    def test_iadd_raise_when_wrong_type(self):
+        self.assertEqual(
+            self.counter.get(),
+            1
+        )
+
+    def test_iadd_RAISE_when_INPUT_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter += self.str
+
+    def test_iadd_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.counter)
             self.counter += 1
@@ -80,9 +115,17 @@ class TestCounter(unittest.TestCase):
 
     def test_isub(self):
         self.counter -= 1
-        assert self.counter.get() == -1
 
-    def test_isub_raise_when_wrong_type(self):
+        self.assertEqual(
+            self.counter.get(),
+            -1
+        )
+
+    def test_isub_RAISE_when_INPUT_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.counter -= self.str
+
+    def test_isub_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.counter)
             self.counter -= 1
@@ -90,16 +133,30 @@ class TestCounter(unittest.TestCase):
     # get
     def test_get(self):
         self.counter.set(self.value)
-        assert self.counter.get() == self.value
+
+        self.assertEqual(
+            self.counter.get(),
+            self.value
+        )
 
     def test_get_RETURN_NONE_when_NOT_EXISTS(self):
-        assert self.counter.get() is None
+        self.assertIsNone(
+            self.counter.get()
+        )
+
+    def test_get_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.counter)
+            self.counter.get()
 
     # set
 
     def test_set(self):
         self.counter.set(self.value)
-        assert self.counter.get() == self.value
+        self.assertEqual(
+            self.counter.get(),
+            self.value
+        )
 
     def test_set_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -110,8 +167,14 @@ class TestCounter(unittest.TestCase):
     def test_getset_when_NOT_EXISTS(self):
         previous_value = self.counter.getset(self.value)
 
-        assert previous_value is None
-        assert self.counter.get() == self.value
+        self.assertIsNone(
+            previous_value
+        )
+
+        self.assertEqual(
+            self.counter.get(),
+            self.value
+        )
 
     def test_getset_when_EXISTS(self):
         self.counter.getset(self.value)
@@ -119,8 +182,15 @@ class TestCounter(unittest.TestCase):
         self.new_value = 123
         previous_value = self.counter.getset(self.new_value)
 
-        assert previous_value == self.value
-        assert self.counter.get() == self.new_value
+        self.assertEqual(
+            previous_value,
+            self.value
+        )
+
+        self.assertEqual(
+            self.counter.get(),
+            self.new_value
+        )
 
     def test_getset_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
