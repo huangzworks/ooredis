@@ -96,6 +96,11 @@ class TestString(unittest.TestCase):
             self.value
         )
 
+    def test_setnx_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type()
+            self.key.setnx(self.value)
+
     
     # setex
 
