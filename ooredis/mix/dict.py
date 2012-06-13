@@ -14,15 +14,16 @@ from ooredis.mix.helper import format_key
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
 class Dict(Key, collections.MutableMapping):
-
-    """ 一个字典对象，底层是redis的hash实现。 """
+    """
+    一个字典对象，底层是 Redis 的 Hash 结构。
+    """
 
     def __repr__(self):
         return format_key(self, self.name, dict(self))
 
     def __setitem__(self, key, python_value):
         """ 
-        将字典中键 key 的值设为 value 。
+        将字典中键 key 的值设为 python_value 。
         如果键 key 已经关联了另一个值 ，那么将它覆盖。
 
         Args:
@@ -47,7 +48,7 @@ class Dict(Key, collections.MutableMapping):
     def __getitem__(self, key):
         """ 
         返回字典中键 key 的值。
-        如果键 key 的值不存在，那么抛出 KeyError 。
+        如果键 key 在字典中不存在，那么抛出 KeyError 。
 
         Args:
             key
@@ -136,7 +137,7 @@ class Dict(Key, collections.MutableMapping):
             O(1)
 
         Returns:
-            int: 字典中 key-value 对的个数。
+            len
 
         Raises:
             TypeError: Key 对象不是 Dict 类型时抛出。

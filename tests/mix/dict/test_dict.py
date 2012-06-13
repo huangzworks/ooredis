@@ -29,6 +29,7 @@ class TestDict(unittest.TestCase):
     def set_wrong_type(self, key):
         self.redispy.set(key.name, 'string')
 
+
     # __repr__
 
     def test__repr__(self):
@@ -37,9 +38,10 @@ class TestDict(unittest.TestCase):
             format_key(self.d, self.name, dict(self.d))
         )
 
+
     # __setitem__
 
-    def test__setitem__with_NOT_EXISTS_KEY(self):
+    def test__setitem__when_KEY_NOT_TAKEN(self):
         self.d[self.key] = self.value
         
         self.assertEqual(
@@ -54,6 +56,7 @@ class TestDict(unittest.TestCase):
 
     def test__setitem__OVERWRITE_EXISTS_KEY(self):
         self.old_value = 'foo'
+
         self.d[self.key] = self.value
 
         self.assertEqual(
@@ -61,10 +64,16 @@ class TestDict(unittest.TestCase):
             self.value
         )
 
+        self.assertEqual(
+            dict(self.d),
+            {self.key : self.value}
+        )
+
     def test__setitem__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             self.d[self.key] = self.value
+
 
     # __getitem__
 
@@ -84,6 +93,7 @@ class TestDict(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             self.d[self.key]
+
 
     # __delitem__
 
@@ -110,11 +120,12 @@ class TestDict(unittest.TestCase):
             self.set_wrong_type(self.d)
             del self.d['wrong_type_cant_be_delete']
 
+
     # __iter__
 
     def test__ite__with_EMPTY_DICT(self):
         self.assertEqual(
-            list(iter(self.d)),
+            list(self.d),
             []
         )
 
@@ -122,7 +133,7 @@ class TestDict(unittest.TestCase):
         self.d[self.key] = self.value
 
         self.assertEqual(
-            list(iter(self.d)),
+            list(self.d),
             [self.key]
         )
 
@@ -130,6 +141,7 @@ class TestDict(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             list(iter(self.d))
+
 
     # __len__
 
@@ -151,6 +163,7 @@ class TestDict(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             len(self.d)
+
 
 if __name__ == "__main__":
     unittest.main()
