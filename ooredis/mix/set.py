@@ -9,16 +9,25 @@ import redis.exceptions as redispy_exception
 
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
-from ooredis.mix.helper import get_key_name_from_single_value, format_key
+from ooredis.mix.helper import (
+    get_key_name_from_single_value,
+    format_key,
+    catch_wrong_type_error,
+)
 
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 
 class Set(Key):
-    """ 集合 key 对象，底层实现是redis的set类型。 """
+
+    """
+    集合 key 对象，底层实现是redis的set类型。 
+    """
 
     def __repr__(self):
         return format_key(self, self.name, set(self))
 
+
+    @catch_wrong_type_error
     def __len__(self):
         """ 返回集合中元素的个数。
         当集合为空集时，返回 0 。
@@ -32,10 +41,8 @@ class Set(Key):
         Raises:
             TypeError: 当 key 不是 redis 的 set 类型时抛出。
         """
-        try:
-            return self._client.scard(self.name)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self._client.scard(self.name)
+
 
     def __iter__(self):
         """ 返回一个包含集合中所有元素的迭代器。
@@ -56,6 +63,8 @@ class Set(Key):
         except redispy_exception.ResponseError:
             raise TypeError
 
+
+    @catch_wrong_type_error
     def __contains__(self, element):
         """ 检查给定元素 element 是否集合的成员。
 
@@ -71,12 +80,11 @@ class Set(Key):
         Raises:
             TypeError: 当 key 不是 redis 的 set 类型时抛出。
         """
-        try:
-            redis_element = self._type_case.to_redis(element)
-            return self._client.sismember(self.name, redis_element)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_element = self._type_case.to_redis(element)
+        return self._client.sismember(self.name, redis_element)
 
+
+    @catch_wrong_type_error
     def add(self, element):
         """ 将 element 加入到集合当中。
 
@@ -95,12 +103,11 @@ class Set(Key):
         Raises:
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
-        try:
-            redis_element = self._type_case.to_redis(element)
-            self._client.sadd(self.name, redis_element)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_element = self._type_case.to_redis(element)
+        self._client.sadd(self.name, redis_element)
 
+
+    @catch_wrong_type_error
     def remove(self, element):
         """ 如果 element 是集合的成员，移除它。
 
@@ -119,14 +126,13 @@ class Set(Key):
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
             KeyError： 要移除的元素 element 不存在于集合时抛出。
         """
-        try:
-            redis_element = self._type_case.to_redis(element)
-            delete_success = self._client.srem(self.name, redis_element)
-            if not delete_success:
-                raise KeyError
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_element = self._type_case.to_redis(element)
+        delete_success = self._client.srem(self.name, redis_element)
+        if not delete_success:
+            raise KeyError
 
+
+    @catch_wrong_type_error
     def pop(self):
         """ 移除并返回集合中任意一个成员。
 
@@ -142,16 +148,15 @@ class Set(Key):
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
             KeyError: 集合为空集时抛出。
         """
-        try:
-            redis_member = self._client.spop(self.name)
-            python_member = self._type_case.to_python(redis_member)
-            if python_member is None:
-                raise KeyError
-            else:
-                return python_member
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_member = self._client.spop(self.name)
+        python_member = self._type_case.to_python(redis_member)
+        if python_member is None:
+            raise KeyError
+        else:
+            return python_member
 
+
+    @catch_wrong_type_error
     def random(self):
         """ 返回集合中的一个随机元素。
 
@@ -168,13 +173,12 @@ class Set(Key):
         Raises:
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
-        try:
-            redis_element = self._client.srandmember(self.name)
-            python_member = self._type_case.to_python(redis_element)
-            return python_member
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_element = self._client.srandmember(self.name)
+        python_member = self._type_case.to_python(redis_element)
+        return python_member
 
+
+    @catch_wrong_type_error
     def move(self, destination, member):
         """ 将集合成员 member 移动到另一个集合 destination 中去。
 
@@ -195,13 +199,11 @@ class Set(Key):
             KeyError: 要被移动的元素 member 不存在于集合时抛出。
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
-        try:
-            redis_member = self._type_case.to_redis(member)
-            state = self._client.smove(self.name, destination.name, redis_member)
-            if state == MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET:
-                raise KeyError
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_member = self._type_case.to_redis(member)
+        state = self._client.smove(self.name, destination.name, redis_member)
+        if state == MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET:
+            raise KeyError
+
 
     # disjoint, 不相交
 
@@ -225,6 +227,7 @@ class Set(Key):
 
         return self_member.isdisjoint(other_member)
 
+
     # subset, <= , 子集
 
     def __le__(self, other):
@@ -246,6 +249,7 @@ class Set(Key):
 
     issubset = __le__
 
+
     # proper subset, < , 真子集
 
     def __lt__(self, other):
@@ -264,6 +268,7 @@ class Set(Key):
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
         return set(self) < set(other)
+
 
     # superset, >= , 超集
 
@@ -286,6 +291,7 @@ class Set(Key):
 
     issuperset = __ge__
 
+
     # proper superset, > , 真超集
 
     def __gt__(self, other):
@@ -304,6 +310,7 @@ class Set(Key):
             TypeError: 当 key 或 other 不是 Set 类型时抛出。
         """
         return set(self) > set(other)
+
 
     # union, | , 并集
 
@@ -327,6 +334,7 @@ class Set(Key):
     __ror__ = __or__
     __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
 
+    @catch_wrong_type_error
     def __ior__(self, other):
         """
         计算 self 和 other 之间的并集，并将结果设置为 self 的值。
@@ -344,18 +352,16 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
-        try:
-            if isinstance(other, set):
-                elements = set(self) | other
-                redis_elements = map(self._type_case.to_redis, elements)
-                self._client.sadd(self.name, *redis_elements)
-            else:
-                self._client.sunionstore(self.name, [self.name, other.name])
+        if isinstance(other, set):
+            elements = set(self) | other
+            redis_elements = map(self._type_case.to_redis, elements)
+            self._client.sadd(self.name, *redis_elements)
+        else:
+            self._client.sunionstore(self.name, [self.name, other.name])
 
-            return self
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self
  
+
     # intersection, & , 交集
 
     def __and__(self, other):
@@ -378,6 +384,7 @@ class Set(Key):
     __rand__ = __and__
     __rand__.__doc__ = """ __and__的反向方法，用于支持多集合进行交集操作。 """
 
+    @catch_wrong_type_error
     def __iand__(self, other):
         """
         计算 self 和 other 之间的交集，并将结果设置为 self 的值。
@@ -395,19 +402,17 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
-        try:
-            if isinstance(other, set):
-                elements = set(self) - (set(self) & other)
-                redis_elements = map(self._type_case.to_redis, elements)
-                self._client.srem(self.name, *redis_elements)
-            elif other.exists and other._represent != REDIS_TYPE['set']:
-                raise TypeError
-            else:
-                self._client.sinterstore(self.name, [self.name, other.name])
-
-            return self
-        except redispy_exception.ResponseError:
+        if isinstance(other, set):
+            elements = set(self) - (set(self) & other)
+            redis_elements = map(self._type_case.to_redis, elements)
+            self._client.srem(self.name, *redis_elements)
+        elif other.exists and other._represent != REDIS_TYPE['set']:
             raise TypeError
+        else:
+            self._client.sinterstore(self.name, [self.name, other.name])
+
+        return self
+
 
     # difference, - , 差集
 
@@ -435,6 +440,7 @@ class Set(Key):
         # WARNING: 注意这里的位置不要弄反。
         return set(other) - set(self)
 
+    @catch_wrong_type_error
     def __isub__(self, other):
         """
         计算 self 和 other 之间的差集，并将结果设置为 self 的值。
@@ -452,17 +458,15 @@ class Set(Key):
         Raises:
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
-        try:
-            if isinstance(other, set):
-                remove_elements = set(self) & other
-                redis_elements = map(self._type_case.to_redis, remove_elements)
-                self._client.srem(self.name, *redis_elements)
-            else:
-                self._client.sdiffstore(self.name, [self.name, other.name])
+        if isinstance(other, set):
+            remove_elements = set(self) & other
+            redis_elements = map(self._type_case.to_redis, remove_elements)
+            self._client.srem(self.name, *redis_elements)
+        else:
+            self._client.sdiffstore(self.name, [self.name, other.name])
 
-            return self
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self
+
 
     # symmetric difference, ^ ， 对等差
 
