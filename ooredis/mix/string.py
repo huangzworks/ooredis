@@ -18,6 +18,7 @@ class String(Key):
     def __repr__(self):
         return format_key(self, self.name, self.get())
 
+
     def set(self, python_value):
         """
         为 Key 对象指定值。
@@ -36,12 +37,13 @@ class String(Key):
         """
         # set 命令可以无视类型进行设置的命令， 为了保证类型的限制
         # ooredis 里对一个非 string 类型进行 set 将引发 TypeError 异常。
-        if self.exists and self._represent != REDIS_TYPE['string']:
+        if self.exists and \
+           self._represent != REDIS_TYPE['string']:
                 raise TypeError
 
         redis_value = self._type_case.to_redis(python_value)
-
         self._client.set(self.name, redis_value)
+
 
     def setnx(self, python_value):
         """
@@ -61,11 +63,13 @@ class String(Key):
         """
         # setnx 命令可以无视类型进行设置的命令， 为了保证类型的限制
         # ooredis 里对一个非 string 类型进行 setnx 将引发 TypeError 异常。
-        if self.exists and self._represent != REDIS_TYPE['string']:
+        if self.exists and \
+           self._represent != REDIS_TYPE['string']:
             raise TypeError
 
         redis_value = self._type_case.to_redis(python_value)
         return self._client.setnx(self.name, redis_value)
+
 
     def setex(self, python_value, ttl_in_second):
         """
@@ -87,12 +91,13 @@ class String(Key):
         """
         # setex 命令可以无视类型进行设置的命令， 为了保证类型的限制
         # ooredis 里对一个非 string 类型进行 setex 将引发 TypeError 异常。
-        if self.exists and self._represent != REDIS_TYPE['string']:
+        if self.exists and \
+           self._represent != REDIS_TYPE['string']:
             raise TypeError
 
         redis_value = self._type_case.to_redis(python_value)
-
         return self._client.setex(self.name, redis_value, ttl_in_second)
+
 
     def get(self):
         """
@@ -115,6 +120,7 @@ class String(Key):
             return python_value
         except redispy_exception.ResponseError:
             raise TypeError
+
 
     def getset(self, python_value):
         """ 
