@@ -5,10 +5,9 @@ __all__ = ['SortedSet']
 __metaclass__ = type
 
 from functools import partial
-import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key
+from ooredis.mix.helper import format_key, catch_wrong_type_error
 from ooredis.const import (
     LEFTMOST,
     RIGHTMOST,
@@ -27,11 +26,15 @@ VALUE = 0
 SCORE= 1
 
 class SortedSet(Key):
-    """ 有序集对象，底层是redis的zset实现。 """
+    """ 
+    有序集对象，底层是redis的zset实现。 
+    """
 
     def __repr__(self):
         return format_key(self, self.name, list(self))
-   
+  
+
+    @catch_wrong_type_error
     def __len__(self):
         """ 返回有序集的基数。
         
@@ -44,11 +47,10 @@ class SortedSet(Key):
         Raises：
             TypeError: 当key不是有序集类型时抛出。
         """
-        try:
-            return self._client.zcard(self.name)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self._client.zcard(self.name)
 
+
+    @catch_wrong_type_error
     def __contains__(self, element):
         """ 检查给定元素是否是有序集的成员。 
 
@@ -70,12 +72,11 @@ class SortedSet(Key):
         # 如果ZSCORE key member不为None，证明element是有序集成员。
 
         # WARNING: 这里不要用self.score，这两个方法互相引用。
-        try:
-            element = self._type_case.to_redis(element)
-            return None != self._client.zscore(self.name, element)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        element = self._type_case.to_redis(element)
+        return None != self._client.zscore(self.name, element)
 
+
+    @catch_wrong_type_error
     def __setitem__(self, member, score):
         """ 将元素的member的score值设为score。
 
@@ -90,12 +91,11 @@ class SortedSet(Key):
         Raises:
             TypeError: 当key不是有序集类型时抛出。
         """
-        try:
-            member = self._type_case.to_redis(member)
-            self._client.zadd(self.name, member, score) 
-        except redispy_exception.ResponseError:
-            raise TypeError
+        member = self._type_case.to_redis(member)
+        self._client.zadd(self.name, member, score) 
 
+
+    @catch_wrong_type_error
     def __getitem__(self, index):
         """ 返回有序集指定下标内的元素。
 
@@ -114,18 +114,17 @@ class SortedSet(Key):
             KeyError: index下标超出范围时抛出。
             TypeError: 当key不是有序集类型时抛出。
         """
-        try:
-            item_to_dict_list = partial(map, lambda item: dict(value=self._type_case.to_python(item[VALUE]), score=item[SCORE]))
+        item_to_dict_list = partial(map, lambda item: dict(value=self._type_case.to_python(item[VALUE]), score=item[SCORE]))
 
-            if isinstance(index, slice):
-                items = self._client.zrange(self.name, LEFTMOST, RIGHTMOST, withscores=True)
-                return item_to_dict_list(items[index])
-            else:
-                items = self._client.zrange(self.name, index, index, withscores=True)
-                return item_to_dict_list(items)[0]
-        except redispy_exception.ResponseError:
-            raise TypeError
+        if isinstance(index, slice):
+            items = self._client.zrange(self.name, LEFTMOST, RIGHTMOST, withscores=True)
+            return item_to_dict_list(items[index])
+        else:
+            items = self._client.zrange(self.name, index, index, withscores=True)
+            return item_to_dict_list(items)[0]
 
+
+    @catch_wrong_type_error
     def __delitem__(self, index):
         """ 删除有序集指定下标内的元素。
 
@@ -142,19 +141,18 @@ class SortedSet(Key):
             KeyError: index下标超出范围时抛出。
             TypeError: 当key不是有序集类型时抛出。
         """
-        try:
-            if isinstance(index, slice):
-                start = LEFTMOST if index.start == None else index.start
-                stop = RIGHTMOST if index.stop == None else index.stop-1
+        if isinstance(index, slice):
+            start = LEFTMOST if index.start == None else index.start
+            stop = RIGHTMOST if index.stop == None else index.stop-1
 
-                self._client.zremrangebyrank(self.name, start, stop)
-            else:
-                if self._client.zremrangebyrank(self.name, index, index) == \
-                   MEMBER_NOT_IN_SET_AND_DELETE_FALSE:
-                    raise IndexError
-        except redispy_exception.ResponseError:
-            raise TypeError
+            self._client.zremrangebyrank(self.name, start, stop)
+        else:
+            if self._client.zremrangebyrank(self.name, index, index) == \
+                MEMBER_NOT_IN_SET_AND_DELETE_FALSE:
+                raise IndexError
 
+
+    @catch_wrong_type_error
     def remove(self, member, check=False):
         """ 移除有序集成员member，如果member不存在，不做动作。
 
@@ -172,14 +170,13 @@ class SortedSet(Key):
             TypeError: 当key不是有序集类型时抛出。
             KeyError: 当member不存在且check为True时抛出。
         """
-        try:
-            member = self._type_case.to_redis(member)
-            status = self._client.zrem(self.name, member)
-            if check and status == MEMBER_NOT_IN_SET_AND_REMOVE_FALSE:
-                raise KeyError
-        except redispy_exception.ResponseError:
-            raise TypeError
+        member = self._type_case.to_redis(member)
+        status = self._client.zrem(self.name, member)
+        if check and status == MEMBER_NOT_IN_SET_AND_REMOVE_FALSE:
+            raise KeyError
 
+
+    @catch_wrong_type_error
     def rank(self, member, reverse=False):
         """ 返回有序集中成员member的score值的排名。
 
@@ -200,19 +197,18 @@ class SortedSet(Key):
             KeyError: 当member不在有序集中时抛出。
             TypeError: 当key不是有序集类型时由in语句抛出。
         """
-        try:
-            member = self._type_case.to_redis(member)
+        member = self._type_case.to_redis(member)
 
-            get_rank = self._client.zrevrank if reverse else self._client.zrank
-            result = get_rank(self.name, member)
+        get_rank = self._client.zrevrank if reverse else self._client.zrank
+        result = get_rank(self.name, member)
 
-            if result == MEMBER_NOT_IN_SET_AND_GET_RANK_FALSE:
-                raise KeyError
-            else:
-                return result
-        except redispy_exception.ResponseError:
-            raise TypeError
+        if result == MEMBER_NOT_IN_SET_AND_GET_RANK_FALSE:
+            raise KeyError
+        else:
+            return result
 
+
+    @catch_wrong_type_error
     def score(self, member):
         """ 返回有序集中成员member的score值。
 
@@ -229,17 +225,16 @@ class SortedSet(Key):
             KeyError: 当member不在有序集中时抛出。
             TypeError: 当key不是有序集类型时抛出，由in语句抛出。
         """
-        try:
-            member = self._type_case.to_redis(member)
-            result = self._client.zscore(self.name, member)
+        member = self._type_case.to_redis(member)
+        result = self._client.zscore(self.name, member)
 
-            if result == MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE:
-                raise KeyError
-            else:
-                return result
-        except redispy_exception.ResponseError:
-            raise TypeError
+        if result == MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE:
+            raise KeyError
+        else:
+            return result
 
+
+    @catch_wrong_type_error
     def incr(self, member, increment=DEFAULT_INCREMENT):  
         """ 将member的score值加上increment。 
 
@@ -259,11 +254,9 @@ class SortedSet(Key):
         Raises:
             TypeError: 当key不是有序集类型时抛出。
         """
-        try:
-            member = self._type_case.to_redis(member)
-            return self._client.zincrby(self.name, member, increment)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        member = self._type_case.to_redis(member)
+        return self._client.zincrby(self.name, member, increment)
+
 
     def decr(self, member, decrement=DEFAULT_DECREMENT):
         """ 将member的score值减去decrement。 
