@@ -67,11 +67,40 @@ class String(Key):
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
+        # setnx 命令可以无视类型进行设置的命令， 为了保证类型的限制
+        # ooredis 里对一个非 string 类型进行 setnx 将引发 TypeError 异常。
         if self.exists and self._represent != REDIS_TYPE['string']:
             raise TypeError
 
         redis_value = self._type_case.to_redis(python_value)
         return self._client.setnx(self.name, redis_value)
+
+    def setex(self, python_value, ttl_in_second):
+        """
+        将 Key 对象的值设为 python_value ，
+        并将 Key 对象的生存时间设为 ttl_in_second 。
+
+        Args:
+            python_value
+            ttl_in_second: 生存时间，以秒为单位。
+
+        Time:
+            O(1)
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
+        """
+        # setex 命令可以无视类型进行设置的命令， 为了保证类型的限制
+        # ooredis 里对一个非 string 类型进行 setex 将引发 TypeError 异常。
+        if self.exists and self._represent != REDIS_TYPE['string']:
+            raise TypeError
+
+        redis_value = self._type_case.to_redis(python_value)
+
+        return self._client.setex(self.name, redis_value, ttl_in_second)
 
     def get(self):
         """

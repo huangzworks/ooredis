@@ -25,6 +25,9 @@ class TestString(unittest.TestCase):
     def tearDown(self):
         self.redispy.flushdb()
 
+    def set_wrong_type(self):
+        self.redispy.lpush(self.name, "create a list value")
+
 
     # __repr__
 
@@ -94,6 +97,40 @@ class TestString(unittest.TestCase):
         )
 
     
+    # setex
+
+    def test_setex_with_NO_EXISTS_KEY(self):
+        self.key.setex(self.value, 10086)
+
+        self.assertIsNotNone(
+            self.key.ttl
+        )
+
+        self.assertEqual(
+            self.key.get(),
+            self.value
+        )
+
+    def test_setex_with_EXISTS_KEY(self):
+        self.key.setex(self.value, 10086)
+
+        self.key.setex(self.value, 100)
+
+        self.assertTrue(
+            self.key.ttl <= 100
+        )
+
+        self.assertEqual(
+            self.key.get(),
+            self.value
+        )
+
+    def test_setex_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type()
+            self.key.setex(self.value, 10086)
+
+
     # get
 
     def test_get_not_exists_key(self):
