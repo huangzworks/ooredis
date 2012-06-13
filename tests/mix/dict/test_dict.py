@@ -140,7 +140,7 @@ class TestDict(unittest.TestCase):
     def test__iter__RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
-            list(iter(self.d))
+            list(self.d)
 
 
     # __len__

@@ -8,8 +8,7 @@ import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
-from ooredis.const import REDIS_TYPE
-from ooredis.mix.helper import format_key
+from ooredis.mix.helper import format_key, catch_wrong_type_error
 
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
@@ -18,9 +17,12 @@ class Dict(Key, collections.MutableMapping):
     一个字典对象，底层是 Redis 的 Hash 结构。
     """
 
+    @catch_wrong_type_error
     def __repr__(self):
         return format_key(self, self.name, dict(self))
 
+
+    @catch_wrong_type_error
     def __setitem__(self, key, python_value):
         """ 
         将字典中键 key 的值设为 python_value 。
@@ -39,12 +41,11 @@ class Dict(Key, collections.MutableMapping):
         Raises:
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        try:
-            redis_value = self._type_case.to_redis(python_value)
-            self._client.hset(self.name, key, redis_value)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        redis_value = self._type_case.to_redis(python_value)
+        self._client.hset(self.name, key, redis_value)
 
+
+    @catch_wrong_type_error
     def __getitem__(self, key):
         """ 
         返回字典中键 key 的值。
@@ -63,11 +64,6 @@ class Dict(Key, collections.MutableMapping):
             KeyError: key 不存在时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        # 将 TypeError 的抛出单独抽取出来
-        # 让 MIXIN 方法的行为和 Python dict 类保持一致。
-        if self.exists and self._represent != REDIS_TYPE['hash']:
-            raise TypeError
-
         # 没有自己实现 __contains__ 的话
         # 不要使用 key in self ，否则将引起死循环
         if not self._client.hexists(self.name, key):
@@ -78,6 +74,8 @@ class Dict(Key, collections.MutableMapping):
 
         return python_value
 
+    
+    @catch_wrong_type_error
     def __delitem__(self, key):
         """ 
         删除字典键 key 的值。
@@ -96,13 +94,13 @@ class Dict(Key, collections.MutableMapping):
             KeyError: key 不存在时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        try:
-            status = self._client.hdel(self.name, key)
-            if status == DELETE_FAIL_CAUSE_KEY_NOT_EXISTS:
-                raise KeyError
-        except redispy_exception.ResponseError:
-            raise TypeError
+        status = self._client.hdel(self.name, key)
+        if status == DELETE_FAIL_CAUSE_KEY_NOT_EXISTS:
+            raise KeyError
 
+
+    #@catch_wrong_type_error
+    #似乎因为 yield 的缘故，装饰器没办法在这里使用
     def __iter__(self):
         """ 
         返回一个包含字典里所有键的迭代器。
@@ -125,6 +123,8 @@ class Dict(Key, collections.MutableMapping):
         except redispy_exception.ResponseError:
             raise TypeError
 
+   
+    @catch_wrong_type_error
     def __len__(self):
         """
         返回字典中键-值对的个数。
@@ -142,7 +142,4 @@ class Dict(Key, collections.MutableMapping):
         Raises:
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        try:
-            return self._client.hlen(self.name)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self._client.hlen(self.name)
