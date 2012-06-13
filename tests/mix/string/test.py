@@ -50,10 +50,10 @@ class TestString(unittest.TestCase):
             self.value
         )
 
-    def test_set_raises_when_wrong_type(self):
+    def test_set_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.lpush(self.key.name, 'list')
-            self.key.set('value')
+            self.set_wrong_type()
+            self.key.set(self.value)
 
     
     # setnx
@@ -66,7 +66,7 @@ class TestString(unittest.TestCase):
             self.value
         )
 
-    def test_setnx_with_EXISTS_KEY(self):
+    def test_setnx_WILL_NOT_OVERWRITE_EXISTS_VALUE(self):
         self.key.setnx(self.value)
 
         self.key.setnx(10086)   # this value will not set
@@ -96,10 +96,10 @@ class TestString(unittest.TestCase):
             self.value
         )
 
-    def test_setex_with_EXISTS_KEY(self):
+    def test_setex_WILL_UPDATE_EXPIRE_TIME_WHEN_KEY_EXISTS(self):
         self.key.setex(self.value, 10086)
 
-        self.key.setex(self.value, 100)
+        self.key.setex(self.value, 100)     # overwrite 10086 (origin ttl)
 
         self.assertTrue(
             self.key.ttl <= 100
@@ -118,37 +118,58 @@ class TestString(unittest.TestCase):
 
     # get
 
-    def test_get_not_exists_key(self):
-        self.assertIsNone(self.key.get())
-
-    def test_get_exists_key(self):
-        self.key.set(self.value)
-        self.assertEqual(self.key.get(), self.value)
-
-    def test_get_raise_when_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.redispy.lpush(self.key.name, 'list')
+    def test_get_RETURN_NONE_when_KEY_NOT_EXISTS(self):
+        self.assertIsNone(
             self.key.get()
+        )
+
+    def test_get_with_EXISTS_KEY(self):
+        self.key.set(self.value)
+
+        self.assertEqual(
+            self.key.get(), 
+            self.value
+        )
+
+    def test_get_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type()
+            self.key.get()
+
 
     # getset
 
-    def test_getset_return_NONE_cause_KEY_NOT_EXISTS(self):
-        self.assertIsNone(self.key.getset(self.value))
-        self.assertEqual(self.key.get(), self.value)
+    def test_getset_RETURN_NONE_when_KEY_NOT_EXISTS(self):
+        self.assertIsNone(
+            self.key.getset(self.value)
+        )
 
-    def test_getset_return_OLD_VALUE_cause_KEY_EXISTS(self):
+        self.assertEqual(
+            self.key.get(),
+            self.value
+        )
+
+    def test_getset_RETURN_OLD_VALUE_when_KEY_EXISTS(self):
         self.new_value = 10086
         self.old_value = self.value
 
         self.key.set(self.old_value)
 
-        self.assertEqual(self.key.getset(self.new_value), self.old_value)
-        self.assertEqual(self.key.get(), self.new_value)
+        self.assertEqual(
+            self.key.getset(self.new_value),
+            self.old_value
+        )
 
-    def test_getset_raise_when_wrong_type(self):
+        self.assertEqual(
+            self.key.get(), 
+            self.new_value
+        )
+
+    def test_getset_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            self.redispy.rpush(self.key.name, 'item')
+            self.set_wrong_type()
             self.key.getset('value')
+
 
 if __name__ == "__main__":
     unittest.main()
