@@ -18,14 +18,12 @@ class String(Key):
     def __repr__(self):
         return format_key(self, self.name, self.get())
 
-    def set(self, python_value, preserve=False, expire=None):
+    def set(self, python_value):
         """
         为 Key 对象指定值。
 
         Args:
             python_value: 为 Key 对象指定的值。
-            preserve: 指示是否不覆盖原本储存的值。
-            expire: 设置 Key 对象的过期时间，以秒为单位。
 
         Time:
             O(1)
@@ -35,21 +33,15 @@ class String(Key):
 
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
-            ValueError: 根据 preserve 参数的情况抛出。
         """
         # set 命令可以无视类型进行设置的命令， 为了保证类型的限制
         # ooredis 里对一个非 string 类型进行 set 将引发 TypeError 异常。
         if self.exists and self._represent != REDIS_TYPE['string']:
                 raise TypeError
 
-        if self.exists and preserve:
-            raise ValueError
-       
         redis_value = self._type_case.to_redis(python_value)
-        if expire:
-            self._client.setex(self.name, redis_value, expire)
-        else:
-            self._client.set(self.name, redis_value)
+
+        self._client.set(self.name, redis_value)
 
     def setnx(self, python_value):
         """

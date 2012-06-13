@@ -50,26 +50,6 @@ class TestString(unittest.TestCase):
             self.value
         )
 
-    def test_set_with_EXPIRE(self):
-        self.key.set(self.value, expire=3000)
-
-        self.assertIsNotNone(
-            self.key.ttl
-        )
-        self.assertEqual(
-            self.key.get(),
-            self.value
-        )
-
-    def test_set_preserve_with_exists_key(self):
-        with self.assertRaises(ValueError):
-            self.key.set(self.value)
-            self.key.set(self.value, preserve=True) # overwrite false
-
-    def test_set_preserve_with_not_exists_key(self):
-        self.key.set(self.value, preserve=True)
-        self.assertEqual(self.key.get(), self.value)
-
     def test_set_raises_when_wrong_type(self):
         with self.assertRaises(TypeError):
             self.redispy.lpush(self.key.name, 'list')
