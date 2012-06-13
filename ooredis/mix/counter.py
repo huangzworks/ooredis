@@ -4,13 +4,13 @@ __all__ = ['Counter']
 
 __metaclass__ = type
 
-import redis.exceptions as redispy_exception
-
 from ooredis import String
 from ooredis.type_case import IntTypeCase
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
+from ooredis.mix.helper import catch_wrong_type_error
 
 class Counter(String):
+
     """
     计算器用途的 key 对象。
    
@@ -24,6 +24,8 @@ class Counter(String):
         """
         super(Counter, self).__init__(name=name, client=client, type_case=type_case)
 
+
+    @catch_wrong_type_error
     def incr(self, increment=DEFAULT_INCREMENT):
         """
         将计数器的值加上增量 increment， 
@@ -42,11 +44,10 @@ class Counter(String):
             TypeError: 当 Key 对象储存的不是数值类型时抛出。
         """
         # redis-py用incr代替redis的incrby
-        try:
-            return self._client.incr(self.name, increment)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self._client.incr(self.name, increment)
 
+
+    @catch_wrong_type_error
     def decr(self, decrement=DEFAULT_DECREMENT):
         """
         将计数器的值减去减量 decrement ，
@@ -65,10 +66,8 @@ class Counter(String):
             TypeError: 当 key 储存的不是数值类型时抛出。
         """
         # redis-py用decr代替redis的decrby
-        try:
-            return self._client.decr(self.name, decrement)
-        except redispy_exception.ResponseError:
-            raise TypeError
+        return self._client.decr(self.name, decrement)
+
 
     def __iadd__(self, increment):
         """
@@ -89,6 +88,7 @@ class Counter(String):
         """
         self.incr(increment)
         return self
+
 
     def __isub__(self, decrement):
         """
