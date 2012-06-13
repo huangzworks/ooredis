@@ -4,19 +4,29 @@ __all__ = ['String']
 
 __metaclass__ = type
 
-import redis.exceptions as redispy_exception
-
 from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
-from ooredis.mix.helper import format_key
+from ooredis.mix.helper import format_key, catch_wrong_type_error
 
 class String(Key):
+
     """
     为储存单个值的 Key 对象提供 set，get 和 getset操作。
     """
 
+    @catch_wrong_type_error
     def __repr__(self):
         return format_key(self, self.name, self.get())
+
+
+    def _raise_when_wrong_type(self):
+        """
+        set/setex/setnx 命令可以无视类型进行设置的命令，为了保证类型的限制，
+        ooredis 对一个非 string 类型进行 set/setex/setnx 将引发 TypeError 异常。
+        """
+        if self.exists and \
+           self._represent != REDIS_TYPE['string']:
+            raise TypeError
 
 
     def set(self, python_value):
@@ -35,13 +45,10 @@ class String(Key):
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        # set 命令可以无视类型进行设置的命令， 为了保证类型的限制
-        # ooredis 里对一个非 string 类型进行 set 将引发 TypeError 异常。
-        if self.exists and \
-           self._represent != REDIS_TYPE['string']:
-                raise TypeError
+        self._raise_when_wrong_type()
 
         redis_value = self._type_case.to_redis(python_value)
+
         self._client.set(self.name, redis_value)
 
 
@@ -61,13 +68,10 @@ class String(Key):
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        # setnx 命令可以无视类型进行设置的命令， 为了保证类型的限制
-        # ooredis 里对一个非 string 类型进行 setnx 将引发 TypeError 异常。
-        if self.exists and \
-           self._represent != REDIS_TYPE['string']:
-            raise TypeError
+        self._raise_when_wrong_type()
 
         redis_value = self._type_case.to_redis(python_value)
+
         return self._client.setnx(self.name, redis_value)
 
 
@@ -89,16 +93,14 @@ class String(Key):
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        # setex 命令可以无视类型进行设置的命令， 为了保证类型的限制
-        # ooredis 里对一个非 string 类型进行 setex 将引发 TypeError 异常。
-        if self.exists and \
-           self._represent != REDIS_TYPE['string']:
-            raise TypeError
+        self._raise_when_wrong_type()
 
         redis_value = self._type_case.to_redis(python_value)
+
         return self._client.setex(self.name, redis_value, ttl_in_second)
 
 
+    @catch_wrong_type_error
     def get(self):
         """
         返回 Key 对象的值。
@@ -113,15 +115,13 @@ class String(Key):
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        try:
-            redis_value = self._client.get(self.name)
+        redis_value = self._client.get(self.name)
 
-            python_value = self._type_case.to_python(redis_value)
-            return python_value
-        except redispy_exception.ResponseError:
-            raise TypeError
+        python_value = self._type_case.to_python(redis_value)
 
+        return python_value
 
+    
     def getset(self, python_value):
         """ 
         修改 Key 对象的值，并返回 Key 对象之前储存的值。
@@ -139,12 +139,13 @@ class String(Key):
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        try:
-            new_redis_value = self._type_case.to_redis(python_value)
+        # self._raise_when_wrong_type()
+        # 不知为何， getset 不用手动强制类型检查， TypeError 也可以正常抛出
 
-            old_redis_value = self._client.getset(self.name, new_redis_value)
+        new_redis_value = self._type_case.to_redis(python_value)
 
-            python_value = self._type_case.to_python(old_redis_value)
-            return python_value
-        except redispy_exception.ResponseError:
-            raise TypeError
+        old_redis_value = self._client.getset(self.name, new_redis_value)
+
+        python_value = self._type_case.to_python(old_redis_value)
+
+        return python_value
