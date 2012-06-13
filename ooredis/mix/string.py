@@ -11,7 +11,9 @@ from ooredis.const import REDIS_TYPE
 from ooredis.mix.helper import format_key
 
 class String(Key):
-    """ 为储存单个值的 Key 对象提供 set，get 和 getset操作。 """
+    """
+    为储存单个值的 Key 对象提供 set，get 和 getset操作。
+    """
 
     def __repr__(self):
         return format_key(self, self.name, self.get())
@@ -48,6 +50,28 @@ class String(Key):
             self._client.setex(self.name, redis_value, expire)
         else:
             self._client.set(self.name, redis_value)
+
+    def setnx(self, python_value):
+        """
+        将 Key 对象的值设为 python_value ，当且仅当 Key 不存在。
+
+        Args:
+            python_value
+
+        Time:
+            O(1)
+
+        Returns:
+            bool: 如果设置成功，那么返回 True ，否则返回 False 。
+
+        Raises:
+            TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
+        """
+        if self.exists and self._represent != REDIS_TYPE['string']:
+            raise TypeError
+
+        redis_value = self._type_case.to_redis(python_value)
+        return self._client.setnx(self.name, redis_value)
 
     def get(self):
         """
