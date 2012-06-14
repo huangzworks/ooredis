@@ -9,12 +9,9 @@ import redis.exceptions as redispy_exception
 
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
-from ooredis.mix.helper import (
-    get_key_name_from_single_value,
-    format_key,
-    catch_wrong_type_error,
-)
+from ooredis.mix.helper import format_key, catch_wrong_type_error
 
+REMOVE_SUCCESS = True
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 
 class Set(Key):
@@ -29,8 +26,12 @@ class Set(Key):
 
     @catch_wrong_type_error
     def __len__(self):
-        """ 返回集合中元素的个数。
+        """ 
+        返回集合中元素的个数。
         当集合为空集时，返回 0 。
+
+        Args:
+            None
 
         Time:
             O(1)
@@ -45,7 +46,8 @@ class Set(Key):
 
 
     def __iter__(self):
-        """ 返回一个包含集合中所有元素的迭代器。
+        """ 
+        返回一个包含集合中所有元素的迭代器。
 
         Time:
             O(N)
@@ -66,7 +68,8 @@ class Set(Key):
 
     @catch_wrong_type_error
     def __contains__(self, element):
-        """ 检查给定元素 element 是否集合的成员。
+        """ 
+        检查给定元素 element 是否集合的成员。
 
         Args:
             element
@@ -75,7 +78,7 @@ class Set(Key):
             O(1)
 
         Returns:
-            bool: element是集合成员的话True，否则False。
+            bool: element 是集合成员的话返回 True ，否则返回 False 。
 
         Raises:
             TypeError: 当 key 不是 redis 的 set 类型时抛出。
@@ -86,7 +89,8 @@ class Set(Key):
 
     @catch_wrong_type_error
     def add(self, element):
-        """ 将 element 加入到集合当中。
+        """ 
+        将 element 加入到集合当中。
 
         如果 element 已经是集合的成员，不做动作。
         如果 key 不存在，一个空集合被创建并执行 add 动作。
@@ -109,7 +113,8 @@ class Set(Key):
 
     @catch_wrong_type_error
     def remove(self, element):
-        """ 如果 element 是集合的成员，移除它。
+        """ 
+        如果 element 是集合的成员，移除它。
 
         如果要移除的元素不存在，抛出 KeyError 。
 
@@ -127,16 +132,20 @@ class Set(Key):
             KeyError： 要移除的元素 element 不存在于集合时抛出。
         """
         redis_element = self._type_case.to_redis(element)
-        delete_success = self._client.srem(self.name, redis_element)
-        if not delete_success:
+
+        remove_state = self._client.srem(self.name, redis_element)
+        if remove_state != REMOVE_SUCCESS:
             raise KeyError
 
 
     @catch_wrong_type_error
     def pop(self):
-        """ 移除并返回集合中任意一个成员。
+        """ 
+        移除并返回集合中任意一个成员。
+        如果集合为空，抛出 KeyError 。
 
-        如果集合为空，抛出KeyError。
+        Args:
+            None
 
         Time：
             O(1)
@@ -158,10 +167,14 @@ class Set(Key):
 
     @catch_wrong_type_error
     def random(self):
-        """ 返回集合中的一个随机元素。
+        """ 
+        随机返回集合中的某个元素。
 
         该操作和 pop 相似，但 pop 将随机元素从集合中移除并返回，
         而 random 则仅仅返回随机元素，而不对集合进行任何改动。
+
+        Args:
+            None
 
         Time:
             O(1)
@@ -180,9 +193,10 @@ class Set(Key):
 
     @catch_wrong_type_error
     def move(self, destination, member):
-        """ 将集合成员 member 移动到另一个集合 destination 中去。
+        """ 
+        将集合成员 member 移动到另一个集合 destination 中去。
 
-        具体参考Redis命令：SMOVE。
+        具体参考 Redis 命令：SMOVE。
 
         Args:
             destination: 指定被移动元素的目的地集合，
@@ -208,7 +222,8 @@ class Set(Key):
     # disjoint, 不相交
 
     def isdisjoint(self, other):
-        """ 检查集合是否和另一个集合不相交。
+        """ 
+        检查集合是否和另一个集合不相交。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -231,7 +246,8 @@ class Set(Key):
     # subset, <= , 子集
 
     def __le__(self, other):
-        """ 测试集合是否是另一个集合的子集。
+        """ 
+        测试集合是否是另一个集合的子集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -253,7 +269,8 @@ class Set(Key):
     # proper subset, < , 真子集
 
     def __lt__(self, other):
-        """ 测试集合是否是另一个集合的真子集。
+        """ 
+        测试集合是否是另一个集合的真子集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -273,7 +290,8 @@ class Set(Key):
     # superset, >= , 超集
 
     def __ge__(self, other):
-        """ 测试集合是否是另一个集合的超集。
+        """ 
+        测试集合是否是另一个集合的超集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -295,7 +313,8 @@ class Set(Key):
     # proper superset, > , 真超集
 
     def __gt__(self, other):
-        """ 测试集合是否是另一个集合的真超集。
+        """ 
+        测试集合是否是另一个集合的真超集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -315,7 +334,8 @@ class Set(Key):
     # union, | , 并集
 
     def __or__(self, other):
-        """ 返回集合和另一个集合的并集。
+        """ 
+        返回集合和另一个集合的并集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -333,6 +353,7 @@ class Set(Key):
 
     __ror__ = __or__
     __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
+
 
     @catch_wrong_type_error
     def __ior__(self, other):
@@ -365,7 +386,8 @@ class Set(Key):
     # intersection, & , 交集
 
     def __and__(self, other):
-        """ 返回集合和另一个集合的交集。
+        """ 
+        返回集合和另一个集合的交集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -383,6 +405,7 @@ class Set(Key):
 
     __rand__ = __and__
     __rand__.__doc__ = """ __and__的反向方法，用于支持多集合进行交集操作。 """
+
 
     @catch_wrong_type_error
     def __iand__(self, other):
@@ -417,7 +440,8 @@ class Set(Key):
     # difference, - , 差集
 
     def __sub__(self, other):
-        """ 返回集合对另一个集合的差集。
+        """ 
+        返回集合对另一个集合的差集。
 
         Args:
             other: 一个 python 集合或集合 key 对象。
@@ -433,12 +457,15 @@ class Set(Key):
         """
         return set(self) - set(other)
 
+
     def __rsub__(self, other):
-        """ __sub__的反向方法，
+        """ 
+        __sub__的反向方法，
         用于支持多集合进行差集运算。
         """
         # WARNING: 注意这里的位置不要弄反。
         return set(other) - set(self)
+
 
     @catch_wrong_type_error
     def __isub__(self, other):
@@ -471,7 +498,8 @@ class Set(Key):
     # symmetric difference, ^ ， 对等差
 
     def __xor__(self, other):
-        """ 返回集合对另一个集合的对等差集。
+        """ 
+        返回集合对另一个集合的对等差集。
 
         Args:
             other: 一个python集合或集合key对象。

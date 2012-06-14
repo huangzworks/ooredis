@@ -30,6 +30,7 @@ class TestSet(unittest.TestCase):
     def set_wrong_type(self, key_object):
         self.redispy.set(key_object.name, 'string')
 
+
     # __repr__
 
     def test__repr__(self):
@@ -37,6 +38,7 @@ class TestSet(unittest.TestCase):
             repr(self.s),
             format_key(self.s, self.s.name, set(self.s))
         )
+
 
     # __len__
 
@@ -58,6 +60,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)
             len(self.s)
+
 
     # __iter__
 
@@ -98,6 +101,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)
             self.element in self.s
+
 
     # add
 
@@ -174,6 +178,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.s)
             self.s.pop()
 
+
     # random
 
     def test_random_with_EMPTY_SET(self):
@@ -189,7 +194,7 @@ class TestSet(unittest.TestCase):
             self.element
         )
 
-        # make sure random not delete element of set
+        # make sure Set.random not delete element in set
         self.assertEqual(
             len(self.s),
             1
@@ -204,6 +209,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)
             self.s.random()
+
 
     # move
 
@@ -268,6 +274,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s.move(self.another, self.element)
 
+
     # isdisjoint
 
     def test_isdisjoint_True(self):
@@ -302,6 +309,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s.isdisjoint(self.another)
 
+
     # __le__
 
     def test__le__True(self):
@@ -331,12 +339,14 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s <= self.another
 
+
     # issubset
 
     def test_issubset(self):
         self.assertTrue(
             self.s.issubset(self.another)
         )
+
 
     # __lt__
 
@@ -398,12 +408,14 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s >= self.another
 
+
     # issuperset
 
     def test_issuperset(self):   
         self.assertTrue(
             self.s.issuperset(self.another)
         )
+
 
     # __gt__
 
@@ -437,6 +449,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.another)
             self.s > self.another
+
 
     # __or__
 
@@ -474,6 +487,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s | self.another
 
+
     # __ror__
 
     def test__ror__(self):
@@ -483,6 +497,7 @@ class TestSet(unittest.TestCase):
             self.another | self.s,
             {self.element}
         )
+
 
     # __ior__
 
@@ -521,6 +536,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.another)
             self.s |= self.another
+
 
     # __and__
 
@@ -561,6 +577,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s & self.another
 
+
     # __rand__
 
     def test__rand__(self):
@@ -570,6 +587,7 @@ class TestSet(unittest.TestCase):
             {self.element} & self.s,
             {self.element}
         )
+
 
     # __iand__
 
@@ -615,6 +633,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s &= self.another
 
+
     # __sub__
 
     def test__sub__with_EMPTY_SET(self):
@@ -659,6 +678,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s - self.another
 
+
     # __rsub__
 
     def test__rsub__(self):
@@ -668,6 +688,7 @@ class TestSet(unittest.TestCase):
             set() - self.s,
             set()
         )
+
 
     #__isub__
 
@@ -711,6 +732,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s -= self.another
 
+
     # __xor__
 
     def test__xor__with_EMPTY_SET(self):
@@ -752,6 +774,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.another)
             self.s ^ self.another
+
 
     # __rxor__
 
@@ -809,6 +832,6 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.another)
             self.s ^= self.another
 
+
 if __name__ == "__main__":
     unittest.main()
-
