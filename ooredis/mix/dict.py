@@ -17,7 +17,6 @@ class Dict(Key, collections.MutableMapping):
     一个字典对象，底层是 Redis 的 Hash 结构。
     """
 
-    @catch_wrong_type_error
     def __repr__(self):
         return format_key(self, self.name, dict(self))
 

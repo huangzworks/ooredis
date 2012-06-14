@@ -4,8 +4,8 @@
 import redis
 import unittest
 
-from ooredis.client import connect
 from ooredis.mix.dict import Dict
+from ooredis.client import connect
 from ooredis.mix.helper import format_key
 from ooredis.type_case import JsonTypeCase
 
@@ -111,7 +111,7 @@ class TestDict(unittest.TestCase):
             {}
         )
 
-    def test__delitem__when_KEY_NOT_EXISTS(self):
+    def test__delitem__RAISE_when_KEY_NOT_EXISTS(self):
         with self.assertRaises(KeyError):
             del self.d['not_exists_key']
 
