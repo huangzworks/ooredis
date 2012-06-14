@@ -168,6 +168,33 @@ class Deque(Key):
 
 
     @catch_wrong_type_error
+    def block_pop(self, timeout=0):
+        """
+        移除并返回队列最右边的元素，
+        如果队列中没有元素，那么阻塞 timeout 秒，直到获取元素或超时为止。
+
+        Args:
+            timeout: 等待元素时的最大阻塞秒数
+
+        Time:
+            O(1)
+
+        Returns:
+            None: 超时时返回
+            pop_item: 被弹出的元素
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        # 每个非空 brpop 的结果都是一个列表 ['list of the pop item', 'pop item']
+        redis_queue_name_and_item_list = self._client.brpop(self.name, timeout)
+        if redis_queue_name_and_item_list is not None:
+            redis_item = redis_queue_name_and_item_list[1]
+            python_item = self._type_case.to_python(redis_item)
+            return python_item
+
+
+    @catch_wrong_type_error
     def popleft(self):
         """
         移除并返回队列最左边的元素。
@@ -192,6 +219,33 @@ class Deque(Key):
         if python_item is None:
             raise IndexError
         else:
+            return python_item
+
+
+    @catch_wrong_type_error
+    def block_popleft(self, timeout=0):
+        """
+        移除并返回队列最左边的元素，
+        如果队列中没有元素，那么阻塞 timeout 秒，直到获取元素或超时为止。
+
+        Args:
+            timeout: 等待元素时的最大阻塞秒数
+
+        Time:
+            O(1)
+
+        Returns:
+            None: 超时时返回
+            pop_item: 被弹出的元素
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        # 每个非空 blpop 的结果都是一个列表 ['list of the pop item', 'pop item']
+        redis_queue_name_and_item_list = self._client.blpop(self.name, timeout)
+        if redis_queue_name_and_item_list is not None:
+            redis_item = redis_queue_name_and_item_list[1]
+            python_item = self._type_case.to_python(redis_item) 
             return python_item
 
 

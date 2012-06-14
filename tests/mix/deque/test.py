@@ -205,6 +205,47 @@ class TestDeque(TestCase):
             self.set_wrong_type(self.d)
             self.d.pop()
 
+
+    # block_pop
+
+    def test_block_pop_RETURN_NONE_when_EMPTY(self):
+        self.assertIsNone(
+            self.d.block_pop(1)
+        )
+
+    def test_block_pop_with_SINGLE_ITEM(self):
+        self.d.append(self.item)
+
+        self.assertEqual(
+            self.d.block_pop(1),
+            self.item
+        )
+
+        self.assertEqual(
+            len(self.d),
+            0
+        )
+
+    def test_block_pop_with_MULTI_ITEM(self):
+        self.d.append(self.item)
+        self.d.append(self.another_item)
+
+        self.assertEqual(
+            self.d.block_pop(),
+            self.another_item
+        )
+
+        self.assertEqual(
+            len(self.d),
+            1
+        )
+
+    def test_pop_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            self.d.block_pop()
+
+
     # popleft
 
     def test_popleft_RAISE_when_EMPTY(self):
@@ -228,6 +269,47 @@ class TestDeque(TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.d)
             self.d.popleft()
+
+
+    # block_popleft
+
+    def test_block_popleft_RETURN_NONE_when_DEQUE_EMPTY(self):
+        self.assertIsNone(
+            self.d.block_popleft(1)
+        )
+
+    def test_block_popleft_with_SINGLE_ITEM(self):
+        self.d.appendleft(self.item)
+
+        self.assertEqual(
+            self.d.block_popleft(1),
+            self.item
+        )
+
+        self.assertEqual(
+            len(self.d),
+            0
+        )
+
+    def test_block_popleft_with_MULTI_ITEM(self):
+        self.d.appendleft(self.item)
+        self.d.appendleft(self.another_item)
+
+        self.assertEqual(
+            self.d.block_popleft(1),
+            self.another_item
+        )
+
+        self.assertEqual(
+            len(self.d),
+            1
+        )
+
+    def test_block_popleft_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            self.d.block_popleft()
+
 
     # __getitem__
 
