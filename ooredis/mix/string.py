@@ -14,7 +14,6 @@ class String(Key):
     为储存单个值的 Key 对象提供 set，get 和 getset操作。
     """
 
-    @catch_wrong_type_error
     def __repr__(self):
         return format_key(self, self.name, self.get())
 

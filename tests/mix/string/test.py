@@ -1,8 +1,8 @@
 #! /usr/bin/env python2.7
 # coding: utf-8
 
-import unittest
 import redis
+import unittest
 
 from ooredis import String
 from ooredis.client import connect
@@ -20,6 +20,7 @@ class TestString(unittest.TestCase):
         self.name = 'pi'
         self.value = 3.14
 
+        # 使用 FloatTypeCase 是为了测试 TypeCase
         self.key = String(self.name, type_case=FloatTypeCase)
 
     def tearDown(self):
@@ -96,7 +97,7 @@ class TestString(unittest.TestCase):
             self.value
         )
 
-    def test_setex_WILL_UPDATE_EXPIRE_TIME_WHEN_KEY_EXISTS(self):
+    def test_setex_WILL_UPDATE_EXPIRE_TIME_when_KEY_EXISTS(self):
         self.key.setex(self.value, 10086)
 
         self.key.setex(self.value, 100)     # overwrite 10086 (origin ttl)
