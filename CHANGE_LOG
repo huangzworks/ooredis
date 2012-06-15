@@ -1,5 +1,17 @@
 2.0
 
+SortedSet.rank 不再接受 reverse 参数，
+要计算逆序排名，需要使用新增的 SortedSet.reverse_rank
+
+SortedSet.rank 在处理不存在的 member 时，
+不再抛出 KeyError 异常，而是返回 None
+
+SortedSet.remove 移除不存在的 member 不再抛出 KeyError ，
+静默返回 None
+
+SortedSet.score 接受不存在的 member 作为参数时不再抛出 KeyError ，
+静默返回 None
+
 String.set 不再接受 preserve 和 expire 参数，而是使用 String.setnx 和
 String.setex 两个函数来处理 key 不存在时赋值和赋值时设置过期时间的功能
 
