@@ -120,7 +120,8 @@ class String(Key):
 
         return python_value
 
-    
+   
+    @catch_wrong_type_error
     def getset(self, python_value):
         """ 
         修改 Key 对象的值，并返回 Key 对象之前储存的值。
@@ -138,9 +139,6 @@ class String(Key):
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        # self._raise_when_wrong_type()
-        # 不知为何， getset 不用手动强制类型检查， TypeError 也可以正常抛出
-
         new_redis_value = self._type_case.to_redis(python_value)
 
         old_redis_value = self._client.getset(self.name, new_redis_value)

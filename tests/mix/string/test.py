@@ -169,7 +169,7 @@ class TestString(unittest.TestCase):
     def test_getset_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type()
-            self.key.getset('value')
+            self.key.getset(self.value)
 
 
 if __name__ == "__main__":
