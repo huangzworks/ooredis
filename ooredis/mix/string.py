@@ -4,9 +4,26 @@ __all__ = ['String']
 
 __metaclass__ = type
 
+from functools import wraps
 from ooredis.mix.key import Key
 from ooredis.const import REDIS_TYPE
 from ooredis.mix.helper import format_key, catch_wrong_type_error
+
+
+def raise_when_set_wrong_type(func):
+    """
+    set/setex/setnx 命令可以无视类型进行设置的命令，为了保证类型的限制，
+    ooredis 对一个非 string 类型进行 set/setex/setnx 将引发 TypeError 异常。
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        self = args[0]
+        if self.exists and \
+           self._represent != REDIS_TYPE['string']:
+            raise TypeError
+        return func(*args, **kwargs)
+    return wrapper
+
 
 class String(Key):
 
@@ -18,16 +35,7 @@ class String(Key):
         return format_key(self, self.name, self.get())
 
 
-    def _raise_when_wrong_type(self):
-        """
-        set/setex/setnx 命令可以无视类型进行设置的命令，为了保证类型的限制，
-        ooredis 对一个非 string 类型进行 set/setex/setnx 将引发 TypeError 异常。
-        """
-        if self.exists and \
-           self._represent != REDIS_TYPE['string']:
-            raise TypeError
-
-
+    @raise_when_set_wrong_type
     def set(self, python_value):
         """
         为 Key 对象指定值。
@@ -44,13 +52,12 @@ class String(Key):
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        self._raise_when_wrong_type()
-
         redis_value = self._type_case.to_redis(python_value)
 
         self._client.set(self.name, redis_value)
 
 
+    @raise_when_set_wrong_type
     def setnx(self, python_value):
         """
         将 Key 对象的值设为 python_value ，当且仅当 Key 不存在。
@@ -67,13 +74,12 @@ class String(Key):
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        self._raise_when_wrong_type()
-
         redis_value = self._type_case.to_redis(python_value)
 
         return self._client.setnx(self.name, redis_value)
 
 
+    @raise_when_set_wrong_type
     def setex(self, python_value, ttl_in_second):
         """
         将 Key 对象的值设为 python_value ，
@@ -92,8 +98,6 @@ class String(Key):
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        self._raise_when_wrong_type()
-
         redis_value = self._type_case.to_redis(python_value)
 
         return self._client.setex(self.name, redis_value, ttl_in_second)
