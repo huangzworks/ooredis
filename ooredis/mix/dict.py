@@ -13,6 +13,7 @@ from ooredis.mix.helper import format_key, catch_wrong_type_error
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
 class Dict(Key, collections.MutableMapping):
+
     """
     一个字典对象，底层是 Redis 的 Hash 结构。
     """
@@ -98,8 +99,8 @@ class Dict(Key, collections.MutableMapping):
             raise KeyError
 
 
-    #@catch_wrong_type_error
-    #似乎因为 yield 的缘故，装饰器没办法在这里使用
+    # @catch_wrong_type_error
+    # 似乎因为 yield 的缘故，装饰器没办法在这里使用
     def __iter__(self):
         """ 
         返回一个包含字典里所有键的迭代器。
