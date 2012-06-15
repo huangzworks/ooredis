@@ -210,9 +210,4 @@ class Key:
         if not self.exists:
             raise TypeError
 
-        # redis-py 对没有生存时间的 key 进行 persist 也返回 -1
-        # 这里选择不进行其他动作(返回 None )
-        if self.ttl is None:
-            return
-
         self._client.persist(self.name)
