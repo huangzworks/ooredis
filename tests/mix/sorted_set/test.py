@@ -303,15 +303,10 @@ class TestSortedSet(unittest.TestCase):
             0
         )
 
-    def test_remove_NOT_EXISTS_MEMBER_with_DEFAULT_CHECK(self):
-        self.s.remove(self.element) # check=False
-
-    def test_remove_NOT_EXISTS_MEMBER_with_CHECK_OFF(self):
-        self.s.remove(self.element, check=False)
-
-    def test_remove_NOT_EXISTS_MEMBER_with_CHECK_ON(self):
-        with self.assertRaises(KeyError):
-            self.s.remove(self.element, check=True)
+    def test_remove_RETURN_NONE_when_MEMBER_NOT_EXISTS(self):
+        self.assertIsNone(
+            self.s.remove(self.element)
+        )
 
     def test_remove_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):

@@ -170,13 +170,12 @@ class SortedSet(Key):
 
 
     @catch_wrong_type_error
-    def remove(self, member, check=False):
+    def remove(self, member):
         """ 
         移除有序集成员member，如果member不存在，不做动作。
 
         Args:
             member: 要移除的成员。
-            check: 是否检查 member 必须在有序集合中。
 
         Time:
             O(log(N))
@@ -186,12 +185,9 @@ class SortedSet(Key):
 
         Raises:
             TypeError: 当 key 不是有序集类型时抛出。
-            KeyError: 当 member 不存在且 check 为 True 时抛出。
         """
         redis_member = self._type_case.to_redis(member)
-        status = self._client.zrem(self.name, redis_member)
-        if check and status == MEMBER_NOT_IN_SET_AND_REMOVE_FALSE:
-            raise KeyError
+        self._client.zrem(self.name, redis_member)
 
 
     @catch_wrong_type_error
