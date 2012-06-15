@@ -6,6 +6,7 @@ import unittest
 
 from ooredis.client import connect
 from ooredis.mix.helper import format_key
+from ooredis.type_case import JsonTypeCase
 from ooredis.mix.sorted_set import SortedSet
     
 class TestSortedSet(unittest.TestCase):
@@ -16,10 +17,10 @@ class TestSortedSet(unittest.TestCase):
         self.redispy = redis.Redis()
         self.redispy.flushdb()
 
-        self.s = SortedSet('sorted_set')
-        self.another = SortedSet('another')
+        self.s = SortedSet('sorted_set', type_case=JsonTypeCase)
+        self.another = SortedSet('another', type_case=JsonTypeCase)
 
-        self.element = 'value'
+        self.element = {'k':'v'}
         self.score = 10086
         
     def tearDown(self):
@@ -430,6 +431,7 @@ class TestSortedSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type()
             self.s.incr(self.element)
+
 
     # decr
 
