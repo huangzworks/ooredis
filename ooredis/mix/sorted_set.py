@@ -246,19 +246,14 @@ class SortedSet(Key):
             O(1)
 
         Returns:
+            None: 当 member 不是有序集的成员时返回
             float: 以浮点值表示的 score 值。
 
         Raises:
-            KeyError: 当 member 不在有序集中时抛出。
             TypeError: 当 key 不是有序集类型时抛出，由 in 语句抛出。
         """
         redis_member = self._type_case.to_redis(member)
-
-        result = self._client.zscore(self.name, redis_member)
-        if result is None:
-            raise KeyError
-        else:
-            return result
+        return self._client.zscore(self.name, redis_member)
 
 
     @catch_wrong_type_error

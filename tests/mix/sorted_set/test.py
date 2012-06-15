@@ -382,9 +382,10 @@ class TestSortedSet(unittest.TestCase):
             self.score
         )
 
-    def test_score_RAISE_when_MEMBER_NOT_EXISTS(self):
-        with self.assertRaises(KeyError):
+    def test_score_RETURN_NONE_when_MEMBER_NOT_EXISTS(self):
+        self.assertIsNone(
             self.s.score(self.element)
+        )
 
     def test_score_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
