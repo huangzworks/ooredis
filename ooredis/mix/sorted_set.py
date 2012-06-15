@@ -197,34 +197,45 @@ class SortedSet(Key):
     @catch_wrong_type_error
     def rank(self, member, reverse=False):
         """ 
-        返回有序集中成员 member 的 score 值的排名。
-
-        排序可以选择递增(从小到大)和递减(从大到小)两种顺序，
-        默认为递增序排序。
+        按从小到大的顺序(正序)返回有序集成员 member 的 score 值的排名。
 
         Args:
             member: 被检查的成员。
-            reverse: 如果为 True ，元素以递减排序。
 
         Time:
             O(log(N))
 
         Returns:
+            None: 当 member 不是有序集的成员时返回
             int: member 的 score 排名。
 
         Raises:
-            KeyError: 当 member 不在有序集中时抛出。
             TypeError: 当 key 不是有序集类型时由 in 语句抛出。
         """
         redis_member = self._type_case.to_redis(member)
+        return self._client.zrank(self.name, redis_member)
 
-        get_rank = self._client.zrevrank if reverse else self._client.zrank
 
-        result = get_rank(self.name, redis_member)
-        if result is None:
-            raise KeyError
-        else:
-            return result
+    @catch_wrong_type_error
+    def reverse_rank(self, member):
+        """
+        按从大到小的顺序(逆序)返回有序集成员 member 的 score 值排名。
+
+        Args:
+            member
+
+        Time:
+            O(log(N))
+
+        Returns:
+            None: 当 member 不是有序集的成员时返回
+            int: member 的 score 值排名
+
+        Raises:
+            TypeError: 当 key 不是有序集类型时由 in 语句抛出。
+        """
+        redis_member = self._type_case.to_redis(member)
+        return self._client.zrevrank(self.name, redis_member)
 
 
     @catch_wrong_type_error

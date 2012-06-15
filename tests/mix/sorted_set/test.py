@@ -322,7 +322,6 @@ class TestSortedSet(unittest.TestCase):
     # rank
 
     def test_rank(self):
-
         self.s[self.element] = self.score
 
         self.assertEqual(
@@ -337,13 +336,25 @@ class TestSortedSet(unittest.TestCase):
             self.s.rank(self.element), 
             1
         )
-    
-    def test_rank_in_REVERSE_OREDER(self):
+   
+    def test_rank_RETURN_NONE_when_MEMBER_NOT_EXISTS(self):
+        self.assertIsNone(
+            self.s.rank(self.element)
+        )
 
+    def test_rank_RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type()
+            self.s.rank(self.element)
+
+
+    # reverse_rank
+
+    def test_reverse_rank(self):
         self.s[self.element] = self.score
 
         self.assertEqual(
-            self.s.rank(self.element, reverse=True),
+            self.s.reverse_rank(self.element),
             0
         )
 
@@ -351,18 +362,19 @@ class TestSortedSet(unittest.TestCase):
         self.s['new'] = self.score+1
         # self.element被重排了
         self.assertEqual(
-            self.s.rank(self.element, reverse=True),
+            self.s.reverse_rank(self.element),
             1
         )
 
-    def test_rank_RAISE_when_MEMBER_NOT_EXISTS(self):
-        with self.assertRaises(KeyError):
-            self.s.rank(self.element)
+    def test_reverse_rank_RETURN_NONE_when_MEMBER_NOT_EXISTS(self):
+        self.assertIsNone(
+            self.s.reverse_rank(self.element)
+        )
 
     def test_rank_RAISE_when_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
             self.set_wrong_type()
-            self.s.rank(self.element)
+            self.s.reverse_rank(self.element)
 
 
     # score
