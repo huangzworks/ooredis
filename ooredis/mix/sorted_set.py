@@ -18,7 +18,6 @@ from ooredis.const import (
 # redis command execute status code
 MEMBER_NOT_IN_SET_AND_REMOVE_FALSE = 0
 MEMBER_NOT_IN_SET_AND_DELETE_FALSE = 0
-MEMBER_NOT_IN_SET_AND_GET_RANK_FALSE = None
 MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 
 # ZRANGE result item index
@@ -26,6 +25,7 @@ VALUE = 0
 SCORE= 1
 
 class SortedSet(Key):
+
     """ 
     有序集对象，底层是redis的zset实现。 
     """
@@ -36,8 +36,12 @@ class SortedSet(Key):
 
     @catch_wrong_type_error
     def __len__(self):
-        """ 返回有序集的基数。
-        
+        """ 
+        返回有序集的基数。
+
+        Args:
+            None
+
         Time:
             O(1)
 
@@ -52,35 +56,41 @@ class SortedSet(Key):
 
     @catch_wrong_type_error
     def __contains__(self, element):
-        """ 检查给定元素是否是有序集的成员。 
+        """ 
+        检查给定元素 element 是否是有序集的成员。 
 
         Args:
-            element: 要检查的元素。
+            element
 
         Time:
-            O(1)
+            O(log(N))
 
         Returns:
-            bool: 如果element是集合的成员，返回True，否则False。
+            bool: 如果 element 是集合的成员，返回 True ，否则 False 。
 
         Raises:
-            TypeError: 当key不是有序集类型时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
         """
-        # NOTE:
-        # 因为在redis里有序集zset没有集合set那样的SISMEMBER命令，
-        # 所以这里用ZSCORE命令hack一个，
-        # 如果ZSCORE key member不为None，证明element是有序集成员。
-
-        # WARNING: 这里不要用self.score，这两个方法互相引用。
-        element = self._type_case.to_redis(element)
-        return None != self._client.zscore(self.name, element)
+        # 因为在 redis 里 zset 没有 set 那样的 SISMEMBER 命令，
+        # 所以这里用 ZSCORE 命令 hack 一个：
+        # 如果 ZSCORE key member 不为 None ，证明 element 是有序集成员。
+        # 注意，这里不能用 self.score ，因为这两个方法互相引用。
+        redis_element = self._type_case.to_redis(element)
+        element_score = self._client.zscore(self.name, redis_element)
+        return element_score is not None
 
 
     @catch_wrong_type_error
-    def __setitem__(self, member, score):
-        """ 将元素的member的score值设为score。
+    def __setitem__(self, member, new_score):
+        """ 
+        将元素 member 的 score 值更新为 new_score 。
 
-        如果member不存在于有序集，将member加入到有序集。
+        如果 member 不存在于有序集，
+        那么将 member 加入到有序集， score 值等于 new_score 。
+
+        Args:
+            member
+            new_score
 
         Time:
             O(1)
@@ -91,30 +101,36 @@ class SortedSet(Key):
         Raises:
             TypeError: 当key不是有序集类型时抛出。
         """
-        member = self._type_case.to_redis(member)
-        self._client.zadd(self.name, member, score) 
+        redis_memeber = self._type_case.to_redis(member)
+        self._client.zadd(self.name, redis_memeber, new_score)
 
 
     @catch_wrong_type_error
     def __getitem__(self, index):
-        """ 返回有序集指定下标内的元素。
+        """ 
+        返回有序集指定下标内的元素。
 
         Args:
-            index: 一个下标或一个slice对象。
+            index: 一个下标或一个 slice 对象。
 
         Returns:
-            dict： 使用下标时，返回一个字典，包含value和score。
-            list：使用slice对象时，返回一个列表，
+            dict： 使用下标时，返回一个字典，包含 value 和 score 。
+            list：使用 slice 对象时，返回一个列表，
                   列表中每个项都是一个字典。
 
         Time:
-            O(log(N)+M)，N为有序集的基数，而M为结果集的基数。
+            O(log(N)+M) ， N 为有序集的基数，而 M 为结果集的基数。
 
         Raises:
-            KeyError: index下标超出范围时抛出。
-            TypeError: 当key不是有序集类型时抛出。
+            KeyError: index 下标超出范围时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
         """
-        item_to_dict_list = partial(map, lambda item: dict(value=self._type_case.to_python(item[VALUE]), score=item[SCORE]))
+        item_to_dict_list = \
+            partial(map,
+                    lambda item: dict(
+                        value=self._type_case.to_python(item[VALUE]), 
+                        score=item[SCORE]
+                    ))
 
         if isinstance(index, slice):
             items = self._client.zrange(self.name, LEFTMOST, RIGHTMOST, withscores=True)
@@ -126,13 +142,14 @@ class SortedSet(Key):
 
     @catch_wrong_type_error
     def __delitem__(self, index):
-        """ 删除有序集指定下标内的元素。
+        """ 
+        删除有序集指定下标内的元素。
 
         Args:
-            index: 下标或一个slice对象。
+            index: 下标或一个 slice 对象。
 
         Time:
-            O(log(N)+M)，N为有序集的基数，而M为被移除成员的数量。
+            O(log(N)+M) ， N 为有序集的基数，而 M 为被移除成员的数量。
 
         Returns:
             None
@@ -142,23 +159,24 @@ class SortedSet(Key):
             TypeError: 当key不是有序集类型时抛出。
         """
         if isinstance(index, slice):
-            start = LEFTMOST if index.start == None else index.start
-            stop = RIGHTMOST if index.stop == None else index.stop-1
+            start = LEFTMOST if index.start is None else index.start
+            stop = RIGHTMOST if index.stop is None else index.stop-1
 
             self._client.zremrangebyrank(self.name, start, stop)
         else:
-            if self._client.zremrangebyrank(self.name, index, index) == \
-                MEMBER_NOT_IN_SET_AND_DELETE_FALSE:
+            status = self._client.zremrangebyrank(self.name, index, index)
+            if status == MEMBER_NOT_IN_SET_AND_DELETE_FALSE:
                 raise IndexError
 
 
     @catch_wrong_type_error
     def remove(self, member, check=False):
-        """ 移除有序集成员member，如果member不存在，不做动作。
+        """ 
+        移除有序集成员member，如果member不存在，不做动作。
 
         Args:
             member: 要移除的成员。
-            check: 是否检查member必须在有序集合中。
+            check: 是否检查 member 必须在有序集合中。
 
         Time:
             O(log(N))
@@ -167,42 +185,43 @@ class SortedSet(Key):
             None
 
         Raises:
-            TypeError: 当key不是有序集类型时抛出。
-            KeyError: 当member不存在且check为True时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
+            KeyError: 当 member 不存在且 check 为 True 时抛出。
         """
-        member = self._type_case.to_redis(member)
-        status = self._client.zrem(self.name, member)
+        redis_member = self._type_case.to_redis(member)
+        status = self._client.zrem(self.name, redis_member)
         if check and status == MEMBER_NOT_IN_SET_AND_REMOVE_FALSE:
             raise KeyError
 
 
     @catch_wrong_type_error
     def rank(self, member, reverse=False):
-        """ 返回有序集中成员member的score值的排名。
+        """ 
+        返回有序集中成员 member 的 score 值的排名。
 
         排序可以选择递增(从小到大)和递减(从大到小)两种顺序，
         默认为递增序排序。
 
         Args:
             member: 被检查的成员。
-            reverse: 如果为True，元素以递减排序。
+            reverse: 如果为 True ，元素以递减排序。
 
         Time:
             O(log(N))
 
         Returns:
-            int: member的score排名。
+            int: member 的 score 排名。
 
         Raises:
-            KeyError: 当member不在有序集中时抛出。
-            TypeError: 当key不是有序集类型时由in语句抛出。
+            KeyError: 当 member 不在有序集中时抛出。
+            TypeError: 当 key 不是有序集类型时由 in 语句抛出。
         """
-        member = self._type_case.to_redis(member)
+        redis_member = self._type_case.to_redis(member)
 
         get_rank = self._client.zrevrank if reverse else self._client.zrank
-        result = get_rank(self.name, member)
 
-        if result == MEMBER_NOT_IN_SET_AND_GET_RANK_FALSE:
+        result = get_rank(self.name, redis_member)
+        if result is None:
             raise KeyError
         else:
             return result
@@ -210,7 +229,8 @@ class SortedSet(Key):
 
     @catch_wrong_type_error
     def score(self, member):
-        """ 返回有序集中成员member的score值。
+        """ 
+        返回有序集中成员 member 的 score 值。
 
         Args:
             member
@@ -219,16 +239,16 @@ class SortedSet(Key):
             O(1)
 
         Returns:
-            float: 以浮点值表示的score值。
+            float: 以浮点值表示的 score 值。
 
         Raises:
-            KeyError: 当member不在有序集中时抛出。
-            TypeError: 当key不是有序集类型时抛出，由in语句抛出。
+            KeyError: 当 member 不在有序集中时抛出。
+            TypeError: 当 key 不是有序集类型时抛出，由 in 语句抛出。
         """
-        member = self._type_case.to_redis(member)
-        result = self._client.zscore(self.name, member)
+        redis_member = self._type_case.to_redis(member)
 
-        if result == MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE:
+        result = self._client.zscore(self.name, redis_member)
+        if result is None:
             raise KeyError
         else:
             return result
@@ -236,37 +256,39 @@ class SortedSet(Key):
 
     @catch_wrong_type_error
     def incr(self, member, increment=DEFAULT_INCREMENT):  
-        """ 将member的score值加上increment。 
+        """ 
+        将 member 的 score 值加上 increment 。 
 
-        当key不存在，或member不是key的成员时，
-        self.incr(member, increment)等同于self[member] = increment
+        当 key 不存在，或 member 不是 key 的成员时，
+        self.incr(member, increment) 等同于 self[member] = increment
 
         Args:
             member: 集合成员
-            increment：增量，默认为1。
+            increment: 增量，默认为1。
 
         Time:
             O(log(N))
 
         Returns:
-            float: member成员的新score值。
+            float: member 成员的新 score 值。
 
         Raises:
-            TypeError: 当key不是有序集类型时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
         """
-        member = self._type_case.to_redis(member)
-        return self._client.zincrby(self.name, member, increment)
+        redis_member = self._type_case.to_redis(member)
+        return self._client.zincrby(self.name, redis_member, increment)
 
 
     def decr(self, member, decrement=DEFAULT_DECREMENT):
-        """ 将member的score值减去decrement。 
+        """ 
+        将 member 的 score 值减去 decrement 。 
 
-        当key不存在，或member不是key的成员时，
-        self.decr(member, decrement)等同于self[member] = 0-decrement
+        当 key 不存在，或 member 不是 key 的成员时，
+        self.decr(member, decrement) 等同于 self[member] = 0-decrement
 
         Args:
             member: 集合成员
-            decrement：减量，默认为1。
+            decrement: 减量，默认为 1 。
 
         Time:
             O(log(N))
