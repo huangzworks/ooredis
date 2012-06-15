@@ -6,7 +6,7 @@ __metaclass__ = type
 
 from ooredis import String
 from ooredis.type_case import IntTypeCase
-from ooredis.mix.helper import catch_wrong_type_error
+from ooredis.mix.helper import raise_when_wrong_type
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
 class Counter(String):
@@ -25,7 +25,7 @@ class Counter(String):
         super(Counter, self).__init__(name=name, client=client, type_case=type_case)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def incr(self, increment=DEFAULT_INCREMENT):
         """
         将计数器的值加上增量 increment， 
@@ -47,7 +47,7 @@ class Counter(String):
         return self._client.incr(self.name, increment)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def decr(self, decrement=DEFAULT_DECREMENT):
         """
         将计数器的值减去减量 decrement ，

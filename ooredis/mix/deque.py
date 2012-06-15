@@ -8,7 +8,7 @@ import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key, catch_wrong_type_error
+from ooredis.mix.helper import format_key, raise_when_wrong_type
 
 class Deque(Key):
 
@@ -36,7 +36,7 @@ class Deque(Key):
         self._client.rpush(self.name, redis_item)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def appendleft(self, python_item):
         """
         将元素 item 追加到队列的最左边。
@@ -77,7 +77,7 @@ class Deque(Key):
         self._client.rpush(self.name, *redis_iterable)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def extendleft(self, python_iterable):
         """
         将 iterable 内的所有元素追加到队列的最左边。
@@ -139,7 +139,7 @@ class Deque(Key):
         return all_python_item.count(python_item)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def pop(self):
         """
         移除并返回队列最右边的元素。
@@ -167,7 +167,7 @@ class Deque(Key):
             return python_item
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def block_pop(self, timeout=0):
         """
         移除并返回队列最右边的元素，
@@ -194,7 +194,7 @@ class Deque(Key):
             return python_item
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def popleft(self):
         """
         移除并返回队列最左边的元素。
@@ -222,7 +222,7 @@ class Deque(Key):
             return python_item
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def block_popleft(self, timeout=0):
         """
         移除并返回队列最左边的元素，
@@ -253,7 +253,7 @@ class Deque(Key):
         return format_key(self, self.name, list(self))
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def __len__(self):
         """
         返回队列中的元素个数。

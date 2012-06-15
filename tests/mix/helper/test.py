@@ -4,7 +4,7 @@ import redis
 import unittest
 
 from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key, catch_wrong_type_error
+from ooredis.mix.helper import format_key, raise_when_wrong_type
 
 class TestHelper(unittest.TestCase):
 
@@ -21,20 +21,20 @@ class TestHelper(unittest.TestCase):
         self.assertEqual( output,"Key Key 'name': value")
 
     
-    # catch_wrong_type_error
+    # raise_when_wrong_type
 
-    def test_catch_wrong_type_error_RAISE_TYPE_ERROR_when_ERROR_OCCUR(self):
+    def test_raise_when_wrong_type_RAISE_TYPE_ERROR_when_ERROR_OCCUR(self):
 
-        @catch_wrong_type_error
+        @raise_when_wrong_type
         def r():
             raise redis.exceptions.ResponseError
 
         with self.assertRaises(TypeError):
             r() 
 
-    def test_catch_wrong_type_error_NOT_RAISE_when_NO_ERROR_OCCUR(self):
+    def test_raise_when_wrong_type_NOT_RAISE_when_NO_ERROR_OCCUR(self):
 
-        @catch_wrong_type_error
+        @raise_when_wrong_type
         def f():
             return 10
 

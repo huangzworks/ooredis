@@ -2,7 +2,7 @@
 
 __all__ = [
     'format_key',
-    'catch_wrong_type_error'
+    'raise_when_wrong_type',
 ]
 
 import redis
@@ -16,7 +16,7 @@ def format_key(key, name, value):
     type = key.__class__.__name__.title()
     return "{0} Key '{1}': {2}".format(type, name, value)
 
-def catch_wrong_type_error(func):
+def raise_when_wrong_type(func):
     """
     将 redis-py 抛出的 ResponseError 转换为 TypeError 
     """

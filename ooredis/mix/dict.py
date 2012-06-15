@@ -8,7 +8,7 @@ import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key, catch_wrong_type_error
+from ooredis.mix.helper import format_key, raise_when_wrong_type
 
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
@@ -22,7 +22,7 @@ class Dict(Key, collections.MutableMapping):
         return format_key(self, self.name, dict(self))
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def __setitem__(self, key, python_value):
         """ 
         将字典中键 key 的值设为 python_value 。
@@ -45,7 +45,7 @@ class Dict(Key, collections.MutableMapping):
         self._client.hset(self.name, key, redis_value)
 
 
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def __getitem__(self, key):
         """ 
         返回字典中键 key 的值。
@@ -75,7 +75,7 @@ class Dict(Key, collections.MutableMapping):
         return python_value
 
     
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def __delitem__(self, key):
         """ 
         删除字典键 key 的值。
@@ -99,7 +99,7 @@ class Dict(Key, collections.MutableMapping):
             raise KeyError
 
 
-    # @catch_wrong_type_error
+    # @raise_when_wrong_type
     # 似乎因为 yield 的缘故，装饰器没办法在这里使用
     def __iter__(self):
         """ 
@@ -124,7 +124,7 @@ class Dict(Key, collections.MutableMapping):
             raise TypeError
 
    
-    @catch_wrong_type_error
+    @raise_when_wrong_type
     def __len__(self):
         """
         返回字典中键-值对的个数。
