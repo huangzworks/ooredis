@@ -6,9 +6,9 @@ import unittest
 
 from ooredis.client import connect
 
-from ooredis.mix.key import Key
 from ooredis.mix.set import Set
 from ooredis.mix.helper import format_key
+from ooredis.type_case import FloatTypeCase
     
 class TestSet(unittest.TestCase):
 
@@ -18,11 +18,11 @@ class TestSet(unittest.TestCase):
         self.redispy = redis.Redis()
         self.redispy.flushdb()
 
-        self.s = Set('set')
-        self.another = Set('another')
-        self.third = Set('third')
+        self.s = Set('set', type_case=FloatTypeCase)
+        self.another = Set('another', type_case=FloatTypeCase)
+        self.third = Set('third', type_case=FloatTypeCase)
 
-        self.element = 'element'
+        self.element = 3.14
 
     def tearDown(self):
         self.redispy.flushdb()
@@ -83,6 +83,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.s)
             list(iter(self.s))
 
+
     # __contains__
 
     def test__contains__FALSE(self):
@@ -106,12 +107,6 @@ class TestSet(unittest.TestCase):
     # add
 
     def test_add_with_EMPTY_SET(self):
-        self.assertEqual(
-            set(self.s),
-            set()
-        )
-
-    def test_add_with_NOT_EMPTY_SET(self):
         self.s.add(self.element)
 
         self.assertEqual(
@@ -133,6 +128,7 @@ class TestSet(unittest.TestCase):
             self.set_wrong_type(self.s)
             self.s.add(self.element)
 
+
     # remove
 
     def test_remove_when_ELEMENT_EXISTS(self):
@@ -153,6 +149,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.s)
             self.s.remove(self.element)
+
 
     # pop
 
@@ -260,7 +257,7 @@ class TestSet(unittest.TestCase):
 
     def test_move_RAISE_KEY_ERROR_when_ELEMENT_NOT_SET_MEMBER(self):
         with self.assertRaises(KeyError):
-            self.s.move(self.another, 'not_exists_member')
+            self.s.move(self.another, 10086)
 
     def test_move_RAISE_when_SELF_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
@@ -378,6 +375,7 @@ class TestSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.set_wrong_type(self.another)
             self.s < self.another
+
 
     # __ge__
 
@@ -783,6 +781,7 @@ class TestSet(unittest.TestCase):
             {self.element} ^ self.s,
             {self.element}
         )
+
 
     # __ixor__
 

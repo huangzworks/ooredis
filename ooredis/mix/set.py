@@ -199,8 +199,7 @@ class Set(Key):
         具体参考 Redis 命令：SMOVE。
 
         Args:
-            destination: 指定被移动元素的目的地集合，
-                         必须是一个集合 key 对象。
+            destination: 指定被移动元素的目的地集合， 必须是一个集合 key 对象。
             member: 被移动的源集合的成员。
 
         Time:
