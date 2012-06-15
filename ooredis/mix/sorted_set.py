@@ -191,7 +191,7 @@ class SortedSet(Key):
 
 
     @catch_wrong_type_error
-    def rank(self, member, reverse=False):
+    def rank(self, member):
         """ 
         按从小到大的顺序(正序)返回有序集成员 member 的 score 值的排名。
 
