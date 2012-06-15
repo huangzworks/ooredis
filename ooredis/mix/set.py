@@ -4,11 +4,11 @@ __all__ = ['Set']
 
 __metaclass__ = type
 
+import redis
 import collections
-import redis.exceptions as redispy_exception
 
-from ooredis.const import REDIS_TYPE
 from ooredis.mix.key import Key
+from ooredis.const import REDIS_TYPE
 from ooredis.mix.helper import format_key, catch_wrong_type_error
 
 REMOVE_SUCCESS = True
@@ -62,7 +62,7 @@ class Set(Key):
             for redis_member in self._client.smembers(self.name):
                 python_member = self._type_case.to_python(redis_member)
                 yield python_member
-        except redispy_exception.ResponseError:
+        except redis.exceptions.ResponseError:
             raise TypeError
 
 
