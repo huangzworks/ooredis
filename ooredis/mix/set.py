@@ -132,7 +132,6 @@ class Set(Key):
             KeyError： 要移除的元素 element 不存在于集合时抛出。
         """
         redis_element = self._type_case.to_redis(element)
-
         remove_state = self._client.srem(self.name, redis_element)
         if remove_state != REMOVE_SUCCESS:
             raise KeyError
