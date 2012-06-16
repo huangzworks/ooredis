@@ -84,7 +84,10 @@ nosetest(用于测试)
 文档
 ====
 
-OORedis 代码中内置了函数的基本介绍，可以使用 ``help(obj)`` 来查看
+在线文档： `http://ooredis_doc.readthedocs.org/
+<http://ooredis_doc.readthedocs.org/>`_ 
+
+OORedis 代码里也内置了函数的基本介绍，可以使用 ``help(obj)`` 来查看
 
 ::
 
