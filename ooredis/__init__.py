@@ -18,4 +18,4 @@ from mix.string import String
 from mix.counter import Counter
 from mix.deque import Deque
 
-__version__ = "1.4.1.2"
+__version__ = "1.9.0"
