@@ -4,11 +4,15 @@ from helper import is_any_instance
 from numbers import Integral
 
 class GenericTypeCase:
-    """ 通用类型转换类，可以处理 str/unicode/int/float 类型值。 """
+
+    """ 
+    通用类型转换类，可以处理 str/unicode/int/float 类型值。
+    """
 
     @staticmethod
     def to_redis(value):
-        """ 接受 int/long/str/unicode/float 类型值，
+        """ 
+        接受 int/long/str/unicode/float 类型值，
         否则抛出 TypeError 。
         """
         if is_any_instance(value, basestring, Integral, float):
@@ -18,9 +22,10 @@ class GenericTypeCase:
 
     @staticmethod
     def to_python(value):
-        """ 将传入值转换成 int/long/str/unicode/float 等格式。
-
-        因为 redis 只返回字符串值，这个函数也只接受字符串值，否则抛出 TypeError 。
+        """ 
+        将传入值转换成 int/long/str/unicode/float 等格式。
+        因为 redis 只返回字符串值，这个函数也只接受字符串值，
+        否则抛出 TypeError 。
         """
         if value is None:
             return None

@@ -1,11 +1,15 @@
 # coding: utf-8
 
 class StringTypeCase:
-    """ 处理字符串类型(str或unicode)值的转换。 """
+
+    """ 
+    处理字符串类型(str或unicode)值的转换。 
+    """
 
     @staticmethod
     def to_redis(value):
-        """ 接受 basestring 子类的值( str 或 unicode )，
+        """ 
+        接受 basestring 子类的值( str 或 unicode )，
         否则抛出 TypeError 。
         """
         if isinstance(value, basestring):
@@ -15,7 +19,9 @@ class StringTypeCase:
 
     @staticmethod
     def to_python(value):
-        """ 将值转回str或unicode类型。 """
+        """ 
+        将值转回str或unicode类型。 
+        """
         if value is None:
             return None
         else:
