@@ -11,7 +11,7 @@ OORedis 是一个 Redis 的 Python 库，它基于 redis-py ，具有以下三�
 文档
 ------
 
-`http://ooredis.readthedocs.org/
+在线阅读地址： `http://ooredis.readthedocs.org/
 <http://ooredis.readthedocs.org/>`_ 
     
 
