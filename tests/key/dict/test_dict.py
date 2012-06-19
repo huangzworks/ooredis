@@ -4,9 +4,9 @@
 import redis
 import unittest
 
-from ooredis.mix.dict import Dict
+from ooredis.key.dict import Dict
 from ooredis.client import connect
-from ooredis.mix.helper import format_key
+from ooredis.key.helper import format_key
 from ooredis.type_case import JsonTypeCase
 
 class TestDict(unittest.TestCase):

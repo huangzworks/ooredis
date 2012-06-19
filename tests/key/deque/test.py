@@ -4,7 +4,7 @@ from redis import Redis
 from ooredis import Deque
 from unittest import TestCase
 
-from ooredis.mix.helper import format_key
+from ooredis.key.helper import format_key
 from ooredis.type_case import IntTypeCase
 
 class TestDeque(TestCase):

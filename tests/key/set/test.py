@@ -6,8 +6,8 @@ import unittest
 
 from ooredis.client import connect
 
-from ooredis.mix.set import Set
-from ooredis.mix.helper import format_key
+from ooredis.key.set import Set
+from ooredis.key.helper import format_key
 from ooredis.type_case import FloatTypeCase
     
 class TestSet(unittest.TestCase):

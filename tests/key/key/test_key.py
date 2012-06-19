@@ -4,7 +4,7 @@
 import redis
 import unittest
 
-from ooredis.mix.key import Key
+from ooredis.key.key import Key
 from ooredis.const import REDIS_TYPE
 from ooredis.type_case import GenericTypeCase
 from ooredis.client import connect, get_client

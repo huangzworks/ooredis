@@ -7,8 +7,8 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key, raise_when_wrong_type
+from ooredis.key.key import Key
+from ooredis.key.helper import format_key, raise_when_wrong_type
 
 class Deque(Key):
 

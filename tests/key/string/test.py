@@ -6,7 +6,7 @@ import unittest
 
 from ooredis import String
 from ooredis.client import connect
-from ooredis.mix.helper import format_key
+from ooredis.key.helper import format_key
 from ooredis.type_case import FloatTypeCase
 
 class TestString(unittest.TestCase):

@@ -6,7 +6,7 @@ __metaclass__ = type
 
 from ooredis import String
 from ooredis.type_case import IntTypeCase
-from ooredis.mix.helper import raise_when_wrong_type
+from ooredis.key.helper import raise_when_wrong_type
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
 class Counter(String):

@@ -5,9 +5,9 @@ __all__ = ['String']
 __metaclass__ = type
 
 from functools import wraps
-from ooredis.mix.key import Key
+from ooredis.key.key import Key
 from ooredis.const import REDIS_TYPE
-from ooredis.mix.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, raise_when_wrong_type
 
 
 def raise_when_set_wrong_type(func):

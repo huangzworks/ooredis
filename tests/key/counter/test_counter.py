@@ -4,8 +4,8 @@ import redis
 import unittest
 
 from ooredis.client import connect
-from ooredis.mix.helper import format_key
-from ooredis.mix.counter import Counter
+from ooredis.key.helper import format_key
+from ooredis.key.counter import Counter
 
 class TestCounter(unittest.TestCase):
     

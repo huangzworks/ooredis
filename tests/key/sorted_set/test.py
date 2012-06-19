@@ -5,9 +5,9 @@ import redis
 import unittest
 
 from ooredis.client import connect
-from ooredis.mix.helper import format_key
+from ooredis.key.helper import format_key
 from ooredis.type_case import JsonTypeCase
-from ooredis.mix.sorted_set import SortedSet
+from ooredis.key.sorted_set import SortedSet
     
 class TestSortedSet(unittest.TestCase):
 

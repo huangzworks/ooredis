@@ -6,8 +6,8 @@ __metaclass__ = type
 
 from functools import partial
 
-from ooredis.mix.key import Key
-from ooredis.mix.helper import format_key, raise_when_wrong_type
+from ooredis.key.key import Key
+from ooredis.key.helper import format_key, raise_when_wrong_type
 from ooredis.const import (
     LEFTMOST,
     RIGHTMOST,

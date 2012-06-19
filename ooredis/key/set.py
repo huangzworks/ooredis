@@ -7,9 +7,9 @@ __metaclass__ = type
 import redis
 import collections
 
-from ooredis.mix.key import Key
+from ooredis.key.key import Key
 from ooredis.const import REDIS_TYPE
-from ooredis.mix.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, raise_when_wrong_type
 
 REMOVE_SUCCESS = True
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
