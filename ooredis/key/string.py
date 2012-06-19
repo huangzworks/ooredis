@@ -5,7 +5,7 @@ __all__ = ['String']
 __metaclass__ = type
 
 from functools import wraps
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
 from ooredis.key.helper import format_key, raise_when_wrong_type
 
@@ -25,7 +25,7 @@ def raise_when_set_wrong_type(func):
     return wrapper
 
 
-class String(Key):
+class String(BaseKey):
 
     """
     为储存单个值的 Key 对象提供 set，get 和 getset操作。

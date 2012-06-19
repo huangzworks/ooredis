@@ -7,10 +7,10 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.key.helper import format_key, raise_when_wrong_type
 
-class Deque(Key):
+class Deque(BaseKey):
 
     """ 
     一个双端队列 key 对象，底层实现是 redis 的 list 类型。 

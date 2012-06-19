@@ -1,13 +1,13 @@
 # coding:utf-8
 
-__all__ = ['Key']
+__all__ = ['BaseKey']
 
 __metaclass__ = type
 
 from ooredis.client import get_client
 from ooredis.type_case import GenericTypeCase
 
-class Key:
+class BaseKey:
 
     """ 
     所有其他 key 对象的基类。

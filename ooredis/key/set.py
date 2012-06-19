@@ -7,14 +7,14 @@ __metaclass__ = type
 import redis
 import collections
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
 from ooredis.key.helper import format_key, raise_when_wrong_type
 
 REMOVE_SUCCESS = True
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 
-class Set(Key):
+class Set(BaseKey):
 
     """
     集合 key 对象，底层实现是redis的set类型。 

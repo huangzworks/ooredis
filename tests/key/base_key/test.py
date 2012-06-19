@@ -4,12 +4,12 @@
 import redis
 import unittest
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
 from ooredis.type_case import GenericTypeCase
 from ooredis.client import connect, get_client
 
-class TestKey(unittest.TestCase):
+class TestBaseKey(unittest.TestCase):
     
     def setUp(self):
         connect()
@@ -17,7 +17,7 @@ class TestKey(unittest.TestCase):
         self.name = "name"
         self.value = "value"
 
-        self.key = Key(self.name)
+        self.key = BaseKey(self.name)
 
         self.redispy = redis.Redis()
         self.redispy.flushdb()
@@ -49,13 +49,13 @@ class TestKey(unittest.TestCase):
     def test__eq__TRUE(self):
         self.assertEqual(
             self.key, 
-            Key(self.name)
+            BaseKey(self.name)
         )
 
     def test__eq__FALSE(self):
         self.assertNotEqual(
             self.key,
-            Key('another-key')
+            BaseKey('another-key')
         )
 
 
@@ -65,35 +65,35 @@ class TestKey(unittest.TestCase):
         # string
         self.redispy.set('string', 'string')
         self.assertEqual(
-            Key('string')._represent,
+            BaseKey('string')._represent,
             REDIS_TYPE['string']
         )
 
         # list
         self.redispy.lpush('list', 'itme')
         self.assertEqual(
-            Key('list')._represent,
+            BaseKey('list')._represent,
             REDIS_TYPE['list']
         )
 
         # set
         self.redispy.sadd('set', 'element')
         self.assertEqual(
-            Key('set')._represent,
+            BaseKey('set')._represent,
             REDIS_TYPE['set']
         )
 
         # sorted set
         self.redispy.zadd('sorted_set', 'value', 30)
         self.assertEqual(
-            Key('sorted_set')._represent,
+            BaseKey('sorted_set')._represent,
             REDIS_TYPE['sorted_set']
         )
 
         # hash
         self.redispy.hset('hash', 'field', 'value')
         self.assertEqual(
-            Key('hash')._represent,
+            BaseKey('hash')._represent,
             REDIS_TYPE['hash']
         )
 
@@ -102,7 +102,7 @@ class TestKey(unittest.TestCase):
             self.redispy.exists('not_exists_key')
         )
         self.assertEqual(
-            Key('not_exists_key')._represent,
+            BaseKey('not_exists_key')._represent,
             REDIS_TYPE['not_exists']
         )
 

@@ -7,12 +7,12 @@ __metaclass__ = type
 import collections
 import redis.exceptions as redispy_exception
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.key.helper import format_key, raise_when_wrong_type
 
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
-class Dict(Key, collections.MutableMapping):
+class Dict(BaseKey, collections.MutableMapping):
 
     """
     一个字典对象，底层是 Redis 的 Hash 结构。

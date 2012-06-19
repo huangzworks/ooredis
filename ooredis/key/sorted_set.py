@@ -6,7 +6,7 @@ __metaclass__ = type
 
 from functools import partial
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.key.helper import format_key, raise_when_wrong_type
 from ooredis.const import (
     LEFTMOST,
@@ -24,7 +24,7 @@ MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 VALUE = 0
 SCORE= 1
 
-class SortedSet(Key):
+class SortedSet(BaseKey):
 
     """ 
     有序集对象，底层是redis的zset实现。 

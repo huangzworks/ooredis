@@ -3,7 +3,7 @@
 import redis
 import unittest
 
-from ooredis.key.key import Key
+from ooredis.key.base_key import BaseKey
 from ooredis.key.helper import format_key, raise_when_wrong_type
 
 class TestHelper(unittest.TestCase):
@@ -11,14 +11,14 @@ class TestHelper(unittest.TestCase):
     def setUp(self):
         self.name = "name"
         self.value = "value"
-        self.key = Key(self.name)
+        self.key = BaseKey(self.name)
 
 
     # format_key
 
     def test_format_key(self):
         output = format_key(self.key, self.name, self.value)
-        self.assertEqual( output,"Key Key 'name': value")
+        self.assertEqual( output,"Basekey Key 'name': value")
 
     
     # raise_when_wrong_type
