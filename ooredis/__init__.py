@@ -18,4 +18,4 @@ from key.string import String
 from key.counter import Counter
 from key.deque import Deque
 
-__version__ = "1.9.0"
+__version__ = "1.9.1"
