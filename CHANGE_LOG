@@ -1,5 +1,8 @@
 2.0
 
+将 ooredis.mix 改名为 ooredis.key ，
+将 ooredis.mix.key 改名为 ooredis.key.base_key
+
 SortedSet.rank 不再接受 reverse 参数，
 要计算逆序排名，需要使用新增的 SortedSet.reverse_rank
 
