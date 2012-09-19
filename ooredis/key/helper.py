@@ -7,8 +7,6 @@ __all__ = [
 
 import redis
 
-from functools import wraps
-
 def format_key(key, name, value):
     """ 
     提供对 Key 对象的格式化支持。
@@ -18,9 +16,9 @@ def format_key(key, name, value):
 
 def wrap_exception(func):
     """
-    将 redis-py 抛出的 ResponseError 转换为 TypeError 
+    redis-py 在对数据结构执行不属于它的操作时抛出 ResponseError
+    这里将 ResponseError 转换为 TypeError
     """
-    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
