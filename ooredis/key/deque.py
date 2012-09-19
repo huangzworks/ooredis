@@ -4,8 +4,6 @@ __all__ = ['Deque']
 
 __metaclass__ = type
 
-import numbers
-import collections
 import redis.exceptions as redispy_exception
 
 from ooredis.key.base_key import BaseKey
@@ -294,10 +292,26 @@ class Deque(BaseKey):
             raise TypeError
 
     
-    def __delitem__(self, key):
+    def __delitem__(self, index):
+        """
+        删除列表中给定 index 上的值。
+
+        Args:
+            index ：可以是单个 key ，也可以是一个表示范围的 slice 。
+            item
+
+        Time:
+            O(N)
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
         # TODO: 这个实现带有竞争条件
         all_python_item = list(self)
-        del all_python_item[key]
+        del all_python_item[index]
         self.delete()
         if all_python_item != []:
             self.extend(all_python_item)
@@ -323,8 +337,23 @@ class Deque(BaseKey):
 
 
     def __getitem__(self, index):
-        all_item = list(self)
-        return all_item[index]
+        """
+        返回列表中给定 index 上的值。
+
+        Args:
+            index ：可以是单个 key ，也可以是一个表示范围的 slice 。
+            item
+
+        Time:
+            O(N)
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        return list(self)[index]
 
 
     def __setitem__(self, index, item):
