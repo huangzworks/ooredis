@@ -1,5 +1,7 @@
 2.0
 
+内部：将 raise_when_wrong_type 改名为 wrap_exception
+
 将 ooredis.mix 改名为 ooredis.key ，
 将 ooredis.mix.key 改名为 ooredis.key.base_key
 

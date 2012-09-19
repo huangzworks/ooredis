@@ -7,7 +7,7 @@ __metaclass__ = type
 from functools import partial
 
 from ooredis.key.base_key import BaseKey
-from ooredis.key.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, wrap_exception
 from ooredis.const import (
     LEFTMOST,
     RIGHTMOST,
@@ -34,7 +34,7 @@ class SortedSet(BaseKey):
         return format_key(self, self.name, list(self))
   
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __len__(self):
         """ 
         返回有序集的基数。
@@ -54,7 +54,7 @@ class SortedSet(BaseKey):
         return self._client.zcard(self.name)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __contains__(self, element):
         """ 
         检查给定元素 element 是否是有序集的成员。 
@@ -80,7 +80,7 @@ class SortedSet(BaseKey):
         return element_score is not None
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __setitem__(self, member, new_score):
         """ 
         将元素 member 的 score 值更新为 new_score 。
@@ -105,7 +105,7 @@ class SortedSet(BaseKey):
         self._client.zadd(self.name, redis_memeber, new_score)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __getitem__(self, index):
         """ 
         返回有序集指定下标内的元素。
@@ -140,7 +140,7 @@ class SortedSet(BaseKey):
             return item_to_dict_list(items)[0]
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __delitem__(self, index):
         """ 
         删除有序集指定下标内的元素。
@@ -169,7 +169,7 @@ class SortedSet(BaseKey):
                 raise IndexError
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def remove(self, member):
         """ 
         移除有序集成员member，如果member不存在，不做动作。
@@ -190,7 +190,7 @@ class SortedSet(BaseKey):
         self._client.zrem(self.name, redis_member)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def rank(self, member):
         """ 
         按从小到大的顺序(正序)返回有序集成员 member 的 score 值的排名。
@@ -212,7 +212,7 @@ class SortedSet(BaseKey):
         return self._client.zrank(self.name, redis_member)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def reverse_rank(self, member):
         """
         按从大到小的顺序(逆序)返回有序集成员 member 的 score 值排名。
@@ -234,7 +234,7 @@ class SortedSet(BaseKey):
         return self._client.zrevrank(self.name, redis_member)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def score(self, member):
         """ 
         返回有序集中成员 member 的 score 值。
@@ -256,7 +256,7 @@ class SortedSet(BaseKey):
         return self._client.zscore(self.name, redis_member)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def incr(self, member, increment=DEFAULT_INCREMENT):  
         """ 
         将 member 的 score 值加上 increment 。 

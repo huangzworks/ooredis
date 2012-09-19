@@ -4,7 +4,7 @@ import redis
 import unittest
 
 from ooredis.key.base_key import BaseKey
-from ooredis.key.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, wrap_exception
 
 class TestHelper(unittest.TestCase):
 
@@ -21,20 +21,20 @@ class TestHelper(unittest.TestCase):
         self.assertEqual( output,"Basekey Key 'name': value")
 
     
-    # raise_when_wrong_type
+    # wrap_exception
 
-    def test_raise_when_wrong_type_RAISE_TYPE_ERROR_when_ERROR_OCCUR(self):
+    def test_wrap_exception_RAISE_TYPE_ERROR_when_ERROR_OCCUR(self):
 
-        @raise_when_wrong_type
+        @wrap_exception
         def r():
             raise redis.exceptions.ResponseError
 
         with self.assertRaises(TypeError):
             r() 
 
-    def test_raise_when_wrong_type_NOT_RAISE_when_NO_ERROR_OCCUR(self):
+    def test_wrap_exception_NOT_RAISE_when_NO_ERROR_OCCUR(self):
 
-        @raise_when_wrong_type
+        @wrap_exception
         def f():
             return 10
 

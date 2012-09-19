@@ -9,7 +9,7 @@ import collections
 
 from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
-from ooredis.key.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, wrap_exception
 
 REMOVE_SUCCESS = True
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
@@ -24,7 +24,7 @@ class Set(BaseKey):
         return format_key(self, self.name, set(self))
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __len__(self):
         """ 
         返回集合中元素的个数。
@@ -66,7 +66,7 @@ class Set(BaseKey):
             raise TypeError
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __contains__(self, element):
         """ 
         检查给定元素 element 是否集合的成员。
@@ -87,7 +87,7 @@ class Set(BaseKey):
         return self._client.sismember(self.name, redis_element)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def add(self, element):
         """ 
         将 element 加入到集合当中。
@@ -111,7 +111,7 @@ class Set(BaseKey):
         self._client.sadd(self.name, redis_element)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def remove(self, element):
         """ 
         如果 element 是集合的成员，移除它。
@@ -137,7 +137,7 @@ class Set(BaseKey):
             raise KeyError
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def pop(self):
         """ 
         移除并返回集合中任意一个成员。
@@ -164,7 +164,7 @@ class Set(BaseKey):
             return python_member
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def random(self):
         """ 
         随机返回集合中的某个元素。
@@ -190,7 +190,7 @@ class Set(BaseKey):
         return python_member
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def move(self, destination, member):
         """ 
         将集合成员 member 移动到另一个集合 destination 中去。
@@ -353,7 +353,7 @@ class Set(BaseKey):
     __ror__.__doc__ = """ __or__的反向方法，用于支持多集合对象进行并集操作。"""
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __ior__(self, other):
         """
         计算 self 和 other 之间的并集，并将结果设置为 self 的值。
@@ -405,7 +405,7 @@ class Set(BaseKey):
     __rand__.__doc__ = """ __and__的反向方法，用于支持多集合进行交集操作。 """
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __iand__(self, other):
         """
         计算 self 和 other 之间的交集，并将结果设置为 self 的值。
@@ -465,7 +465,7 @@ class Set(BaseKey):
         return set(other) - set(self)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def __isub__(self, other):
         """
         计算 self 和 other 之间的差集，并将结果设置为 self 的值。

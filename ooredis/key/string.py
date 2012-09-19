@@ -7,7 +7,7 @@ __metaclass__ = type
 from functools import wraps
 from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
-from ooredis.key.helper import format_key, raise_when_wrong_type
+from ooredis.key.helper import format_key, wrap_exception
 
 
 def raise_when_set_wrong_type(func):
@@ -103,7 +103,7 @@ class String(BaseKey):
         return self._client.setex(self.name, redis_value, ttl_in_second)
 
 
-    @raise_when_wrong_type
+    @wrap_exception
     def get(self):
         """
         返回 Key 对象的值。
@@ -125,7 +125,7 @@ class String(BaseKey):
         return python_value
 
    
-    @raise_when_wrong_type
+    @wrap_exception
     def getset(self, python_value):
         """ 
         修改 Key 对象的值，并返回 Key 对象之前储存的值。
