@@ -328,4 +328,25 @@ class Deque(BaseKey):
 
 
     def __setitem__(self, index, item):
-        raise Exception
+        """
+        将列表中给定 index 上的值设置为 item 。
+
+        Args:
+            index ：可以是单个 key ，也可以是一个表示范围的 slice 。
+            item
+
+        Time:
+            O(N)
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
+        """
+        # TODO: 这个实现带有竞争条件
+        all_python_item = list(self)
+        all_python_item[index] = item
+        self.delete()
+        if all_python_item != []:
+            self.extend(all_python_item)

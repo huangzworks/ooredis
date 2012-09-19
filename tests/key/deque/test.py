@@ -420,3 +420,35 @@ class TestDeque(TestCase):
             list(self.d),
             []
         )
+
+
+    # __setitem__
+
+    # d[i]
+
+    def test__setitem__by_SINGLE_INDEX(self):
+        self.d.append(self.item)
+
+        self.d[0] = self.another_item
+        self.assertEqual(
+            list(self.d),
+            [self.another_item]
+        )
+
+    # d[i:j]
+
+    def test__setitem__by_SLICE(self):
+        self.d.extend(self.multi_item)
+
+        self.d[1:3] = []
+        self.assertEqual(
+            list(self.d),
+            self.multi_item[:1]
+        )
+
+    # wrong type
+
+    def test__setitem__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            self.d[0] = self.item
