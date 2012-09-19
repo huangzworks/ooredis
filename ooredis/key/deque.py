@@ -4,6 +4,7 @@ __all__ = ['Deque']
 
 __metaclass__ = type
 
+import numbers
 import collections
 import redis.exceptions as redispy_exception
 
@@ -292,9 +293,33 @@ class Deque(BaseKey):
         except redispy_exception.ResponseError:
             raise TypeError
 
-
+    
     def __delitem__(self, key):
-        raise Exception 
+        # TODO: 这个实现带有竞争条件
+        all_python_item = list(self)
+        del all_python_item[key]
+        self.delete()
+        if all_python_item != []:
+            self.extend(all_python_item)
+        """
+        # del self[index]
+        # ...
+
+        # del self[:]
+        if key.start is None and key.stop is None:
+            self.delete()
+
+        # del self[i:]
+        if key.start is not None and key.stop is None:
+            self._client.ltrim(self.name, 0, key.start-1)
+
+        # del self[:j]
+        if key.start is None and key.stop is not None:
+            self._client.ltrim(self.name, key.stop, -1)
+
+        # del self[i:j]
+        # ...
+        """
 
 
     def __getitem__(self, index):

@@ -5,7 +5,7 @@ from ooredis import Deque
 from unittest import TestCase
 
 from ooredis.key.helper import format_key
-from ooredis.type_case import IntTypeCase
+from ooredis.type_case import JsonTypeCase
 
 class TestDeque(TestCase):
 
@@ -17,7 +17,7 @@ class TestDeque(TestCase):
 
         self.multi_item = [123, 321, 231]
 
-        self.d = Deque('deque', type_case=IntTypeCase)
+        self.d = Deque('deque', type_case=JsonTypeCase)
    
     def tearDown(self):
         self.redispy.flushdb()
@@ -334,8 +334,41 @@ class TestDeque(TestCase):
             self.set_wrong_type(self.d)
             self.d[0]
 
-    """
+
     # __delitem__
+    
+    # wrong type
+
+    def test__delitem__RAISE_when_WRONG_TYPE(self):
+        with self.assertRaises(TypeError):
+            self.set_wrong_type(self.d)
+            del self.d[1]
+
+    # del d[i]
+    
+    def test__delitem__by_INDEX_RAISE_when_OUT_OF_INDEX(self):
+        with self.assertRaises(IndexError):
+            del self.d[10086]
+
+    def test__delitem__by_INDEX_with_SINGLE_ITEM(self):
+        self.d.append(self.item)
+
+        del self.d[0]
+        self.assertEqual(
+            list(self.d),
+            []
+        )
+
+    def test__delitem__by_INDEX_with_MULTI_ITEM(self):
+        self.d.extend(self.multi_item)
+
+        del self.d[0]
+        self.assertEqual(
+            list(self.d),
+            self.multi_item[1:]
+        )
+
+    # del d[:]
 
     def test__delitem__DELETE_ALL_ITEM_when_EMPTY(self):
         del self.d[:]
@@ -353,37 +386,37 @@ class TestDeque(TestCase):
         del self.d[:]
         assert list(self.d) == []
 
-    # use left range
+    # del d[i:]
 
     def test__delitem__given_LEFT_RANGE(self):
-        self.d.append(self.multi_item)
+        self.d.extend(self.multi_item)
 
         del self.d[1:]
-        self.assertEqual(list(self.d), list(self.multi_item[0]))
-        assert list(self.d) == list(self.multi_item[0])
 
-    # use index
+        self.assertEqual(
+            list(self.d), 
+            self.multi_item[:1]
+        )
 
-    def test__delitem__by_INDEX_RAISE_when_OUT_OF_INDEX(self):
-        with self.assertRaises(IndexError):
-            del self.d[10086]
+    # del d[:j]
 
-    def test__delitem__by_INDEX_with_SINGLE_ITEM(self):
-        self.d.append(self.item)
+    def test__delitem__given_RIGHT_RANGE(self):
+        self.d.extend(self.multi_item)
 
-        del self.d[0]
-        assert list(self.d) == []
+        del self.d[:1]
 
-    def test__delitem__by_INDEX_with_MULTI_ITEM(self):
-        self.d.append(self.multi_item)
+        self.assertEqual(
+            list(self.d),
+            self.multi_item[1:]
+        )
 
-        del self.d[0]
-        assert list(self.d) == self.multi_item[1:]
+    # del d[i:j]
 
-    # wrong type
+    def test__delitem__by_SLICE_INDEX_with_MULTI_ITEM(self):
+        self.d.extend(self.multi_item)
 
-    def test__delitem__RAISE_when_WRONG_TYPE(self):
-        with self.assertRaises(TypeError):
-            self.set_wrong_type(self.d)
-            del self.d[:]
-    """
+        del self.d[0:3]
+        self.assertEqual(
+            list(self.d),
+            []
+        )
