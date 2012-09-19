@@ -23,6 +23,26 @@ class Dict(BaseKey, collections.MutableMapping):
 
 
     @wrap_exception
+    def __contains__(self, key):
+        """
+        检查给定 key 是否存在于字典中。
+
+        Args:
+            key
+
+        Time:
+            O(1)
+
+        Returns:
+            bool
+
+        Raises:
+            TypeError: Key 对象不是 Dict 类型时抛出。
+        """
+        return self._client.hexists(self.name, key)
+    
+
+    @wrap_exception
     def __setitem__(self, key, python_value):
         """ 
         将字典中键 key 的值设为 python_value 。
@@ -64,9 +84,7 @@ class Dict(BaseKey, collections.MutableMapping):
             KeyError: key 不存在时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        # 没有自己实现 __contains__ 的话
-        # 不要使用 key in self ，否则将引起死循环
-        if not self._client.hexists(self.name, key):
+        if not key in self:
             raise KeyError
 
         redis_value = self._client.hget(self.name, key)

@@ -38,6 +38,21 @@ class TestDict(unittest.TestCase):
             format_key(self.d, self.name, dict(self.d))
         )
 
+    
+    # __contains__
+
+    def test__contains__return_True(self):
+        self.d[self.key] = self.value
+
+        self.assertTrue(
+            self.key in self.d
+        )
+
+    def test__contains__return_False(self):
+        self.assertFalse(
+            self.key in self.d
+        )
+
 
     # __setitem__
 
