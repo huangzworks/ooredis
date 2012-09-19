@@ -14,47 +14,47 @@ class TestGeneric(TestCase):
 
         self.wrong_type_input = set()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_ACCEPT_STRING(self):
-        assert GenericTypeCase.to_redis(self.s) == self.s
+    def test_encode_ACCEPT_STRING(self):
+        assert GenericTypeCase.encode(self.s) == self.s
     
-    def test_to_redis_ACCEPT_UNICODE(self):
-        assert GenericTypeCase.to_redis(self.u) == self.u
+    def test_encode_ACCEPT_UNICODE(self):
+        assert GenericTypeCase.encode(self.u) == self.u
 
-    def test_to_redis_ACCEPT_INT(self):
-        assert GenericTypeCase.to_redis(self.i) == self.i
+    def test_encode_ACCEPT_INT(self):
+        assert GenericTypeCase.encode(self.i) == self.i
 
-    def test_to_redis_ACCEPT_LONG(self):
-        assert GenericTypeCase.to_redis(self.l) == self.l
+    def test_encode_ACCEPT_LONG(self):
+        assert GenericTypeCase.encode(self.l) == self.l
 
-    def test_to_redis_ACCEPT_FLOAT(self):
-        assert GenericTypeCase.to_redis(self.f) == self.f
+    def test_encode_ACCEPT_FLOAT(self):
+        assert GenericTypeCase.encode(self.f) == self.f
 
-    def test_to_redis_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_encode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            GenericTypeCase.to_redis(self.wrong_type_input)
+            GenericTypeCase.encode(self.wrong_type_input)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert GenericTypeCase.to_python(None) is None
+    def test_decode_RETURN_NONE(self):
+        assert GenericTypeCase.decode(None) is None
 
-    def test_to_python_RETURN_STRING(self):
-        assert GenericTypeCase.to_python(str(self.s)) == self.s
+    def test_decode_RETURN_STRING(self):
+        assert GenericTypeCase.decode(str(self.s)) == self.s
 
-    def test_to_python_RETURN_UNICODE(self):
-        assert GenericTypeCase.to_python(unicode(self.u)) == self.u
+    def test_decode_RETURN_UNICODE(self):
+        assert GenericTypeCase.decode(unicode(self.u)) == self.u
 
-    def test_to_python_RETURN_INT(self):
-        assert GenericTypeCase.to_python(str(self.i)) == self.i
+    def test_decode_RETURN_INT(self):
+        assert GenericTypeCase.decode(str(self.i)) == self.i
 
-    def test_to_python_RETURN_LONG(self):
-        assert GenericTypeCase.to_python(str(self.l)) == self.l
+    def test_decode_RETURN_LONG(self):
+        assert GenericTypeCase.decode(str(self.l)) == self.l
 
-    def test_to_python_RETURN_FLOAT(self):
-        assert GenericTypeCase.to_python(str(self.f)) == self.f
+    def test_decode_RETURN_FLOAT(self):
+        assert GenericTypeCase.decode(str(self.f)) == self.f
 
-    def test_to_python_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_decode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            GenericTypeCase.to_python(self.l)
+            GenericTypeCase.decode(self.l)

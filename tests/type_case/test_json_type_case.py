@@ -15,23 +15,23 @@ class TestJson(TestCase):
 
         self.wrong_type_input = UnJsonableObj()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_with_JSONABLE(self):
-        assert JsonTypeCase.to_redis(self.s) == json.dumps(self.s)
+    def test_encode_with_JSONABLE(self):
+        assert JsonTypeCase.encode(self.s) == json.dumps(self.s)
 
-    def test_to_redis_RAISE_when_INPUT_UN_JSONABLE(self):
+    def test_encode_RAISE_when_INPUT_UN_JSONABLE(self):
         with self.assertRaises(TypeError):
-            JsonTypeCase.to_redis(self.wrong_type_input)
+            JsonTypeCase.encode(self.wrong_type_input)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert JsonTypeCase.to_python(None) == None
+    def test_decode_RETURN_NONE(self):
+        assert JsonTypeCase.decode(None) == None
 
-    def test_to_python_RETURN_JSONABLE(self):
-        assert JsonTypeCase.to_python(json.dumps(self.s)) == self.s
+    def test_decode_RETURN_JSONABLE(self):
+        assert JsonTypeCase.decode(json.dumps(self.s)) == self.s
 
-    def test_to_python_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_decode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            JsonTypeCase.to_python(self.wrong_type_input)
+            JsonTypeCase.decode(self.wrong_type_input)

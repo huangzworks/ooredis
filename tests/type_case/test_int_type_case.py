@@ -11,29 +11,29 @@ class TestInt(TestCase):
 
         self.wrong_type_input = set()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_ACCEPT_INT(self):
-        assert IntTypeCase.to_redis(self.i) == self.i
+    def test_encode_ACCEPT_INT(self):
+        assert IntTypeCase.encode(self.i) == self.i
 
-    def test_to_redis_ACCEPT_LONG(self):
-        assert IntTypeCase.to_redis(self.l) == self.l
+    def test_encode_ACCEPT_LONG(self):
+        assert IntTypeCase.encode(self.l) == self.l
 
-    def test_to_redis_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_encode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            IntTypeCase.to_redis(self.wrong_type_input)
+            IntTypeCase.encode(self.wrong_type_input)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert IntTypeCase.to_python(None) == None
+    def test_decode_RETURN_NONE(self):
+        assert IntTypeCase.decode(None) == None
 
-    def test_to_python_RETURN_INT(self):    
-        assert IntTypeCase.to_python(str(self.i)) == self.i
+    def test_decode_RETURN_INT(self):    
+        assert IntTypeCase.decode(str(self.i)) == self.i
 
-    def test_to_python_RETURN_LONG(self):
-        assert IntTypeCase.to_python(str(self.l)) == self.l
+    def test_decode_RETURN_LONG(self):
+        assert IntTypeCase.decode(str(self.l)) == self.l
 
-    def test_to_python_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_decode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            IntTypeCase.to_python(self.wrong_type_input)
+            IntTypeCase.decode(self.wrong_type_input)

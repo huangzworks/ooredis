@@ -60,7 +60,7 @@ class Set(BaseKey):
         """
         try:
             for redis_member in self._client.smembers(self.name):
-                python_member = self._type_case.to_python(redis_member)
+                python_member = self.decode(redis_member)
                 yield python_member
         except redis.exceptions.ResponseError:
             raise TypeError
@@ -83,7 +83,7 @@ class Set(BaseKey):
         Raises:
             TypeError: 当 key 不是 redis 的 set 类型时抛出。
         """
-        redis_element = self._type_case.to_redis(element)
+        redis_element = self.encode(element)
         return self._client.sismember(self.name, redis_element)
 
 
@@ -107,7 +107,7 @@ class Set(BaseKey):
         Raises:
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
-        redis_element = self._type_case.to_redis(element)
+        redis_element = self.encode(element)
         self._client.sadd(self.name, redis_element)
 
 
@@ -131,7 +131,7 @@ class Set(BaseKey):
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
             KeyError： 要移除的元素 element 不存在于集合时抛出。
         """
-        redis_element = self._type_case.to_redis(element)
+        redis_element = self.encode(element)
         remove_state = self._client.srem(self.name, redis_element)
         if remove_state != REMOVE_SUCCESS:
             raise KeyError
@@ -157,7 +157,7 @@ class Set(BaseKey):
             KeyError: 集合为空集时抛出。
         """
         redis_member = self._client.spop(self.name)
-        python_member = self._type_case.to_python(redis_member)
+        python_member = self.decode(redis_member)
         if python_member is None:
             raise KeyError
         else:
@@ -186,7 +186,7 @@ class Set(BaseKey):
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
         redis_element = self._client.srandmember(self.name)
-        python_member = self._type_case.to_python(redis_element)
+        python_member = self.decode(redis_element)
         return python_member
 
 
@@ -211,7 +211,7 @@ class Set(BaseKey):
             KeyError: 要被移动的元素 member 不存在于集合时抛出。
             TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         state = self._client.smove(self.name, destination.name, redis_member)
         if state == MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET:
             raise KeyError
@@ -373,7 +373,7 @@ class Set(BaseKey):
         """
         if isinstance(other, set):
             elements = set(self) | other
-            redis_elements = map(self._type_case.to_redis, elements)
+            redis_elements = map(self.encode, elements)
             self._client.sadd(self.name, *redis_elements)
         else:
             self._client.sunionstore(self.name, [self.name, other.name])
@@ -425,7 +425,7 @@ class Set(BaseKey):
         """
         if isinstance(other, set):
             elements = set(self) - (set(self) & other)
-            redis_elements = map(self._type_case.to_redis, elements)
+            redis_elements = map(self.encode, elements)
             self._client.srem(self.name, *redis_elements)
         elif other.exists and other._represent != REDIS_TYPE['set']:
             raise TypeError
@@ -485,7 +485,7 @@ class Set(BaseKey):
         """
         if isinstance(other, set):
             remove_elements = set(self) & other
-            redis_elements = map(self._type_case.to_redis, remove_elements)
+            redis_elements = map(self.encode, remove_elements)
             self._client.srem(self.name, *redis_elements)
         else:
             self._client.sdiffstore(self.name, [self.name, other.name])

@@ -41,7 +41,7 @@ class Dict(BaseKey, collections.MutableMapping):
         Raises:
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        redis_value = self._type_case.to_redis(python_value)
+        redis_value = self.encode(python_value)
         self._client.hset(self.name, key, redis_value)
 
 
@@ -70,7 +70,7 @@ class Dict(BaseKey, collections.MutableMapping):
             raise KeyError
 
         redis_value = self._client.hget(self.name, key)
-        python_value = self._type_case.to_python(redis_value)
+        python_value = self.decode(redis_value)
 
         return python_value
 

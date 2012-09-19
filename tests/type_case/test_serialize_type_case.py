@@ -14,21 +14,21 @@ class TestSerializeTypeCase(TestCase):
         self.s = 'str'
         self.c = SerializeAbleClass()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_with_STR(self):
-        assert SerializeTypeCase.to_redis(self.s) == pickle.dumps(self.s)
+    def test_encode_with_STR(self):
+        assert SerializeTypeCase.encode(self.s) == pickle.dumps(self.s)
 
-    def test_to_redis_with_CLASS(self):
-        assert SerializeTypeCase.to_redis(self.c) == pickle.dumps(self.c)
+    def test_encode_with_CLASS(self):
+        assert SerializeTypeCase.encode(self.c) == pickle.dumps(self.c)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert SerializeTypeCase.to_python(None) == None
+    def test_decode_RETURN_NONE(self):
+        assert SerializeTypeCase.decode(None) == None
 
-    def test_to_python_RETURN_STR(self):
-        assert SerializeTypeCase.to_python(SerializeTypeCase.to_redis(self.s)) == self.s
+    def test_decode_RETURN_STR(self):
+        assert SerializeTypeCase.decode(SerializeTypeCase.encode(self.s)) == self.s
 
-    def test_to_python_RETURN_CLASS(self):
-        assert isinstance(SerializeTypeCase.to_python(SerializeTypeCase.to_redis(self.c)), SerializeAbleClass)
+    def test_decode_RETURN_CLASS(self):
+        assert isinstance(SerializeTypeCase.decode(SerializeTypeCase.encode(self.c)), SerializeAbleClass)

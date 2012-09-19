@@ -11,26 +11,26 @@ class TestFloat(TestCase):
 
         self.wrong_type_input = set()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_ACCEPT_FLOAT(self):
-        assert FloatTypeCase.to_redis(self.f) == self.f
+    def test_encode_ACCEPT_FLOAT(self):
+        assert FloatTypeCase.encode(self.f) == self.f
 
-    def test_to_redis_ACCEPT_INT(self):
-        assert FloatTypeCase.to_redis(self.i) == float(self.i)
+    def test_encode_ACCEPT_INT(self):
+        assert FloatTypeCase.encode(self.i) == float(self.i)
 
-    def test_to_redis_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_encode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            FloatTypeCase.to_redis(self.wrong_type_input)
+            FloatTypeCase.encode(self.wrong_type_input)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert FloatTypeCase.to_python(None) == None
+    def test_decode_RETURN_NONE(self):
+        assert FloatTypeCase.decode(None) == None
 
-    def test_to_python_RETURN_FLOAT(self):
-        assert FloatTypeCase.to_python(str(self.f)) == self.f
+    def test_decode_RETURN_FLOAT(self):
+        assert FloatTypeCase.decode(str(self.f)) == self.f
 
-    def test_to_python_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_decode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            FloatTypeCase.to_python(self.wrong_type_input)
+            FloatTypeCase.decode(self.wrong_type_input)

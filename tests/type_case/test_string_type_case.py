@@ -11,25 +11,25 @@ class TestString(TestCase):
 
         self.wrong_type_input = set()
 
-    # to_redis
+    # encode
 
-    def test_to_redis_ACCEPT_STR(self):
-        assert StringTypeCase.to_redis(self.s) == self.s
+    def test_encode_ACCEPT_STR(self):
+        assert StringTypeCase.encode(self.s) == self.s
 
-    def test_to_redis_ACCEPT_UNICODE(self):
-        assert StringTypeCase.to_redis(self.u) == self.u
+    def test_encode_ACCEPT_UNICODE(self):
+        assert StringTypeCase.encode(self.u) == self.u
 
-    def test_to_redis_RAISE_when_INPUT_WRONG_TYPE(self):
+    def test_encode_RAISE_when_INPUT_WRONG_TYPE(self):
         with self.assertRaises(TypeError):
-            StringTypeCase.to_redis(self.wrong_type_input)
+            StringTypeCase.encode(self.wrong_type_input)
 
-    # to_python
+    # decode
 
-    def test_to_python_RETURN_NONE(self):
-        assert StringTypeCase.to_python(None) == None
+    def test_decode_RETURN_NONE(self):
+        assert StringTypeCase.decode(None) == None
 
-    def test_to_python_RETURN_STR(self):
-        assert StringTypeCase.to_python(self.s) == self.s
+    def test_decode_RETURN_STR(self):
+        assert StringTypeCase.decode(self.s) == self.s
 
-    def test_to_python_RETURN_UNICODE(self):
-        assert StringTypeCase.to_python(self.u) == self.u
+    def test_decode_RETURN_UNICODE(self):
+        assert StringTypeCase.decode(self.u) == self.u

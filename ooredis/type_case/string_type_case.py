@@ -7,7 +7,7 @@ class StringTypeCase:
     """
 
     @staticmethod
-    def to_redis(value):
+    def encode(value):
         """ 
         接受 basestring 子类的值( str 或 unicode )，
         否则抛出 TypeError 。
@@ -18,7 +18,7 @@ class StringTypeCase:
         raise TypeError
 
     @staticmethod
-    def to_python(value):
+    def decode(value):
         """ 
         将值转回str或unicode类型。 
         """

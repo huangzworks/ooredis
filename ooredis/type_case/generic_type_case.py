@@ -10,7 +10,7 @@ class GenericTypeCase:
     """
 
     @staticmethod
-    def to_redis(value):
+    def encode(value):
         """ 
         接受 int/long/str/unicode/float 类型值，
         否则抛出 TypeError 。
@@ -21,7 +21,7 @@ class GenericTypeCase:
         raise TypeError
 
     @staticmethod
-    def to_python(value):
+    def decode(value):
         """ 
         将传入值转换成 int/long/str/unicode/float 等格式。
         因为 redis 只返回字符串值，这个函数也只接受字符串值，

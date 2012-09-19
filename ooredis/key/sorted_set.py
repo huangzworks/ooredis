@@ -75,7 +75,7 @@ class SortedSet(BaseKey):
         # 所以这里用 ZSCORE 命令 hack 一个：
         # 如果 ZSCORE key member 不为 None ，证明 element 是有序集成员。
         # 注意，这里不能用 self.score ，因为这两个方法互相引用。
-        redis_element = self._type_case.to_redis(element)
+        redis_element = self.encode(element)
         element_score = self._client.zscore(self.name, redis_element)
         return element_score is not None
 
@@ -101,7 +101,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当key不是有序集类型时抛出。
         """
-        redis_memeber = self._type_case.to_redis(member)
+        redis_memeber = self.encode(member)
         self._client.zadd(self.name, redis_memeber, new_score)
 
 
@@ -128,7 +128,7 @@ class SortedSet(BaseKey):
         item_to_dict_list = \
             partial(map,
                     lambda item: dict(
-                        value=self._type_case.to_python(item[VALUE]), 
+                        value=self.decode(item[VALUE]), 
                         score=item[SCORE]
                     ))
 
@@ -186,7 +186,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当 key 不是有序集类型时抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         self._client.zrem(self.name, redis_member)
 
 
@@ -208,7 +208,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当 key 不是有序集类型时由 in 语句抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         return self._client.zrank(self.name, redis_member)
 
 
@@ -230,7 +230,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当 key 不是有序集类型时由 in 语句抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         return self._client.zrevrank(self.name, redis_member)
 
 
@@ -252,7 +252,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当 key 不是有序集类型时抛出，由 in 语句抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         return self._client.zscore(self.name, redis_member)
 
 
@@ -277,7 +277,7 @@ class SortedSet(BaseKey):
         Raises:
             TypeError: 当 key 不是有序集类型时抛出。
         """
-        redis_member = self._type_case.to_redis(member)
+        redis_member = self.encode(member)
         return self._client.zincrby(self.name, redis_member, increment)
 
 

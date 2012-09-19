@@ -1,5 +1,12 @@
 2.0
 
+内部：将原本的 Key._type_case.to_redis 改为 Key.encode
+      将原本的 Key._type_case.to_python 改为 Key.decode
+      删除 Key._type_case 属性
+
+API：所有 TypeCase.to_redis 方法改为 TypeCase.encode
+     所有 TypeCase.to_python 方法改为 TypeCase.decode 
+
 内部：将 raise_when_wrong_type 改名为 wrap_exception
 
 将 ooredis.mix 改名为 ooredis.key ，

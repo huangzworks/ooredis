@@ -39,8 +39,12 @@ class TestBaseKey(unittest.TestCase):
         )
 
         self.assertEqual(
-            self.key._type_case,
-            GenericTypeCase
+            self.key.encode,
+            GenericTypeCase.encode
+        )
+        self.assertEqual(
+            self.key.decode,
+            GenericTypeCase.decode
         )
 
 

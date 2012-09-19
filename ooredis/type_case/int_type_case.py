@@ -9,7 +9,7 @@ class IntTypeCase:
     """
 
     @staticmethod
-    def to_redis(value):
+    def encode(value):
         """ 
         接受 int 类型值，否则抛出 TypeError 。 
         """
@@ -19,7 +19,7 @@ class IntTypeCase:
         raise TypeError
 
     @staticmethod
-    def to_python(value):
+    def decode(value):
         """ 
         尝试将值转回 int 类型，
         如果转换失败，抛出 TypeError。

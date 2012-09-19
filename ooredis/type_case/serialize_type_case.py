@@ -9,7 +9,7 @@ class SerializeTypeCase:
     """
 
     @staticmethod
-    def to_redis(value):
+    def encode(value):
         """ 
         将值序列化(包括自定义类和 Python 内置类)。
         如果传入的值无法被序列化，抛出 TypeError 。
@@ -20,7 +20,7 @@ class SerializeTypeCase:
             raise TypeError
 
     @staticmethod
-    def to_python(value):
+    def decode(value):
         """ 
         将序列化的字符串转换回原来的对象，
         如果传入值无法进行反序列化，抛出 TypeError 。

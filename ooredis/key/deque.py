@@ -32,7 +32,7 @@ class Deque(BaseKey):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        redis_item = self._type_case.to_redis(python_item)
+        redis_item = self.encode(python_item)
         self._client.rpush(self.name, redis_item)
 
 
@@ -53,7 +53,7 @@ class Deque(BaseKey):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        redis_item = self._type_case.to_redis(python_item)
+        redis_item = self.encode(python_item)
         self._client.lpush(self.name, redis_item)
 
 
@@ -73,7 +73,7 @@ class Deque(BaseKey):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        redis_iterable = map(self._type_case.to_redis, python_iterable)
+        redis_iterable = map(self.encode, python_iterable)
         self._client.rpush(self.name, *redis_iterable)
 
 
@@ -99,7 +99,7 @@ class Deque(BaseKey):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        redis_iterable = map(self._type_case.to_redis, python_iterable)
+        redis_iterable = map(self.encode, python_iterable)
         self._client.lpush(self.name, *redis_iterable)
 
 
@@ -160,7 +160,7 @@ class Deque(BaseKey):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         redis_item = self._client.rpop(self.name)
-        python_item = self._type_case.to_python(redis_item)
+        python_item = self.decode(redis_item)
         if python_item is None:
             raise IndexError
         else:
@@ -190,7 +190,7 @@ class Deque(BaseKey):
         redis_queue_name_and_item_list = self._client.brpop(self.name, timeout)
         if redis_queue_name_and_item_list is not None:
             redis_item = redis_queue_name_and_item_list[1]
-            python_item = self._type_case.to_python(redis_item)
+            python_item = self.decode(redis_item)
             return python_item
 
 
@@ -215,7 +215,7 @@ class Deque(BaseKey):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         redis_item = self._client.lpop(self.name)
-        python_item = self._type_case.to_python(redis_item)
+        python_item = self.decode(redis_item)
         if python_item is None:
             raise IndexError
         else:
@@ -245,7 +245,7 @@ class Deque(BaseKey):
         redis_queue_name_and_item_list = self._client.blpop(self.name, timeout)
         if redis_queue_name_and_item_list is not None:
             redis_item = redis_queue_name_and_item_list[1]
-            python_item = self._type_case.to_python(redis_item) 
+            python_item = self.decode(redis_item) 
             return python_item
 
 
@@ -287,7 +287,7 @@ class Deque(BaseKey):
         try:
             all_redis_item = self._client.lrange(self.name, 0, -1)
             for redis_item in all_redis_item:
-                python_item = self._type_case.to_python(redis_item)
+                python_item = self.decode(redis_item)
                 yield python_item
         except redispy_exception.ResponseError:
             raise TypeError
