@@ -18,10 +18,10 @@ OORedis 是一个 Redis 的 Python 库，它基于 redis-py ，具有以下三�
     >>>
     >>> project = Dict('project-info')
     >>> project['name'] = 'OORedis'
-    >>> project['description'] = 'A Redis-to-Python mapper'
+    >>> project['description'] = 'A Python-to-Redis mapper'
     >>> project['language'] = 'Python'
     >>> project.items()
-    [('name', 'OORedis'), ('type', 'Redis-to-Python mapper'), ('description', 'A Redis-to-Python mapper'), ('language', 'Python')]
+    [('name', 'OORedis'),  ('description', 'A Python-to-Redis mapper'), ('language', 'Python')]
     >>>
     >>> book_list = Deque('my-book-list')
     >>> book_list.append('SICP')
