@@ -8,12 +8,70 @@ OORedis 是一个 Redis 的 Python 库，它基于 redis-py ，具有以下三�
 - 提供方便的类型转换机制 
 
 
+用例
+------
+
+::
+
+    >>> from ooredis import *
+    >>> connect()
+    >>>
+    >>> project = Dict('project-info')
+    >>> project['name'] = 'OORedis'
+    >>> project['description'] = 'A Redis-to-Python mapper'
+    >>> project['language'] = 'Python'
+    >>> project.items()
+    [('name', 'OORedis'), ('type', 'Redis-to-Python mapper'), ('description', 'A Redis-to-Python mapper'), ('language', 'Python')]
+    >>>
+    >>> book_list = Deque('my-book-list')
+    >>> book_list.append('SICP')
+    >>> book_list.append('The Joy of Clojure')
+    >>> book_list.append('Real World Haskell')
+    >>> list(book_list)
+    ['SICP', 'The Joy of Clojure', 'Real World Haskell']
+    >>> book_list.pop()
+    'Real World Haskell'
+    >>>
+    >>> my_friend = Set('my-friend')
+    >>> my_friend.add('peter')
+    >>> my_friend.add('jack')
+    >>> my_friend.add('mary')
+    >>> your_friend = set(['peter', 'bob', 'yui'])
+    >>> my_friend ^ your_friend
+    set(['yui', 'bob', 'mary', 'jack'])
+    >>> my_friend & your_friend
+    set(['peter'])
+    >>> my_friend
+    Set Key 'my-friend': set(['peter', 'mary', 'jack'])
+    >>> my_friend &= your_friend
+    >>> my_friend
+    Set Key 'my-friend': set(['peter'])
+    >>>
+    >>> price = SortedSet('fruit-price')
+    >>> price['apple'] = 6.5
+    >>> price['banana'] = 3.2
+    >>> price['cherry'] = 4
+    >>> price
+    Sortedset Key 'fruit-price': [{'score': 3.2, 'value': 'banana'}, {'score': 4.0, 'value': 'cherry'}, {'score': 6.5, 'value': 'apple'}]
+    >>> for p in price:
+    ...     print(p)
+    ... 
+    {'score': 3.2, 'value': 'banana'}
+    {'score': 4.0, 'value': 'cherry'}
+    {'score': 6.5, 'value': 'apple'}
+    >>> for p in reversed(price):
+    ...     print(p)
+    ... 
+    {'score': 6.5, 'value': 'apple'}
+    {'score': 4.0, 'value': 'cherry'}
+    {'score': 3.2, 'value': 'banana'}
+
+
 文档
 ------
 
-在线阅读地址： `http://ooredis.readthedocs.org/
-<http://ooredis.readthedocs.org/>`_ 
-    
+更多代码示例和具体用法，请参考在线文档： `http://ooredis.readthedocs.org/ <http://ooredis.readthedocs.org/>`_ 
+
 
 测试
 ------
