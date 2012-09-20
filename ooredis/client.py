@@ -15,7 +15,7 @@ def get_client():
     """ 返回OORedis客户端 """
     global client
 
-    if client == None:
+    if client is None:
         connect()
 
     return client
