@@ -56,5 +56,5 @@ class TestGeneric(TestCase):
         assert GenericTypeCase.decode(str(self.f)) == self.f
 
     def test_decode_RAISE_when_INPUT_WRONG_TYPE(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AssertionError):
             GenericTypeCase.decode(self.l)
