@@ -11,11 +11,11 @@ import type_case
 
 from client import connect, get_client
 
-from key.dict import Dict
 from key.set import Set
-from key.sorted_set import SortedSet
+from key.dict import Dict
+from key.deque import Deque
 from key.string import String
 from key.counter import Counter
-from key.deque import Deque
+from key.sorted_set import SortedSet
 
 __version__ = "1.9.3"
