@@ -23,6 +23,6 @@ class JsonTypeCase:
         如果转换失败，抛出 TypeError 。
         """
         if value is None:
-            return None
+            return
 
         return json.loads(value)
