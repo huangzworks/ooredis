@@ -4,12 +4,16 @@ __all__ = ['Counter']
 
 __metaclass__ = type
 
-from ooredis import String
 from ooredis.type_case import IntTypeCase
 from ooredis.key.helper import wrap_exception
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
-class Counter(String):
+from base_key import BaseKey
+from common_key_property_mixin import CommonKeyPropertyMixin
+from set_and_get_op_mixin import SetAndGetOpMixin
+from helper import format_key
+
+class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
 
     """
     计算器用途的 key 对象。
@@ -23,6 +27,10 @@ class Counter(String):
         使用 IntTypeCase 作为默认 type case 。
         """
         super(Counter, self).__init__(name=name, client=client, type_case=type_case)
+
+
+    def __repr__(self):
+        return format_key(self, self.name, self.get())
 
 
     @wrap_exception
