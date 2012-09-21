@@ -1,5 +1,7 @@
 # coding: utf-8
 
+__all__ = ['CommonKeyPropertyMixin']
+
 __metaclass__ = type
 
 class CommonKeyPropertyMixin:
