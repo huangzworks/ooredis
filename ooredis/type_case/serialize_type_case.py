@@ -26,7 +26,7 @@ class SerializeTypeCase:
         如果传入值无法进行反序列化，抛出 TypeError 。
         """
         if value is None:
-            return None
+            return
 
         try:
             return pickle.loads(value)
