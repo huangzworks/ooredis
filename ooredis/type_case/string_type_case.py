@@ -3,7 +3,7 @@
 class StringTypeCase:
 
     """ 
-    处理字符串类型(str或unicode)值的转换。 
+    处理字符串类型( str 或 unicode )值的转换。 
     """
 
     @staticmethod
@@ -20,12 +20,12 @@ class StringTypeCase:
     @staticmethod
     def decode(value):
         """ 
-        将值转回str或unicode类型。 
+        将值转回 str 或 unicode 类型。 
         """
         if value is None:
-            return None
-        else:
-            try:
-                return str(value)
-            except:
-                return unicode(value)
+            return 
+
+        try:
+            return str(value)
+        except:
+            return unicode(value)
