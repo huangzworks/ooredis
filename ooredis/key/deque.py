@@ -4,17 +4,16 @@ __all__ = ['Deque']
 
 __metaclass__ = type
 
-import redis.exceptions as redispy_exception
+import redis
 
-from ooredis.key.base_key import BaseKey
-from ooredis.key.helper import format_key, wrap_exception
-
+from base_key import BaseKey
+from helper import format_key, wrap_exception
 from common_key_property_mixin import CommonKeyPropertyMixin
 
 class Deque(BaseKey, CommonKeyPropertyMixin):
 
     """ 
-    一个双端队列 key 对象，底层实现是 redis 的 list 类型。 
+    将 Redis 的 list 结构映射到双端队列对象。
     """
 
     def append(self, python_item):
@@ -136,8 +135,7 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
         Raises:
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
-        all_python_item = list(self)
-        return all_python_item.count(python_item)
+        return list(self).count(python_item)
 
 
     @wrap_exception
@@ -161,11 +159,11 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         redis_item = self._client.rpop(self.name)
-        python_item = self.decode(redis_item)
-        if python_item is None:
+        if redis_item is None:
             raise IndexError
-        else:
-            return python_item
+
+        python_item = self.decode(redis_item)
+        return python_item
 
 
     @wrap_exception
@@ -216,11 +214,10 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
             TypeError: 尝试对非 list 类型的 key 进行操作时抛出。
         """
         redis_item = self._client.lpop(self.name)
-        python_item = self.decode(redis_item)
-        if python_item is None:
+        if redis_item is None:
             raise IndexError
-        else:
-            return python_item
+        python_item = self.decode(redis_item)
+        return python_item
 
 
     @wrap_exception
@@ -290,7 +287,7 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
             for redis_item in all_redis_item:
                 python_item = self.decode(redis_item)
                 yield python_item
-        except redispy_exception.ResponseError:
+        except redis.exceptions.ResponseError:
             raise TypeError
 
     
@@ -313,8 +310,10 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
         """
         # TODO: 这个实现带有竞争条件
         all_python_item = list(self)
-        del all_python_item[index]
+
         self.delete()
+
+        del all_python_item[index]
         if all_python_item != []:
             self.extend(all_python_item)
         """
@@ -377,7 +376,8 @@ class Deque(BaseKey, CommonKeyPropertyMixin):
         """
         # TODO: 这个实现带有竞争条件
         all_python_item = list(self)
+
         all_python_item[index] = item
+
         self.delete()
-        if all_python_item != []:
-            self.extend(all_python_item)
+        self.extend(all_python_item)

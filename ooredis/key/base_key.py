@@ -10,16 +10,16 @@ from ooredis.type_case import GenericTypeCase
 class BaseKey:
 
     """ 
-    所有其他 key 对象的基类。
+    所有其他 Key 对象的基类，保存了 key 名，客户端以及 TypeCase 。
     """
 
     def __init__(self, name, client=None, type_case=GenericTypeCase):
         """ 
-        指定 key 名和客户端，以及 type_case 。
+        指定 key 名和客户端，以及 TypeCase 。
 
         Args:
             name: Redis key 的名字
-            client: 客户端，默认为全局客户端。
+            client: 客户端，默认为全局客户端
             type_case: 类型转换类
 
         Time:

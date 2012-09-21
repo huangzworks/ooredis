@@ -7,10 +7,10 @@ __metaclass__ = type
 import redis
 import collections
 
-from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
-from ooredis.key.helper import format_key, wrap_exception
 
+from base_key import BaseKey
+from helper import format_key, wrap_exception
 from common_key_property_mixin import CommonKeyPropertyMixin
 
 REMOVE_SUCCESS = True
@@ -19,74 +19,11 @@ MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 class Set(BaseKey, CommonKeyPropertyMixin):
 
     """
-    集合 key 对象，底层实现是redis的set类型。 
+    将 Redis 的 Set 结构映射为集合对象。
     """
 
     def __repr__(self):
         return format_key(self, self.name, set(self))
-
-
-    @wrap_exception
-    def __len__(self):
-        """ 
-        返回集合中元素的个数。
-        当集合为空集时，返回 0 。
-
-        Args:
-            None
-
-        Time:
-            O(1)
-
-        Returns:
-            len 
-
-        Raises:
-            TypeError: 当 key 不是 redis 的 set 类型时抛出。
-        """
-        return self._client.scard(self.name)
-
-
-    def __iter__(self):
-        """ 
-        返回一个包含集合中所有元素的迭代器。
-
-        Time:
-            O(N)
-
-        Returns:
-            iterator
-
-        Raises:
-            TypeError: 当 key 不是 redis 的 set 类型时抛出。
-        """
-        try:
-            for redis_member in self._client.smembers(self.name):
-                python_member = self.decode(redis_member)
-                yield python_member
-        except redis.exceptions.ResponseError:
-            raise TypeError
-
-
-    @wrap_exception
-    def __contains__(self, element):
-        """ 
-        检查给定元素 element 是否集合的成员。
-
-        Args:
-            element
-
-        Time:
-            O(1)
-
-        Returns:
-            bool: element 是集合成员的话返回 True ，否则返回 False 。
-
-        Raises:
-            TypeError: 当 key 不是 redis 的 set 类型时抛出。
-        """
-        redis_element = self.encode(element)
-        return self._client.sismember(self.name, redis_element)
 
 
     @wrap_exception
@@ -107,7 +44,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             None
 
         Raises:
-            TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
+            TypeError: 当 key 非空且它不是 Redis 的 set 类型时抛出。
         """
         redis_element = self.encode(element)
         self._client.sadd(self.name, redis_element)
@@ -130,7 +67,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             None
 
         Raises:
-            TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
+            TypeError: 当 key 非空且它不是 Redis 的 set 类型时抛出。
             KeyError： 要移除的元素 element 不存在于集合时抛出。
         """
         redis_element = self.encode(element)
@@ -155,15 +92,15 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             member: 被移除的集合成员。
 
         Raises:
-            TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
+            TypeError: 当 key 非空且它不是 Redis 的 set 类型时抛出。
             KeyError: 集合为空集时抛出。
         """
         redis_member = self._client.spop(self.name)
-        python_member = self.decode(redis_member)
-        if python_member is None:
+        if redis_member is None:
             raise KeyError
-        else:
-            return python_member
+
+        python_member = self.decode(redis_member)
+        return python_member
 
 
     @wrap_exception
@@ -171,7 +108,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         """ 
         随机返回集合中的某个元素。
 
-        该操作和 pop 相似，但 pop 将随机元素从集合中移除并返回，
+        该操作和 pop 方法相似，但 pop 将随机元素从集合中移除并返回，
         而 random 则仅仅返回随机元素，而不对集合进行任何改动。
 
         Args:
@@ -185,7 +122,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             None: 当集合为空集时，返回 None 。
 
         Raises:
-            TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
+            TypeError: 当 key 非空且它不是 Redis 的 set 类型时抛出。
         """
         redis_element = self._client.srandmember(self.name)
         python_member = self.decode(redis_element)
@@ -211,7 +148,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
 
         Raises:
             KeyError: 要被移动的元素 member 不存在于集合时抛出。
-            TypeError: 当 key 非空且它不是 redis 的 set 类型时抛出。
+            TypeError: 当 key 非空且它不是 Redis 的 set 类型时抛出。
         """
         redis_member = self.encode(member)
         state = self._client.smove(self.name, destination.name, redis_member)
@@ -226,7 +163,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         检查集合是否和另一个集合不相交。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 Key 对象。
         
         Returns:
             bool
@@ -250,7 +187,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         测试集合是否是另一个集合的子集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Returns:
             bool
@@ -273,7 +210,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         测试集合是否是另一个集合的真子集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Returns:
             bool
@@ -294,7 +231,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         测试集合是否是另一个集合的超集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Returns:
             bool
@@ -317,7 +254,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         测试集合是否是另一个集合的真超集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Returns:
             bool
@@ -338,7 +275,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         返回集合和另一个集合的并集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Time:
             O(N)
@@ -359,7 +296,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
     def __ior__(self, other):
         """
         计算 self 和 other 之间的并集，并将结果设置为 self 的值。
-        other 可以是另一个集合 key 对象，或者 python set 的实例。
+        other 可以是另一个集合 key 对象，或者 Python set 的实例。
 
         Args:
             other
@@ -374,8 +311,8 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
         if isinstance(other, set):
-            elements = set(self) | other
-            redis_elements = map(self.encode, elements)
+            python_elements = set(self) | other
+            redis_elements = map(self.encode, python_elements)
             self._client.sadd(self.name, *redis_elements)
         else:
             self._client.sunionstore(self.name, [self.name, other.name])
@@ -390,7 +327,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         返回集合和另一个集合的交集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Time:
             O(N)
@@ -411,7 +348,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
     def __iand__(self, other):
         """
         计算 self 和 other 之间的交集，并将结果设置为 self 的值。
-        other 可以是另一个集合 key 对象，或者 python set 的实例。
+        other 可以是另一个集合 key 对象，或者 Python set 的实例。
 
         Args:
             other
@@ -426,8 +363,8 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
         if isinstance(other, set):
-            elements = set(self) - (set(self) & other)
-            redis_elements = map(self.encode, elements)
+            python_elements = set(self) - (set(self) & other)
+            redis_elements = map(self.encode, python_elements)
             self._client.srem(self.name, *redis_elements)
         elif other.exists and other._represent != REDIS_TYPE['set']:
             raise TypeError
@@ -444,7 +381,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         返回集合对另一个集合的差集。
 
         Args:
-            other: 一个 python 集合或集合 key 对象。
+            other: 一个 Python 集合或集合 key 对象。
 
         Time:
             O(N)
@@ -471,7 +408,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
     def __isub__(self, other):
         """
         计算 self 和 other 之间的差集，并将结果设置为 self 的值。
-        other 可以是另一个集合 key 对象，或者 python set 的实例。
+        other 可以是另一个集合 key 对象，或者 Python set 的实例。
 
         Args:
             other
@@ -486,8 +423,8 @@ class Set(BaseKey, CommonKeyPropertyMixin):
             TypeError: 当 key 或 other 的类型不符合要求时抛出。
         """
         if isinstance(other, set):
-            remove_elements = set(self) & other
-            redis_elements = map(self.encode, remove_elements)
+            python_elements = set(self) & other
+            redis_elements = map(self.encode, python_elements)
             self._client.srem(self.name, *redis_elements)
         else:
             self._client.sdiffstore(self.name, [self.name, other.name])
@@ -502,7 +439,7 @@ class Set(BaseKey, CommonKeyPropertyMixin):
         返回集合对另一个集合的对等差集。
 
         Args:
-            other: 一个python集合或集合key对象。
+            other: 一个Python集合或集合key对象。
 
         Returns:
             set
@@ -518,3 +455,66 @@ class Set(BaseKey, CommonKeyPropertyMixin):
     __rxor__ = __xor__
     __rxor__.__doc__ = \
     """ __xor__的反向方法，用于支持多集合的对等差集运算。 """
+
+
+    @wrap_exception
+    def __len__(self):
+        """ 
+        返回集合中元素的个数。
+        当集合为空集时，返回 0 。
+
+        Args:
+            None
+
+        Time:
+            O(1)
+
+        Returns:
+            len 
+
+        Raises:
+            TypeError: 当 key 不是 Redis 的 set 类型时抛出。
+        """
+        return self._client.scard(self.name)
+
+
+    def __iter__(self):
+        """ 
+        返回一个包含集合中所有元素的迭代器。
+
+        Time:
+            O(N)
+
+        Returns:
+            iterator
+
+        Raises:
+            TypeError: 当 key 不是 Redis 的 set 类型时抛出。
+        """
+        try:
+            for redis_member in self._client.smembers(self.name):
+                python_member = self.decode(redis_member)
+                yield python_member
+        except redis.exceptions.ResponseError:
+            raise TypeError
+
+
+    @wrap_exception
+    def __contains__(self, element):
+        """ 
+        检查给定元素 element 是否集合的成员。
+
+        Args:
+            element
+
+        Time:
+            O(1)
+
+        Returns:
+            bool: element 是集合成员的话返回 True ，否则返回 False 。
+
+        Raises:
+            TypeError: 当 key 不是 Redis 的 set 类型时抛出。
+        """
+        redis_element = self.encode(element)
+        return self._client.sismember(self.name, redis_element)

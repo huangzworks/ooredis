@@ -5,9 +5,6 @@ __all__ = ['SortedSet']
 __metaclass__ = type
 
 from functools import partial
-
-from ooredis.key.base_key import BaseKey
-from ooredis.key.helper import format_key, wrap_exception
 from ooredis.const import (
     LEFTMOST,
     RIGHTMOST,
@@ -15,6 +12,8 @@ from ooredis.const import (
     DEFAULT_DECREMENT,
 )
 
+from base_key import BaseKey
+from helper import format_key, wrap_exception
 from common_key_property_mixin import CommonKeyPropertyMixin
 
 # redis command execute status code
@@ -29,7 +28,7 @@ SCORE= 1
 class SortedSet(BaseKey, CommonKeyPropertyMixin):
 
     """ 
-    有序集对象，底层是redis的zset实现。 
+    将 Redis 的 sorted set 结构映射为有序集对象。
     """
 
     def __repr__(self):
@@ -76,7 +75,7 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
         # 因为在 redis 里 zset 没有 set 那样的 SISMEMBER 命令，
         # 所以这里用 ZSCORE 命令 hack 一个：
         # 如果 ZSCORE key member 不为 None ，证明 element 是有序集成员。
-        # 注意，这里不能用 self.score ，因为这两个方法互相引用。
+        # 注意，这里不能用 self.score 来实现，因为这两个方法互相引用。
         redis_element = self.encode(element)
         element_score = self._client.zscore(self.name, redis_element)
         return element_score is not None
@@ -157,8 +156,8 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
             None
 
         Raises:
-            KeyError: index下标超出范围时抛出。
-            TypeError: 当key不是有序集类型时抛出。
+            KeyError: index 下标超出范围时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
         """
         if isinstance(index, slice):
             start = LEFTMOST if index.start is None else index.start
@@ -174,7 +173,7 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
     @wrap_exception
     def remove(self, member):
         """ 
-        移除有序集成员member，如果member不存在，不做动作。
+        移除有序集成员 member ，如果 member 不存在，不做动作。
 
         Args:
             member: 要移除的成员。
@@ -298,9 +297,9 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
             O(log(N))
 
         Returns:
-            float: member成员的新score值。
+            float: member 成员的新 score 值。
 
         Raises:
-            TypeError: 当key不是有序集类型时抛出。
+            TypeError: 当 key 不是有序集类型时抛出。
         """
         return self.incr(member, 0-decrement)

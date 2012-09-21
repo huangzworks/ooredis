@@ -5,7 +5,8 @@ __all__ = ['SetAndGetOpMixin']
 __metaclass__ = type
 
 from ooredis.const import REDIS_TYPE
-from ooredis.key.helper import wrap_exception
+
+from helper import wrap_exception
 
 def raise_when_set_wrong_type(func):
     """

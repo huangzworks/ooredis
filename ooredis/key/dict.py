@@ -4,12 +4,11 @@ __all__ = ['Dict']
 
 __metaclass__ = type
 
+import redis
 import collections
-import redis.exceptions as redispy_exception
 
-from ooredis.key.base_key import BaseKey
-from ooredis.key.helper import format_key, wrap_exception
-
+from base_key import BaseKey
+from helper import format_key, wrap_exception
 from common_key_property_mixin import CommonKeyPropertyMixin
 
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
@@ -17,7 +16,7 @@ DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 class Dict(BaseKey, CommonKeyPropertyMixin, collections.MutableMapping):
 
     """
-    一个字典对象，底层是 Redis 的 Hash 结构。
+    将 Redis 的 Hash 结构映射为字典对象。
     """
 
     def __repr__(self):
@@ -27,7 +26,7 @@ class Dict(BaseKey, CommonKeyPropertyMixin, collections.MutableMapping):
     @wrap_exception
     def __contains__(self, key):
         """
-        检查给定 key 是否存在于字典中。
+        检查字典是否包含给定 key 。
 
         Args:
             key
@@ -86,12 +85,11 @@ class Dict(BaseKey, CommonKeyPropertyMixin, collections.MutableMapping):
             KeyError: key 不存在时抛出。
             TypeError: Key 对象不是 Dict 类型时抛出。
         """
-        if not key in self:
+        redis_value = self._client.hget(self.name, key)
+        if redis_value is None:
             raise KeyError
 
-        redis_value = self._client.hget(self.name, key)
         python_value = self.decode(redis_value)
-
         return python_value
 
     
@@ -140,7 +138,7 @@ class Dict(BaseKey, CommonKeyPropertyMixin, collections.MutableMapping):
         try:
             for key in self._client.hkeys(self.name):
                 yield key
-        except redispy_exception.ResponseError:
+        except redis.exceptions.ResponseError:
             raise TypeError
 
    

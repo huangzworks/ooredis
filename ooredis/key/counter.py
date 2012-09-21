@@ -5,20 +5,19 @@ __all__ = ['Counter']
 __metaclass__ = type
 
 from ooredis.type_case import IntTypeCase
-from ooredis.key.helper import wrap_exception
 from ooredis.const import DEFAULT_INCREMENT, DEFAULT_DECREMENT
 
 from base_key import BaseKey
 from common_key_property_mixin import CommonKeyPropertyMixin
 from set_and_get_op_mixin import SetAndGetOpMixin
-from helper import format_key
+from helper import format_key, wrap_exception
 
 class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
 
     """
-    计算器用途的 key 对象。
+    计数器用途的 Key 对象。
    
-    注意当 Key 对象为空时，get/getset 的返回值为 None。
+    注意当 Key 对象为空时，get/getset 的返回值为 None 。
     """
 
     def __init__(self, name, client=None, type_case=IntTypeCase):
@@ -51,7 +50,7 @@ class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
         Raises:
             TypeError: 当 Key 对象储存的不是数值类型时抛出。
         """
-        # redis-py用incr代替redis的incrby
+        # redis-py 用 incr 代替 redis 的 incrby
         return self._client.incr(self.name, increment)
 
 
@@ -73,14 +72,14 @@ class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
         Raises:
             TypeError: 当 key 储存的不是数值类型时抛出。
         """
-        # redis-py用decr代替redis的decrby
+        # redis-py 用 decr 代替 redis 的 decrby
         return self._client.decr(self.name, decrement)
 
 
     def __iadd__(self, increment):
         """
-        self.incr 方法的一个 python 语法糖，
-        区别是这个特殊方法不返回 key 对象的当前值。
+        self.incr 方法的一个 Python 语法糖，
+        区别是这个特殊方法不返回 Key 对象的当前值。
 
         Args:
             increment: 增量。
@@ -89,7 +88,7 @@ class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
             O(1)
 
         Returns:
-            self: python 要求这个特殊方法返回被修改后的对象。
+            self: Python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
             TypeError: 当 key 储存的不是数值类型时由 self.incr 抛出。
@@ -100,8 +99,8 @@ class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
 
     def __isub__(self, decrement):
         """
-        self.decr 方法的一个 python 语法糖，
-        区别是这个特殊方法不返回 key 对象的当前值。
+        self.decr 方法的一个 Python 语法糖，
+        区别是这个特殊方法不返回 Key 对象的当前值。
 
         Args:
             decrement: 减量。
@@ -110,7 +109,7 @@ class Counter(BaseKey, CommonKeyPropertyMixin, SetAndGetOpMixin):
             O(1)
 
         Returns:
-            self: python 要求这个特殊方法返回被修改后的对象。
+            self: Python 要求这个特殊方法返回被修改后的对象。
 
         Raises:
             TypeError: 当 key 储存的不是数值类型时由 self.decr 抛出。
