@@ -11,10 +11,12 @@ from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
 from ooredis.key.helper import format_key, wrap_exception
 
+from common_key_property_mixin import CommonKeyPropertyMixin
+
 REMOVE_SUCCESS = True
 MOVE_FAIL_CAUSE_MEMBER_NOT_IN_SET = 0
 
-class Set(BaseKey):
+class Set(BaseKey, CommonKeyPropertyMixin):
 
     """
     集合 key 对象，底层实现是redis的set类型。 

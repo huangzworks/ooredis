@@ -1,5 +1,9 @@
 2.0
 
+内部：将 key.BaseKey 类分解成 key.BaseKey 类和 key.CommonKeyPropertyMixin
+      新的 key.BaseKey 纯粹用于创建 Key 对象
+      至于所有 Key 对象通用的属性，比如 delete 、 expire 、 persist 等方法，则通过继承 CommonKeyPropertyMixin 获取
+
 内部：删除 ooredis.type_case.helper 中的 is_any_instance 函数
       并将空模块 ooredis.type_case.helper 一并删除
 

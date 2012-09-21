@@ -15,6 +15,8 @@ from ooredis.const import (
     DEFAULT_DECREMENT,
 )
 
+from common_key_property_mixin import CommonKeyPropertyMixin
+
 # redis command execute status code
 MEMBER_NOT_IN_SET_AND_REMOVE_FALSE = 0
 MEMBER_NOT_IN_SET_AND_DELETE_FALSE = 0
@@ -24,7 +26,7 @@ MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 VALUE = 0
 SCORE= 1
 
-class SortedSet(BaseKey):
+class SortedSet(BaseKey, CommonKeyPropertyMixin):
 
     """ 
     有序集对象，底层是redis的zset实现。 

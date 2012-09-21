@@ -10,9 +10,11 @@ import redis.exceptions as redispy_exception
 from ooredis.key.base_key import BaseKey
 from ooredis.key.helper import format_key, wrap_exception
 
+from common_key_property_mixin import CommonKeyPropertyMixin
+
 DELETE_FAIL_CAUSE_KEY_NOT_EXISTS = False
 
-class Dict(BaseKey, collections.MutableMapping):
+class Dict(BaseKey, CommonKeyPropertyMixin, collections.MutableMapping):
 
     """
     一个字典对象，底层是 Redis 的 Hash 结构。

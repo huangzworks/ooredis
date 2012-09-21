@@ -8,6 +8,8 @@ from ooredis.key.base_key import BaseKey
 from ooredis.const import REDIS_TYPE
 from ooredis.key.helper import format_key, wrap_exception
 
+from common_key_property_mixin import CommonKeyPropertyMixin
+
 def raise_when_set_wrong_type(func):
     """
     set/setex/setnx 命令可以无视类型进行设置的命令，为了保证类型的限制，
@@ -21,7 +23,7 @@ def raise_when_set_wrong_type(func):
         return func(*args, **kwargs)
     return wrapper
 
-class String(BaseKey):
+class String(BaseKey, CommonKeyPropertyMixin):
 
     """
     为储存单个值的 Key 对象提供 set，get 和 getset操作。
