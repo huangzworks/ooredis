@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from numbers import Integral
-
 class IntTypeCase:
 
     """ 
@@ -13,10 +11,10 @@ class IntTypeCase:
         """ 
         接受 int 类型值，否则抛出 TypeError 。 
         """
-        if isinstance(value, Integral):
-            return value
-
-        raise TypeError
+        try:
+            return int(value)
+        except ValueError:
+            raise TypeError
 
     @staticmethod
     def decode(value):
@@ -25,12 +23,9 @@ class IntTypeCase:
         如果转换失败，抛出 TypeError。
         """
         if value is None:
-            return None
-        else:
-            try:
-                return int(value)
-            except:
-                try:
-                    return long(value)
-                except:
-                    raise TypeError
+            return
+
+        try:
+            return int(value)
+        except ValueError:
+            raise TypeError
