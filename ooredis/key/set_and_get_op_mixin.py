@@ -44,7 +44,7 @@ class SetAndGetOpMixin:
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        redis_value = self.encode(python_value)
+        redis_value = self._encode(python_value)
 
         self._client.set(self.name, redis_value)
 
@@ -66,7 +66,7 @@ class SetAndGetOpMixin:
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        redis_value = self.encode(python_value)
+        redis_value = self._encode(python_value)
 
         return self._client.setnx(self.name, redis_value)
 
@@ -90,7 +90,7 @@ class SetAndGetOpMixin:
         Raises:
             TypeError: 当 Key 对象非空且不是 Redis 的字符串类型时抛出。
         """
-        redis_value = self.encode(python_value)
+        redis_value = self._encode(python_value)
 
         return self._client.setex(self.name, redis_value, ttl_in_second)
 
@@ -112,7 +112,7 @@ class SetAndGetOpMixin:
         """
         redis_value = self._client.get(self.name)
 
-        python_value = self.decode(redis_value)
+        python_value = self._decode(redis_value)
 
         return python_value
 
@@ -135,10 +135,10 @@ class SetAndGetOpMixin:
         Raises:
             TypeError: 当 key 非空但 Key 对象不是指定类型时抛出。
         """
-        new_redis_value = self.encode(python_value)
+        new_redis_value = self._encode(python_value)
 
         old_redis_value = self._client.getset(self.name, new_redis_value)
 
-        python_value = self.decode(old_redis_value)
+        python_value = self._decode(old_redis_value)
 
         return python_value

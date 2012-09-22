@@ -33,8 +33,8 @@ class BaseKey:
         """
         self.name = name
         self._client = client or get_client()
-        self.encode = type_case.encode
-        self.decode = type_case.decode
+        self._encode = type_case.encode
+        self._decode = type_case.decode
 
 
     def __eq__(self, other):
