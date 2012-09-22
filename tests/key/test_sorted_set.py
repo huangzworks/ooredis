@@ -89,7 +89,7 @@ class TestSortedSet(unittest.TestCase):
         )
 
         self.assertEqual(
-            self.s[0]['value'],
+            self.s[0]['member'],
             self.element
         )
         self.assertEqual(
@@ -103,7 +103,7 @@ class TestSortedSet(unittest.TestCase):
         self.s[self.element] = self.score
 
         self.assertEqual(
-            self.s[0]['value'],
+            self.s[0]['member'],
             self.element
         )
         self.assertEqual(
@@ -127,7 +127,7 @@ class TestSortedSet(unittest.TestCase):
         )
 
         self.assertEqual(
-            self.s[0]['value'],
+            self.s[0]['member'],
             self.element
         )
         self.assertEqual(
@@ -145,20 +145,20 @@ class TestSortedSet(unittest.TestCase):
         self.s['three']= 3
 
         self.assertEqual(self.s[1:],    
-                         [{'value': 'two', 'score': 2},
-                          {'value': 'three', 'score': 3},])
+                         [{'member': 'two', 'score': 2},
+                          {'member': 'three', 'score': 3},])
 
         self.assertEqual(self.s[:2],
-                        [{'value': 'one', 'score': 1},
-                         {'value': 'two', 'score': 2}])
+                        [{'member': 'one', 'score': 1},
+                         {'member': 'two', 'score': 2}])
 
         self.assertEqual(self.s[:],
-                        [{'value': 'one', 'score': 1},
-                         {'value': 'two', 'score': 2},
-                         {'value': 'three', 'score': 3},])
+                        [{'member': 'one', 'score': 1},
+                         {'member': 'two', 'score': 2},
+                         {'member': 'three', 'score': 3},])
 
         self.assertEqual(self.s[1:2],
-                         [{'value': 'two', 'score': 2},])
+                         [{'member': 'two', 'score': 2},])
 
         self.assertEqual(self.s[10086:],
                          [])
@@ -203,8 +203,8 @@ class TestSortedSet(unittest.TestCase):
         self.assertEqual(
             self.s[:],
             [
-                {'value': 'two', 'score': 2},
-                {'value': 'three', 'score': 3},
+                {'member': 'two', 'score': 2},
+                {'member': 'three', 'score': 3},
             ]
         )
 
@@ -218,7 +218,7 @@ class TestSortedSet(unittest.TestCase):
         self.assertEqual(
             self.s[:],
             [
-                {'value': 'two', 'score': 2},
+                {'member': 'two', 'score': 2},
             ]
         )
 
@@ -244,8 +244,8 @@ class TestSortedSet(unittest.TestCase):
         self.assertEqual(
             self.s[:],
             [
-                {'value': 'one', 'score': 1},
-                {'value': 'two', 'score': 2}
+                {'member': 'one', 'score': 1},
+                {'member': 'two', 'score': 2}
             ]
         )
 
@@ -259,7 +259,7 @@ class TestSortedSet(unittest.TestCase):
         self.assertEqual(
             self.s[:],
             [
-                {'value': 'one', 'score': 1}
+                {'member': 'one', 'score': 1}
             ]
         )
 

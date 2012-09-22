@@ -21,10 +21,6 @@ MEMBER_NOT_IN_SET_AND_REMOVE_FALSE = 0
 MEMBER_NOT_IN_SET_AND_DELETE_FALSE = 0
 MEMBER_NOT_IN_SET_AND_GET_SCORE_FALSE = None
 
-# ZRANGE result item index
-VALUE = 0
-SCORE= 1
-
 class SortedSet(BaseKey, CommonKeyPropertyMixin):
 
     """ 
@@ -115,7 +111,7 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
             index: 一个下标或一个 slice 对象。
 
         Returns:
-            dict： 使用下标时，返回一个字典，包含 value 和 score 。
+            dict： 使用下标时，返回一个字典，包含 member 和 score 。
             list：使用 slice 对象时，返回一个列表，
                   列表中每个项都是一个字典。
 
@@ -129,8 +125,8 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
         item_to_dict_list = \
             partial(map,
                     lambda item: dict(
-                        value=self._decode(item[VALUE]), 
-                        score=item[SCORE]
+                        member=self._decode(item[0]), 
+                        score=item[1]
                     ))
 
         if isinstance(index, slice):
