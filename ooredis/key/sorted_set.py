@@ -112,8 +112,7 @@ class SortedSet(BaseKey, CommonKeyPropertyMixin):
 
         Returns:
             dict： 使用下标时，返回一个字典，包含 member 和 score 。
-            list：使用 slice 对象时，返回一个列表，
-                  列表中每个项都是一个字典。
+            list：使用 slice 对象时，返回一个列表， 列表中每个项都是一个字典。
 
         Time:
             O(log(N)+M) ， N 为有序集的基数，而 M 为结果集的基数。
