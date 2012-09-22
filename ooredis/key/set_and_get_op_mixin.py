@@ -4,6 +4,7 @@ __all__ = ['SetAndGetOpMixin']
 
 __metaclass__ = type
 
+from functools import wraps
 from ooredis.const import REDIS_TYPE
 
 from helper import wrap_exception
@@ -13,6 +14,7 @@ def raise_when_set_wrong_type(func):
     set/setex/setnx 命令可以无视类型进行设置的命令，为了保证类型的限制，
     ooredis 对一个非 string 类型进行 set/setex/setnx 将引发 TypeError 异常。
     """
+    @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
         if self.exists and \

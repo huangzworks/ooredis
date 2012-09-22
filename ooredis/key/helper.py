@@ -6,6 +6,7 @@ __all__ = [
 ]
 
 import redis
+from functools import wraps
 
 def format_key(key, name, value):
     """ 
@@ -19,6 +20,7 @@ def wrap_exception(func):
     redis-py 在对数据结构执行不属于它的操作时抛出 ResponseError
     这里将 ResponseError 转换为 TypeError
     """
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
