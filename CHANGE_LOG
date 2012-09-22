@@ -1,5 +1,7 @@
 2.0
 
+API：将 SortedSet 对象中元素的 ['value'] 属性改为 ['member'] 属性。
+
 内部：key.Counter 类不再继承 key.String ，而是通过混入 Mixin 来获得属性和方法
 
 内部：将 key.String 类分解成 key.String 和 key.SetAndGetOpMixin
