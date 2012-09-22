@@ -13,8 +13,8 @@
 内部：删除 ooredis.type_case.helper 中的 is_any_instance 函数
       并将空模块 ooredis.type_case.helper 一并删除
 
-内部：将原本的 Key._type_case.to_redis 改为 Key.encode
-      将原本的 Key._type_case.to_python 改为 Key.decode
+内部：将原本的 Key._type_case.to_redis 改为 Key._encode
+      将原本的 Key._type_case.to_python 改为 Key._decode
       删除 Key._type_case 属性
 
 API：所有 TypeCase.to_redis 方法改为 TypeCase.encode
