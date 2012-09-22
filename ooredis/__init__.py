@@ -18,4 +18,4 @@ from key.string import String
 from key.counter import Counter
 from key.sorted_set import SortedSet
 
-__version__ = "1.9.6"
+__version__ = "1.9.7"
