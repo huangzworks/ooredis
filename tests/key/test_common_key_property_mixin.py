@@ -156,7 +156,7 @@ class TestCommonKeyPropertyMixin(unittest.TestCase):
     def test_expireat_with_EXISTS_KEY(self):
         self.redispy.set(self.key.name, self.value)
 
-        self.key.expireat(1355292000)
+        self.key.expireat(9999999999)
 
         self.assertIsNotNone(
             self.key.ttl
@@ -164,7 +164,7 @@ class TestCommonKeyPropertyMixin(unittest.TestCase):
 
     def test_expireat_RAISE_when_KEY_NOT_EXISTS(self):
         with self.assertRaises(TypeError):
-            self.key.expireat(1355292000)   # 2012.12.12
+            self.key.expireat(9999999999)
 
 
     # persist
